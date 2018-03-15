@@ -4,6 +4,7 @@ var os = require('os')
 var fs = require('fs');
 var path = require('path')
 var shelljs = require('shelljs');
+var is_win = (os.platform() === 'win32');
 
 if(!process.env.CMAKI_PWD)
 {
@@ -31,6 +32,20 @@ if(!process.env.CMAKI_INSTALL)
 else
 {
 	shelljs.env['CMAKI_INSTALL'] = process.env['CMAKI_INSTALL'];
+}
+
+if(is_win)
+{
+	cmaki_identifier = 'cmaki_identifier.cmd'
+}
+else
+{
+	cmaki_identifier = 'cmaki_identifier.sh'
+}
+
+if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
+{
+	console.log("WARNING: compile cmaki_identifier")
 }
 
 if(!process.env.MODE)
@@ -72,7 +87,6 @@ environment_vars.forEach(function(val, index, array)
 	}
 });
 
-var is_win = (os.platform() === 'win32');
 var dir_script;
 var script = process.argv[2];
 if (is_win)
