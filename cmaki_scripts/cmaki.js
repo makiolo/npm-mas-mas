@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 var os = require('os')
 var fs = require('fs');
 var path = require('path')
@@ -6,7 +7,7 @@ var shelljs = require('shelljs');
 
 if(!process.env.CMAKI_PWD)
 {
-	if (fs.existsSync(path.join("..", "..", "node_modules", "cmaki_scripts"))) {
+	if (fs.existsSync(path.join("..", "..", "node_modules", "npm-mas-mas", "cmaki_scripts"))) {
 		shelljs.env['CMAKI_PWD'] = path.join(process.cwd(), '..', '..');
 		process.env['CMAKI_PWD'] = path.join(process.cwd(), '..', '..');
 	} else {
@@ -79,7 +80,7 @@ if (is_win)
 	}
 	else
 	{
-		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'cmaki_scripts');
+		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_scripts');
 	}
 }
 else
@@ -90,7 +91,7 @@ else
 	}
 	else
 	{
-		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'cmaki_scripts');
+		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_scripts');
 	}
 }
 
