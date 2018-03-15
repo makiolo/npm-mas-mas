@@ -18,6 +18,10 @@ fi
 
 env | sort
 
+if [[ -d "bin" ]]; then
+	rm -Rf bin
+fi
+
 if [[ -d "artifacts" ]]; then
 	rm -Rf artifacts
 fi
@@ -64,3 +68,4 @@ if [ -f "cmaki.yml" ]; then
 		./node_modules/cmaki_scripts/upload.sh
 	fi
 fi
+
