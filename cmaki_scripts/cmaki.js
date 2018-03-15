@@ -21,9 +21,6 @@ else
 	shelljs.env['CMAKI_PWD'] = process.env['CMAKI_PWD'];
 }
 
-// change cwd
-process.chdir( process.env['CMAKI_PWD'] );
-
 if(!process.env.CMAKI_INSTALL)
 {
 	shelljs.env['CMAKI_INSTALL'] = path.join(process.env['CMAKI_PWD'], 'bin');
@@ -43,9 +40,29 @@ else
 	cmaki_identifier = 'cmaki_identifier.sh'
 }
 
-if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
+// no check in cmaki_identifier for avoid recursion
+if( process.env['npm_package_name'] != 'cmaki_identifier')
 {
-	console.log("WARNING: compile cmaki_identifier")
+	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
+	{
+		dir_identifier = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_identifier');
+
+		backup1 = shelljs.env['CMAKI_PWD'];
+		backup2 = process.env['CMAKI_PWD'];
+
+		shelljs.env['CMAKI_PWD'] = dir_identifier;
+		process.env['CMAKI_PWD'] = dir_identifier;
+
+		process.chdir( dir_identifier );
+
+		if (shelljs.exec('npm install').code !== 0) {
+			shelljs.echo('Error detecting compiler (compiling cmaki_identifier ...)');
+			shelljs.exit(1);
+		}
+
+		shelljs.env['CMAKI_PWD'] = backup1;
+		process.env['CMAKI_PWD'] = backup2;
+	}
 }
 
 if(!process.env.MODE)
@@ -57,6 +74,11 @@ else
 {
 	shelljs.env['MODE'] = process.env['MODE'];
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// change cwd
+process.chdir( process.env['CMAKI_PWD'] );
+////////////////////////////////////////////////////////////////////////////////
 
 function trim(s)
 {
@@ -83,7 +105,7 @@ environment_vars.forEach(function(val, index, array)
 	}
 	else
 	{
-		console.log("Error in -e with value: " + val)
+		console.log("Error in -e with value: " + val);
 	}
 });
 
@@ -115,15 +137,15 @@ else
 if (is_win)
 {
 	script_execute = path.join(dir_script, script+".cmd");
-	exists = fs.existsSync(script_execute)
-	caller_execute = "cmd /c "
+	exists = fs.existsSync(script_execute);
+	caller_execute = "cmd /c ";
 	script_execute = script_execute.replace(/\//g, "\\");
 }
 else
 {
 	script_execute = path.join(dir_script, script+".sh");
-	exists = fs.existsSync(script_execute)
-	caller_execute = "bash "
+	exists = fs.existsSync(script_execute);
+	caller_execute = "bash ";
 	script_execute = script_execute.replace(/\\/g, "/");
 }
 
