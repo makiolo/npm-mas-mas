@@ -105,12 +105,17 @@ environment_vars.forEach(function(val, index, array)
 	}
 });
 
+////////////////////////////////////////////////////////////////////////////////
+// change cwd
+shelljs.cd( process.env['CMAKI_PWD'] );
+////////////////////////////////////////////////////////////////////////////////
+
 
 var dir_script;
 var script = process.argv[2];
 if (is_win)
 {
-	if(fs.existsSync(path.join(process.cwd(), '..', '..', script+".cmd")))
+	if(fs.existsSync(path.join(process.cwd(), script+".cmd")))
 	{
 		dir_script = process.cwd();
 	}
@@ -121,7 +126,7 @@ if (is_win)
 }
 else
 {
-	if(fs.existsSync(path.join(process.cwd(), '..', '..', script+".sh")))
+	if(fs.existsSync(path.join(process.cwd(), script+".sh")))
 	{
 		dir_script = process.cwd();
 	}
@@ -145,11 +150,6 @@ else
 	caller_execute = "bash ";
 	script_execute = script_execute.replace(/\\/g, "/");
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// change cwd
-shelljs.cd( process.env['CMAKI_PWD'] );
-////////////////////////////////////////////////////////////////////////////////
 
 if(exists)
 {
