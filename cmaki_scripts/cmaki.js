@@ -47,21 +47,21 @@ if( process.env['npm_package_name'] != 'cmaki_identifier')
 	{
 		dir_identifier = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_identifier');
 
-		backup1 = shelljs.env['CMAKI_PWD'];
-		backup2 = process.env['CMAKI_PWD'];
-
-		shelljs.env['CMAKI_PWD'] = dir_identifier;
-		process.env['CMAKI_PWD'] = dir_identifier;
+		// backup1 = shelljs.env['CMAKI_PWD'];
+		// backup2 = process.env['CMAKI_PWD'];
+        //
+		// shelljs.env['CMAKI_PWD'] = dir_identifier;
+		// process.env['CMAKI_PWD'] = dir_identifier;
 
 		process.chdir( dir_identifier );
 
-		if (shelljs.exec('npm install').code !== 0) {
+		if (shelljs.exec('cd "' + dir_identifier + '" && npm install').code !== 0) {
 			shelljs.echo('Error detecting compiler (compiling cmaki_identifier ...)');
 			shelljs.exit(1);
 		}
 
-		shelljs.env['CMAKI_PWD'] = backup1;
-		process.env['CMAKI_PWD'] = backup2;
+		// shelljs.env['CMAKI_PWD'] = backup1;
+		// process.env['CMAKI_PWD'] = backup2;
 	}
 }
 
