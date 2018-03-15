@@ -40,8 +40,11 @@ else
 	cmaki_identifier = 'cmaki_identifier.sh'
 }
 
+console.log( process.env['npm_package_name'] )
+console.log( shelljs.env['npm_package_name'] )
+
 // no check in cmaki_identifier for avoid recursion
-if( process.env['npm_package_name'] != 'cmaki_identifier')
+if( shelljs.env['npm_package_name'] != 'cmaki_identifier')
 {
 	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
 	{
