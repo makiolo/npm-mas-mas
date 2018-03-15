@@ -42,7 +42,7 @@ else
 
 
 // no check in cmaki_identifier for avoid recursion
-if( !process.cwd().endsWith("/cmaki_identifier/node_modules/npm-mas-mas") )
+if( process.cwd().search("node_modules/cmaki_identifier/node_modules") == -1 )
 {
 	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
 	{
