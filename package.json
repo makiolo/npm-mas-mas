@@ -1,0 +1,38 @@
+{
+  "name": "npm-mas-mas",
+  "version": "0.0.1",
+  "description": "npm extension for use packing system with C++",
+  "bin": {
+    "cmaki": "./cmaki/cmaki.js"
+  },
+  "scripts": {
+    "docker": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/docker.sh | bash",
+    "ci": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/ci.sh | bash",
+    "docker": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/docker.sh | bash",
+    "clean": "cmaki clean",
+    "setup": "cmaki setup",
+    "compile": "cmaki compile",
+    "install": "cmaki setup && cmaki compile",
+    "test": "cmaki test",
+    "upload": "cmaki upload"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makiolo/npm-mas-mas.git"
+  },
+  "keywords": [
+    "cmake",
+    "c++",
+    "artifacts"
+  ],
+  "author": "Ricardo Marmolejo García",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/makiolo/npm-mas-mas/issues"
+  },
+  "homepage": "https://github.com/makiolo/npm-mas-mas#readme",
+  "dependencies": {
+    "shelljs": "^0.7.8"
+  }
+}
+
