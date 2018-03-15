@@ -26,7 +26,7 @@
     "url": "https://github.com/makiolo/cmaki_identifier/issues"
   },
   "homepage": "https://github.com/makiolo/cmaki_identifier#readme",
-  "devDependencies": {
+  "dependencies": {
     "npm-mas-mas": "git+https://github.com/makiolo/npm-mas-mas.git"
   }
 }
