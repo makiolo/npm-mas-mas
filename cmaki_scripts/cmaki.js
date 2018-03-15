@@ -108,12 +108,9 @@ environment_vars.forEach(function(val, index, array)
 
 var dir_script;
 var script = process.argv[2];
-
-console.log( path.join(process.cwd(), script+".sh") )
-
 if (is_win)
 {
-	if(fs.existsSync(path.join(process.cwd(), script+".cmd")))
+	if(fs.existsSync(path.join(process.cwd(), '..', '..', script+".cmd")))
 	{
 		dir_script = process.cwd();
 	}
@@ -124,7 +121,7 @@ if (is_win)
 }
 else
 {
-	if(fs.existsSync(path.join(process.cwd(), script+".sh")))
+	if(fs.existsSync(path.join(process.cwd(), '..', '..', script+".sh")))
 	{
 		dir_script = process.cwd();
 	}
