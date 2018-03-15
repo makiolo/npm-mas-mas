@@ -6,8 +6,6 @@ var path = require('path')
 var shelljs = require('shelljs');
 var is_win = (os.platform() === 'win32');
 
-console.log( process.cwd() )
-
 if(!process.env.CMAKI_PWD)
 {
 	if (fs.existsSync(path.join("..", "..", "node_modules", "npm-mas-mas"))) {
@@ -44,7 +42,7 @@ else
 
 
 // no check in cmaki_identifier for avoid recursion
-if( shelljs.env['npm_package_name'] != 'cmaki_identifier')
+if( !process.cwd().endsWith("/cmaki_identifier/node_modules/npm-mas-mas") )
 {
 	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
 	{
