@@ -1,0 +1,9 @@
+CMakeFiles/
+bin/
+cmaki/
+cmaki_generator/
+coverage/
+depends.json
+depends/
+gcc/
+

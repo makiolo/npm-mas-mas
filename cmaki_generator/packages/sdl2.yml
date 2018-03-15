@@ -1,0 +1,23 @@
+- sdl2:
+    <<: *thirdparty_defaults
+    version: 2.0.3.0
+    source: https://www.libsdl.org/release/SDL2-2.0.3.tar.gz
+    uncompress_strip: SDL2-2.0.3
+    depends:
+        - dune-glew
+    mode: dr
+    targets:
+        - SDL2:
+            info:
+                <<: *library_dynamic_exact
+            extra:
+                win32:
+                    include:
+                        - include/SDL2
+                win64:
+                    include:
+                        - include/SDL2
+                default:
+                    include:
+                        - include/SDL2
+

@@ -1,0 +1,62 @@
+- boost-headers:
+    <<: *thirdparty_defaults
+    version: 1.65.0.0
+    mode: dr
+    source: $HTTP_URL_NPSERVER/boost_1_65_0.tar.bz2
+    cmake_definitions:
+        - BASENAME_STRIP=boost_1_65_0
+        - BOOST_INSTALL_HEADERS=1
+    before_copy:
+        - ../boost-headers/CMakeLists.txt .
+    references:
+        definitions_boost_headers: &definitions_boost_headers
+            default:
+                definitions:
+                    - -DBOOST_ALL_NO_LIB
+    unittest:
+        |
+            #include <boost/smart_ptr/shared_ptr.hpp>
+            #include <boost/make_shared.hpp>
+            int main()
+            {
+                boost::shared_ptr<int> a = boost::make_shared<int>(123);
+                return 0;
+            }
+    targets:
+        - dummy:
+            info:
+                <<: *library_dynamic_boost
+            extra:
+                <<: *definitions_boost_headers
+
+    # - atomic                   : building
+    # - chrono                   : building
+    # - container                : building
+    # - context                  : building
+    # - coroutine                : building
+    # - coroutine2               : building
+    # - date_time                : building
+    # - exception                : building
+    # - fiber                    : building
+    # - filesystem               : building
+    # - graph                    : building
+    # - graph_parallel           : building
+    # - iostreams                : building
+    # - locale                   : building
+    # - log                      : building
+    # - math                     : building
+    # - metaparse                : building
+    # - mpi                      : building
+    # - program_options          : building
+    # - python                   : building
+    # - random                   : building
+    # - regex                    : building
+    # - serialization            : building
+    # - signals                  : building
+    # - system                   : building
+    # - test                     : building
+    # - thread                   : building
+    # - timer                    : building
+    # - type_erasure             : building
+    # - wave                     : building
+    #

@@ -1,0 +1,32 @@
+{
+  "name": "cmaki_identifier",
+  "version": "1.0.0",
+  "description": "identify your platform",
+  "scripts": {
+    "ci": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/ci.sh | bash",
+    "docker": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/docker.sh | bash",
+    "clean": "cmaki clean",
+    "setup": "cmaki setup",
+    "compile": "cmaki compile",
+    "install": "cmaki setup && cmaki compile",
+    "test": "cmaki test",
+    "upload": "cmaki upload"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makiolo/cmaki_identifier.git"
+  },
+  "keywords": [
+    "c++",
+    "identifier"
+  ],
+  "author": "Ricardo Marmolejo García",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/makiolo/cmaki_identifier/issues"
+  },
+  "homepage": "https://github.com/makiolo/cmaki_identifier#readme",
+  "devDependencies": {
+    "cmaki_scripts": "git+https://github.com/makiolo/cmaki_scripts.git"
+  }
+}

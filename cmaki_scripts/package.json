@@ -1,0 +1,37 @@
+{
+  "name": "cmaki_scripts",
+  "version": "1.0.0",
+  "description": "scripts for cmaki: compile, tests, upload ....",
+  "directories": {
+    "test": "tests"
+  },
+  "bin": {
+    "cmaki": "./cmaki.js"
+  },
+  "scripts": {
+    "ci": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/ci.sh | bash",
+    "clean": "echo ok",
+    "setup": "echo ok",
+    "compile": "echo ok",
+    "install": "echo ok",
+    "test": "echo ok",
+    "upload": "echo ok"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/makiolo/cmaki_scripts.git"
+  },
+  "keywords": [
+    "c++",
+    "identifier"
+  ],
+  "author": "Ricardo Marmolejo García",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/makiolo/cmaki_scripts/issues"
+  },
+  "homepage": "https://github.com/makiolo/cmaki_scripts#readme",
+  "dependencies": {
+    "shelljs": "^0.7.8"
+  }
+}
