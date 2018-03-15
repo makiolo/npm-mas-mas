@@ -40,8 +40,7 @@ else
 	cmaki_identifier = 'cmaki_identifier.sh'
 }
 
-console.log( process.env['npm_package_name'] )
-console.log( shelljs.env['npm_package_name'] )
+console.log( shelljs.env )
 
 // no check in cmaki_identifier for avoid recursion
 if( shelljs.env['npm_package_name'] != 'cmaki_identifier')
