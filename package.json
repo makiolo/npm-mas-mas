@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "npm extension for use packing system with C++",
   "bin": {
-    "cmaki": "./cmaki/cmaki.js"
+    "cmaki": "./cmaki_scripts/cmaki.js"
   },
   "scripts": {
     "docker": "curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/docker.sh | bash",
