@@ -80,7 +80,7 @@ if (is_win)
 	}
 	else
 	{
-		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas');
+		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_scripts');
 	}
 }
 else
@@ -91,7 +91,7 @@ else
 	}
 	else
 	{
-		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas');
+		dir_script = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_scripts');
 	}
 }
 
