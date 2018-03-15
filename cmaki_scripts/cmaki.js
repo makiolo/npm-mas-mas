@@ -20,6 +20,9 @@ else
 	shelljs.env['CMAKI_PWD'] = process.env['CMAKI_PWD'];
 }
 
+// change cwd
+process.chdir( process.env['CMAKI_PWD'] );
+
 if(!process.env.CMAKI_INSTALL)
 {
 	shelljs.env['CMAKI_INSTALL'] = path.join(process.env['CMAKI_PWD'], 'bin');
