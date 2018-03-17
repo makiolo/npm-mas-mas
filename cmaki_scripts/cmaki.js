@@ -42,29 +42,29 @@ else
 
 
 // no check in cmaki_identifier for avoid recursion
-if( process.cwd().search("/cmaki_identifier/") == -1 )
-{
-	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
-	{
-		dir_identifier = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_identifier');
-
-		backup1 = shelljs.env['CMAKI_PWD'];
-		backup2 = process.env['CMAKI_PWD'];
-
-		shelljs.env['CMAKI_PWD'] = dir_identifier;
-		process.env['CMAKI_PWD'] = dir_identifier;
-
-		shelljs.cd( dir_identifier );
-
-		if (shelljs.exec('npm install').code !== 0) {
-			shelljs.echo('Error detecting compiler (compiling cmaki_identifier ...)');
-			shelljs.exit(1);
-		}
-
-		shelljs.env['CMAKI_PWD'] = backup1;
-		process.env['CMAKI_PWD'] = backup2;
-	}
-}
+// if( process.cwd().search("/cmaki_identifier/") == -1 )
+// {
+// 	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
+// 	{
+// 		dir_identifier = path.join(process.env['CMAKI_PWD'], 'node_modules', 'npm-mas-mas', 'cmaki_identifier');
+//
+// 		backup1 = shelljs.env['CMAKI_PWD'];
+// 		backup2 = process.env['CMAKI_PWD'];
+//
+// 		shelljs.env['CMAKI_PWD'] = dir_identifier;
+// 		process.env['CMAKI_PWD'] = dir_identifier;
+//
+// 		shelljs.cd( dir_identifier );
+//
+// 		if (shelljs.exec('npm install').code !== 0) {
+// 			shelljs.echo('Error detecting compiler (compiling cmaki_identifier ...)');
+// 			shelljs.exit(1);
+// 		}
+//
+// 		shelljs.env['CMAKI_PWD'] = backup1;
+// 		process.env['CMAKI_PWD'] = backup2;
+// 	}
+// }
 
 if(!process.env.MODE)
 {
