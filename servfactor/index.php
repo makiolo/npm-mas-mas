@@ -70,8 +70,8 @@ $dt = formatSize($dt);
 }
 
 </style>
-<a href="https://app.keymetrics.io/#/bucket/58ab049327a87d2558279e52/dashboard">dashboard</a><br />
-<a href="services.json">services</a><br />
+<!-- <a href="https://app.keymetrics.io/#/bucket/58ab049327a87d2558279e52/dashboard">dashboard</a><br /> -->
+<!-- <a href="services.json">services</a><br /> -->
 <div class='progress'>
         <div class='prgtext'><?php echo $dp; ?>% Disk Used</div>
         <div class='prgbar'></div>
