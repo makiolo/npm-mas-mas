@@ -76,7 +76,7 @@ def amalgamation_yaml(rootdir, yamlfile=None):
             for line in fr.readlines():
                 f.write('%s%s' % (' '*8, line))
         collapse_third_parties(rootdir, yaml_collapsed_third_parties, yamlfile=yamlfile)
-        if yamlfile is None:
+        if yamlfile is None and not parameters.no_back_yaml:
             rootdir_up = os.path.abspath(os.path.join(rootdir, '..', '..'))
             for path in os.listdir(rootdir_up):
                 fullpath = os.path.join(os.path.abspath(rootdir_up), path)
@@ -119,7 +119,7 @@ def collapse_third_parties(rootdir, filename, yamlfile=None):
     p = pipeline.grep_v('circle.yml')(p)
     p = pipeline.grep_v('_config.yml')(p)
     p = pipeline.grep_v('.circleci-matrix.yml')(p)
-    # p = pipeline.grep_v('.build_')(p)
+    p = pipeline.grep_v('.build_')(p)
     p = pipeline.grep_v(yaml_collapsed_final)(p)
     p = pipeline.grep_v(yaml_common_references)(p)
     p = pipeline.grep_v(yaml_collapsed_third_parties)(p)
@@ -288,6 +288,7 @@ usage:""")
     group_upload = group_padawan.add_mutually_exclusive_group()
     group_upload.add_argument('--no-upload', dest='no_upload', action='store_true', help='remove upload from pipeline', default=False)
     group_upload.add_argument('--only-upload', dest='only_upload', action='store_true', help='execute only upload in pipeline', default=False)
+    group_run_tests.add_argument('--no-back-yaml', dest='no_back_yaml', action='store_true', help='no search back yaml', default=False)
     # creador de third parties
     group_jedi = parser.add_argument_group('jedi')
     group_jedi.add_argument('-o', '--only', dest='build_only', action='store_true', help='build only explicit packages and not your depends')

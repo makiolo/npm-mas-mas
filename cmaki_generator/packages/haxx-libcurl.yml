@@ -6,18 +6,14 @@
     depends:
         - openssl
     cmake_definitions:
-        # - CMAKE_POSITION_INDEPENDENT_CODE=OFF
-        # - BUILD_CURL_EXE=OFF
-        # - BUILD_CURL_TESTS=OFF
         - CMAKE_USE_OPENSSL=ON
-        # - ENABLE_IPV6=OFF
     unittest:
         |
             #include <curl/curl.h>
+            #include <openssl/ssl.h>
             int main()
             {
-                CURL *curl;
-                curl = curl_easy_init();
+                CURL* curl = curl_easy_init();
                 return 0;
             }
     references:
