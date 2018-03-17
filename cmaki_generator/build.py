@@ -77,7 +77,7 @@ def amalgamation_yaml(rootdir, yamlfile=None):
                 f.write('%s%s' % (' '*8, line))
         collapse_third_parties(rootdir, yaml_collapsed_third_parties, yamlfile=yamlfile)
         if yamlfile is None:
-            rootdir_up = os.path.abspath(os.path.join(rootdir, '..'))
+            rootdir_up = os.path.abspath(os.path.join(rootdir, '..', '..'))
             for path in os.listdir(rootdir_up):
                 fullpath = os.path.join(os.path.abspath(rootdir_up), path)
                 if os.path.isdir(fullpath):
