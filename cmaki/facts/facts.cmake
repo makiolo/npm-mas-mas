@@ -112,11 +112,15 @@ function(cmaki_find_package)
 	endif()
 	#######################################################
 
+
+	get_filename_component(package_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
+	get_filename_component(package_name_version "${package_dir}" NAME)
+
 	# 3. si no tengo los ficheros de cmake, los intento descargar
-	set(depends_dir "${CMAKE_PREFIX_PATH}")
+	set(depends_dir "${DEPENDS_PATH}")
 	set(depends_bin_package "${depends_dir}/${PACKAGE}-${VERSION}")
 	set(depends_package "${depends_dir}/${PACKAGE}-${VERSION}")
-	set(package_marker "${depends_bin_package}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	# pido un paquete, en funcion de:
 	#		- paquete
 	#		- version
@@ -160,10 +164,10 @@ function(cmaki_find_package)
 		# pero queremos que evite compilar cosas que estan en cache remota
 		#
 		###
-		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${CMAKE_PREFIX_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -d")
+		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -d")
 		###
 		execute_process(
-			COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${CMAKE_PREFIX_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -d
+			COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -d
 			WORKING_DIRECTORY "${ARTIFACTS_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
@@ -347,12 +351,12 @@ macro(cmaki_download_package)
 	get_filename_component(package_name_version "${package_dir}" NAME)
 	set(package_filename "${package_name_version}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(http_package_filename ${CMAKI_REPOSITORY}/download.php?file=${package_filename})
-	set(depends_dir "${CMAKE_PREFIX_PATH}")
+	set(depends_dir "${DEPENDS_PATH}")
 	get_filename_component(depends_dir "${depends_dir}" ABSOLUTE)
 	set(package_compessed "${depends_dir}/${package_name_version}.tar.gz")
 	set(package_target "${depends_dir}/${package_filename}")
 	set(package_uncompressed_dir "${depends_dir}/${package_name_version}.tmp")
-	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	set(package_compressed_md5 "${package_dir}/${package_name_version}-${CMAKI_IDENTIFIER}.md5")
 	set(strip_compressed "${package_name_version}")
 	set(_MY_DIR "${package_dir}")
