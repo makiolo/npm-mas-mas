@@ -1,7 +1,6 @@
 PROJECT(UNITEST_CMAKI_GENERATOR_${CMAKI_PLATFORM}_${CMAKE_BUILD_TYPE} CXX)
 cmake_minimum_required(VERSION 3.0)
 
-# include("$ENV{CMAKI_PWD}/node_modules/cmaki/cmaki.cmake")
 include(cmaki)
 
 get_filename_component(BASEDIR "${CMAKE_CURRENT_LIST_FILE}" PATH)

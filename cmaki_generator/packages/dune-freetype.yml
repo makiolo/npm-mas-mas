@@ -6,19 +6,22 @@
     uncompress_strip: freetype-2.6
     cmake_definitions:
         - BUILD_SHARED_LIBS=ON
-    install: false
+    unittest:
+        |
+            #include <ft2build.h>
+            #include FT_FREETYPE_H
+            int main()
+            {
+                FT_Library  library;
+                FT_Init_FreeType( &library );
+                return 0;
+            }
     targets:
         - freetype:
             info:
                 <<: *library_dynamic_exact
             extra:
-                win32:
-                    include:
-                        - include/freetype2
-                win64:
-                    include:
-                        - include/freetype2
                 default:
                     include:
-                        - include/freetype2
+                        - $PLATFORM/include/freetype2
 

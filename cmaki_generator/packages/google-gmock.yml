@@ -2,6 +2,7 @@
     <<: *thirdparty_defaults
     mask: w
     source: https://github.com/google/googletest.git
+    branch: -b release-1.8.0
     post_install:
         - ./googlemock/include/gmock/*.h* include/gmock/ RECURSIVE
         - ./googletest/include/gtest/*.h* include/gtest/ RECURSIVE
@@ -32,7 +33,7 @@
     <<: *thirdparty_defaults
     mask: ls
     source: https://github.com/google/googletest.git
-    branch: release-1.8.0
+    branch: -b release-1.8.0
     post_install:
         - ./googlemock/include/gmock/*.h* include/gmock/ RECURSIVE
         - ./googletest/include/gtest/*.h* include/gtest/ RECURSIVE

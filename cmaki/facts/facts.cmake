@@ -3,7 +3,7 @@ cmake_policy(SET CMP0011 NEW)
 cmake_policy(SET CMP0045 OLD)
 
 IF(NOT DEFINED DEPENDS_PATH)
-	set(DEPENDS_PATH ${CMAKI_PATH}/../../artifacts)
+	set(DEPENDS_PATH ${CMAKI_PATH}/../../../artifacts)
 ENDIF()
 
 IF(NOT DEFINED CMAKE_PREFIX_PATH)
@@ -16,7 +16,7 @@ ENDIF()
 
 IF(NOT DEFINED DEPENDS_PATHFILE)
 	# rename to ".cmaki.yml" ?
-	set(DEPENDS_PATHFILE ${CMAKI_PATH}/../../artifacts.json)
+	set(DEPENDS_PATHFILE ${CMAKI_PATH}/../../../artifacts.json)
 ENDIF()
 
 if(DEFINED CMAKI_DEBUG)
@@ -159,6 +159,9 @@ function(cmaki_find_package)
 		# no queremos usar "-o", queremos que trate de compilar las dependencias (sin -o)
 		# pero queremos que evite compilar cosas que estan en cache remota
 		#
+		###
+		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${CMAKE_PREFIX_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -d")
+		###
 		execute_process(
 			COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${CMAKE_PREFIX_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -d
 			WORKING_DIRECTORY "${ARTIFACTS_PATH}"

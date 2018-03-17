@@ -42,13 +42,13 @@ def smart_merge(dict1, dict2):
                 dict1[key].update(value)
             except KeyError:
                 dict1[key] = value
-        else:
+        elif isinstance(value, list):
             try:
                 dict1[key] += value
-            except TypeError:
-                dict1[key] = value
             except KeyError:
                 dict1[key] = value
+        else:
+            dict1[key] = value
     return dict1
 
 def apply_replaces(element, dictionary):

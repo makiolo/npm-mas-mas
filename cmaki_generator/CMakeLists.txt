@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 
 MESSAGE("-- compiler ${CMAKI_COMPILER}, platform ${CMAKI_PLATFORM}")
 
+include(cmaki)
+
 IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
     MESSAGE("-- Debug Mode")
     SET(GLOBAL_BUILD_MODE "Debug")

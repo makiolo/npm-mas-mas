@@ -8,6 +8,7 @@
         - ./Include/Rocket/*.inl include/Rocket/ recursive
     version_manager: git
     source: https://github.com/libRocket/libRocket.git
+    branch: -b stable
     depends:
         - dune-freetype
     targets:

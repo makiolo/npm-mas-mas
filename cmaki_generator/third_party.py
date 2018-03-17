@@ -91,6 +91,18 @@ def search_fuzzy(data, fuzzy_key, fallback='default'):
             logging.error("not found 'default' platform or %s" % fuzzy_key)
             raise Exception("not found '{}'".format(fuzzy_key))
 
+
+if 'MODE' not in os.environ:
+    # raise Exception("not defined environment var: MODE")
+    logging.warning('Using Release by default. For explicit use, define environment var MODE')
+    os.environ['MODE'] = 'Release'
+
+if 'CMAKI_INSTALL' not in os.environ:
+    # raise Exception("not defined environment var: CMAKI_INSTALL")
+    logging.warning('Using CMAKI_INSTALL by default. For explicit use, define environment var CMAKI_INSTALL')
+    os.environ['CMAKI_INSTALL'] = os.path.join( os.getcwd(), '..', 'cmaki_identifier', 'bin')
+
+
 #
 # INMUTABLE GLOBALS
 #
@@ -446,14 +458,6 @@ class ThirdParty:
         except KeyError:
             # default value
             return False
-
-    def get_install(self):
-        parms = self.parameters
-        try:
-            return parms['install']
-        except KeyError:
-            # default value
-            return True
 
     def get_unittest(self):
         parms = self.parameters
@@ -849,10 +853,10 @@ class ThirdParty:
             if branch is not None:
                 logging.info('clonning to branch %s' % branch)
                 extra_cmd = '%s' % branch
-            self.safe_system('git clone --depth=200 %s %s' % (url, build_directory), compiler_replace_maps)
+            self.safe_system('git clone %s --depth=200 %s %s' % (extra_cmd, url, build_directory), compiler_replace_maps)
             # self.safe_system('git clone %s %s' % (url, build_directory), compiler_replace_maps)
             with utils.working_directory(build_directory):
-                self.safe_system('git checkout {}'.format(extra_cmd), compiler_replace_maps)
+                # self.safe_system('git checkout {}'.format(extra_cmd), compiler_replace_maps)
                 self.safe_system('git submodule init', compiler_replace_maps)
                 self.safe_system('git submodule update', compiler_replace_maps)
             # depends_file = self.user_parameters.depends
@@ -1393,7 +1397,6 @@ cmaki_package_version_check()
 
                         # print includes
                         if len(includes_set) > 0:
-                            # TODO: remove repeats
                             for d in list(set(includes_set)):
                                 f.write('list(APPEND %s_INCLUDE_DIRS ${_DIR}/%s)\n' % (superpackage_upper, d))
 

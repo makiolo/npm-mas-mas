@@ -261,7 +261,7 @@ usage:""")
     group_main = parser.add_argument_group('basic usage')
     group_main.add_argument('packages', metavar='packages', type=str, nargs='*', help='name (or list names) third party')
     group_main.add_argument('--plan', '--dry-run', dest='plan', action='store_true', help='Show packages plan (like a dry-run)', default=False)
-    group_main.add_argument('--server', dest='server', help='artifact server', default=None)
+    group_main.add_argument('--server', dest='server', help='artifact server', default='http://192.168.0.4:8080')
 
     group_layer = group_main.add_mutually_exclusive_group()
     group_layer.add_argument('--layer', dest='priority', help='filter by layername. Valid values: (minimal|tools|third_party)', default=None)
@@ -283,7 +283,7 @@ usage:""")
     group_packing.add_argument('--no-packing', dest='no_packing', action='store_true', help='remove packing from pipeline', default=False)
     group_packing.add_argument('--only-packing', dest='only_packing', action='store_true', help='execute only packing in pipeline', default=False)
     group_run_tests = group_padawan.add_mutually_exclusive_group()
-    group_run_tests.add_argument('--no-run-tests', dest='no_run_tests', action='store_true', help='remove run_tests from pipeline', default=True)
+    group_run_tests.add_argument('--no-run-tests', dest='no_run_tests', action='store_true', help='remove run_tests from pipeline', default=False)
     group_run_tests.add_argument('--only-run-tests', dest='only_run_tests', action='store_true', help='execute only run_tests in pipeline', default=False)
     group_upload = group_padawan.add_mutually_exclusive_group()
     group_upload.add_argument('--no-upload', dest='no_upload', action='store_true', help='remove upload from pipeline', default=False)
@@ -320,10 +320,9 @@ usage:""")
     #     parameters.rootdir = init_parameter_path(parameters.rootdir, os.environ.get('CMAKI_PWD'))
     # else:
     parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
-
-    parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, 'artifacts'))
-    parameters.cmakefiles = init_parameter_path(parameters.cmakefiles, os.path.join(parameters.rootdir, 'node_modules', 'cmaki'))
+    parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, '..', 'artifacts'))
     parameters.third_party_dir = init_parameter_path(parameters.third_party_dir, os.path.join(parameters.prefix, 'cmaki_find_package'))
+    parameters.cmakefiles = init_parameter_path(parameters.cmakefiles, os.path.join(parameters.rootdir, '..', 'cmaki'))
     parameters.blacklist = init_parameter_path(parameters.blacklist, os.path.join(parameters.rootdir, 'blacklist.txt'))
     parameters.depends = init_parameter_path(parameters.depends, os.path.join(parameters.prefix, '..', 'depends.json'))
 
@@ -391,9 +390,6 @@ usage:""")
     if parameters.with_svn is None:
         if 'SUBVERSION' in os.environ:
             parameters.with_svn = os.environ['SUBVERSION']
-
-    if 'MODE' not in os.environ:
-        raise Exception("not defined environment var: MODE")
 
     # fetch remotes yaml
     # i = 0
