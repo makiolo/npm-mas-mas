@@ -229,10 +229,6 @@ function(cmaki_find_package)
 			file(REMOVE "${package_generated_file}")
 		endif()
 
-		# 8. borro los 2 tar gz
-		file(REMOVE "${package_generated_file}")
-		file(REMOVE "${package_cmake_generated_file}")
-
 	# me lo he descargdo y solo es descomprimirlo
 	elseif(EXISTS "${package_uncompressed_file}")
 
@@ -245,6 +241,7 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "Extracting ${package_uncompressed_file} failed! Error ${uncompress_result}")
 		endif()
 		file(REMOVE "${package_uncompressed_file}")
+
 	endif()
 
 	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake

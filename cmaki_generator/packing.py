@@ -114,6 +114,9 @@ def packing(node, parameters, compiler_replace_maps):
                 logging.info('generating package cmake %s' % prefix_package_cmake)
                 gen_targz_cmake = '{}tar zcvf {} {}'.format(precmd, prefix_package_cmake, node.get_base_folder())
                 node.ret += abs( node.safe_system(gen_targz_cmake, compiler_replace_maps) )
+                if not os.path.exists(prefix_package_cmake):
+                    logging.error('No such file: {}'.format(prefix_package_cmake))
+                    return False
 
     # finish well
     return True
