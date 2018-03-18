@@ -23,5 +23,6 @@
             extra:
                 default:
                     include:
+                        - include/freetype2
                         - $PLATFORM/include/freetype2
 

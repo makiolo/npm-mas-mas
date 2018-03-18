@@ -138,7 +138,7 @@ function(cmaki_find_package)
 		set(package_uncompressed_file "${package_binary_filename}")
 		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
 	else()
-
+		message("-- download file: ${http_package_cmake_filename}")
 		# if(NO_USE_CACHE_LOCAL STREQUAL "FALSE")
 		set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
@@ -152,12 +152,12 @@ function(cmaki_find_package)
 	# Si no puede descargar el artefacto ya hecho (es que necesito compilarlo y subirlo)
 	if(NOT "${COPY_SUCCESFUL}" OR NO_USE_CACHE_REMOTE STREQUAL "TRUE")
 
+		# 5. compilo y genera el paquete en local
+		message("Generating artifact ${PACKAGE} ...")
+
 		file(REMOVE_RECURSE "${depends_bin_package}")
 		file(REMOVE_RECURSE "${depends_package}")
 		file(REMOVE "${package_uncompressed_file}")
-
-		# 5. compilo y genera el paquete en local
-		message("Generating artifact ${PACKAGE} ...")
 		#
 		# ojo: estoy hay que mejorarlo
 		# no queremos usar "-o", queremos que trate de compilar las dependencias (sin -o)
@@ -229,10 +229,10 @@ function(cmaki_find_package)
 			file(REMOVE "${package_generated_file}")
 		endif()
 
-	# me lo he descargdo y solo es descomprimirlo
+	# lo tengo, y solo es descomprimirlo
 	elseif(EXISTS "${package_uncompressed_file}")
 
-		# 10. lo descomprimo cacheado
+		# 10. lo descomprimo
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_uncompressed_file}"
 			WORKING_DIRECTORY "${depends_dir}"
@@ -361,6 +361,7 @@ macro(cmaki_download_package)
 
 	# message("marca: ${package_marker}")
 
+	# TODO: check esta logica
 	set(SUPOSITION_ALREADY_UPLOAD TRUE)
 	if(NOT EXISTS "${package_marker}")
 		file(REMOVE "${package_compessed}")

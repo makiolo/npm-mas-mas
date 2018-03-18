@@ -73,7 +73,14 @@ def compilation(node, parameters, compiler_replace_maps):
                         env_modified['CPPFLAGS'] = '-g -O2 -DNDEBUG'
                 elif build_mode.lower() == 'release':
                     # default packages assume came in release
-                    pass
+                    try:
+                        env_modified['CFLAGS'] = '%s -O3 -DNDEBUG' % env_modified['CFLAGS']
+                    except KeyError:
+                        env_modified['CFLAGS'] = '-O3 -DNDEBUG'
+                    try:
+                        env_modified['CPPFLAGS'] = '%s -O3 -DNDEBUG' % env_modified['CPPFLAGS']
+                    except KeyError:
+                        env_modified['CPPFLAGS'] = '-O3 -DNDEBUG'
 
                 install_directory = os.path.join(os.getcwd(), '..', workspace, node.get_base_folder(), plat)
                 utils.trymkdir(install_directory)
