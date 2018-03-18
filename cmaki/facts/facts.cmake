@@ -346,6 +346,8 @@ function(cmaki_download_file THE_URL INTO_FILE)
 endfunction()
 
 macro(cmaki_download_package)
+
+	message("-- begin cmaki_download_package")
 	if(NOT DEFINED CMAKI_REPOSITORY)
 		set(CMAKI_REPOSITORY "http://artifacts.myftp.biz:8080")
 	endif()
@@ -419,6 +421,7 @@ macro(cmaki_download_package)
 		file(REMOVE_RECURSE "${package_uncompressed_dir}")
 		file(WRITE "${package_marker}" "")
 	endif()
+	message("-- end cmaki_download_package")
 
 endmacro()
 
