@@ -203,7 +203,7 @@ function(cmaki_find_package)
 		# 7. descomprimo el artefacto
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_generated_file}"
-			WORKING_DIRECTORY "${depends_dir}"
+			WORKING_DIRECTORY "${CMAKE_PREFIX_PATH}"
 			RESULT_VARIABLE uncompress_result
 			)
 		if(uncompress_result)
@@ -239,13 +239,13 @@ function(cmaki_find_package)
 		# 10. lo descomprimo
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_uncompressed_file}"
-			WORKING_DIRECTORY "${depends_dir}"
+			WORKING_DIRECTORY "${CMAKE_PREFIX_PATH}/"
 			RESULT_VARIABLE uncompress_result)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_uncompressed_file} failed! Error ${uncompress_result}")
 		endif()
 		# borrar si acaba en .tmp
-		# file(REMOVE "${package_uncompressed_file}")
+		file(REMOVE "${package_uncompressed_file}")
 
 	endif()
 
