@@ -369,7 +369,7 @@ macro(cmaki_download_package)
 
 	# TODO: check esta logica
 	set(SUPOSITION_ALREADY_UPLOAD TRUE)
-	if(NOT EXISTS "${package_marker}")
+	# if(NOT EXISTS "${package_marker}")
 		#######
 		message("download ${package_compessed}")
 		#######
@@ -390,12 +390,12 @@ macro(cmaki_download_package)
 			file(REMOVE_RECURSE "${package_dir}")
 			file(REMOVE_RECURSE "${_DIR}")
 		endif()
-	elseif(EXISTS "${package_target}")
-		message("-- exists mark (skip download)")
-		# si existe la marca y el fichero a descargar, hacemos este trick para evitar una descarga innecesaria
-		set(package_compessed "${package_target}")
-		set(SUPOSITION_ALREADY_UPLOAD FALSE)
-	endif()
+	# elseif(EXISTS "${package_target}")
+	# 	message("-- exists mark (skip download)")
+	# 	# si existe la marca y el fichero a descargar, hacemos este trick para evitar una descarga innecesaria
+	# 	set(package_compessed "${package_target}")
+	# 	set(SUPOSITION_ALREADY_UPLOAD FALSE)
+	# endif()
 
 	if(EXISTS "${package_compessed}")
 		######
