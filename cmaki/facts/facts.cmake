@@ -360,15 +360,17 @@ macro(cmaki_download_package)
 	set(package_uncompressed_dir "${depends_dir}/${package_name_version}.tmp")
 	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	set(package_compressed_md5 "${package_dir}/${package_name_version}-${CMAKI_IDENTIFIER}.md5")
-	set(strip_compressed "${package_name_version}")
 	set(_MY_DIR "${package_dir}")
-	set(_DIR "${depends_dir}/${strip_compressed}")
+	set(_DIR "${depends_dir}/${package_name_version}")
 
 	# message("marca: ${package_marker}")
 
 	# TODO: check esta logica
 	set(SUPOSITION_ALREADY_UPLOAD TRUE)
 	if(NOT EXISTS "${package_marker}")
+		#######
+		message("download ${package_compessed}")
+		#######
 		file(REMOVE "${package_compessed}")
 		if(EXISTS "${package_compressed_md5}")
 			file(READ "${package_compressed_md5}" md5sum )
@@ -393,8 +395,13 @@ macro(cmaki_download_package)
 	endif()
 
 	if(EXISTS "${package_compessed}")
-		file(MAKE_DIRECTORY "${package_uncompressed_dir}")
+		######
 		message("Extracting ${package_compessed} into ${package_uncompressed_dir}...")
+		######
+		file(MAKE_DIRECTORY "${package_uncompressed_dir}")
+
+		# TODO: se podria descomprimir en un solo paso
+		############################################
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_compessed}"
 			WORKING_DIRECTORY "${package_uncompressed_dir}"
@@ -402,8 +409,11 @@ macro(cmaki_download_package)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_compessed} failed! Error ${uncompress_result}")
 		endif()
-		file(COPY "${package_uncompressed_dir}/${strip_compressed}" DESTINATION "${depends_dir}")
+		file(COPY "${package_uncompressed_dir}/${package_name_version}" DESTINATION "${depends_dir}")
+		#############################################
+	
 		if(SUPOSITION_ALREADY_UPLOAD)
+			message("removing ${package_compessed} ...")
 			file(REMOVE "${package_compessed}")
 		endif()
 		file(REMOVE_RECURSE "${package_uncompressed_dir}")
