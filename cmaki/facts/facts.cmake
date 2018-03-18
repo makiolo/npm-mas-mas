@@ -140,12 +140,11 @@ function(cmaki_find_package)
 	else()
 		set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
-		message("-- download file: ${http_package_cmake_filename}")
-		# if(NO_USE_CACHE_LOCAL STREQUAL "FALSE")
-		# message("download from ${http_package_cmake_filename}")
-		# 4. descargo el fichero que se supone tienes los ficheros cmake
+		message("-- download file: ${http_package_cmake_filename} in ${package_uncompressed_file}")
 		if(NOT "${NO_USE_CACHE_REMOTE}")
 			cmaki_download_file("${http_package_cmake_filename}" "${package_uncompressed_file}")
+		else()
+			message("WARN: no using cache remote for: ${package_uncompressed_file}")
 		endif()
 	endif()
 
@@ -233,6 +232,9 @@ function(cmaki_find_package)
 	elseif(EXISTS "${package_uncompressed_file}")
 
 		message("-- only uncompress")
+		################
+		message("${CMAKE_COMMAND} -E tar zxf ${package_uncompressed_file}")
+		################
 
 		# 10. lo descomprimo
 		execute_process(
@@ -242,7 +244,8 @@ function(cmaki_find_package)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_uncompressed_file} failed! Error ${uncompress_result}")
 		endif()
-		file(REMOVE "${package_uncompressed_file}")
+		# borrar si acaba en .tmp
+		# file(REMOVE "${package_uncompressed_file}")
 
 	endif()
 
