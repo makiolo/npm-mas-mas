@@ -138,10 +138,10 @@ function(cmaki_find_package)
 		set(package_uncompressed_file "${package_binary_filename}")
 		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
 	else()
-		message("-- download file: ${http_package_cmake_filename}")
-		# if(NO_USE_CACHE_LOCAL STREQUAL "FALSE")
 		set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
+		message("-- download file: ${http_package_cmake_filename}")
+		# if(NO_USE_CACHE_LOCAL STREQUAL "FALSE")
 		# message("download from ${http_package_cmake_filename}")
 		# 4. descargo el fichero que se supone tienes los ficheros cmake
 		if(NOT "${NO_USE_CACHE_REMOTE}")
@@ -232,6 +232,8 @@ function(cmaki_find_package)
 	# lo tengo, y solo es descomprimirlo
 	elseif(EXISTS "${package_uncompressed_file}")
 
+		message("-- only uncompress")
+
 		# 10. lo descomprimo
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_uncompressed_file}"
@@ -246,10 +248,10 @@ function(cmaki_find_package)
 
 	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
 	if(${PACKAGE_MODE} STREQUAL "EXACT")
-		# message("-- using ${PACKAGE} in EXACT")
+		message("-- using ${PACKAGE} ${VERSION} in EXACT")
 		find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
 	else()
-		# message("-- using ${PACKAGE} in COMPATIBLE")
+		message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
 		find_package(${PACKAGE} ${VERSION} REQUIRED)
 	endif()
 
