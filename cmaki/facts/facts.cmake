@@ -120,7 +120,7 @@ function(cmaki_find_package)
 	set(depends_dir "${DEPENDS_PATH}")
 	set(depends_bin_package "${depends_dir}/${PACKAGE}-${VERSION}")
 	set(depends_package "${depends_dir}/${PACKAGE}-${VERSION}")
-	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	# pido un paquete, en funcion de:
 	#		- paquete
 	#		- version
@@ -360,7 +360,7 @@ macro(cmaki_download_package)
 	set(package_compessed "${depends_dir}/${package_name_version}.tar.gz")
 	set(package_target "${depends_dir}/${package_filename}")
 	set(package_uncompressed_dir "${depends_dir}/${package_name_version}-binary.tmp")
-	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	set(package_compressed_md5 "${package_dir}/${package_name_version}-${CMAKI_IDENTIFIER}.md5")
 	set(_MY_DIR "${package_dir}")
 	set(_DIR "${depends_dir}/${package_name_version}")
@@ -369,7 +369,7 @@ macro(cmaki_download_package)
 
 	# TODO: check esta logica
 	set(SUPOSITION_ALREADY_UPLOAD TRUE)
-	# if(NOT EXISTS "${package_marker}")
+	if(NOT EXISTS "${package_marker}")
 		#######
 		message("download ${package_compessed}")
 		#######
@@ -390,12 +390,12 @@ macro(cmaki_download_package)
 			file(REMOVE_RECURSE "${package_dir}")
 			file(REMOVE_RECURSE "${_DIR}")
 		endif()
-	# elseif(EXISTS "${package_target}")
-	# 	message("-- exists mark (skip download)")
-	# 	# si existe la marca y el fichero a descargar, hacemos este trick para evitar una descarga innecesaria
-	# 	set(package_compessed "${package_target}")
-	# 	set(SUPOSITION_ALREADY_UPLOAD FALSE)
-	# endif()
+	elseif(EXISTS "${package_target}")
+		message("-- exists mark (skip download)")
+		# si existe la marca y el fichero a descargar, hacemos este trick para evitar una descarga innecesaria
+		set(package_compessed "${package_target}")
+		set(SUPOSITION_ALREADY_UPLOAD FALSE)
+	endif()
 
 	if(EXISTS "${package_compessed}")
 		######
