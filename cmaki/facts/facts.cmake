@@ -128,7 +128,7 @@ function(cmaki_find_package)
 	#		- modo (COMPATIBLE / EXACT)
 	# Recibo el que mejor se adapta a mis especificaciones
 	# Otra opcion es enviar todos los ficheros de cmake de todas las versiones
-	set(package_uncompressed_file "${depends_dir}/${PACKAGE}.tmp")
+	set(package_uncompressed_file "${depends_dir}/${PACKAGE}-${VERSION}.tmp")
 	set(package_binary_filename "${depends_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
 	# message("marca: ${package_marker}")
 	# message("binario: ${package_binary_filename}")
@@ -154,9 +154,9 @@ function(cmaki_find_package)
 		# 5. compilo y genera el paquete en local
 		message("Generating artifact ${PACKAGE} ...")
 
-		file(REMOVE_RECURSE "${depends_bin_package}")
-		file(REMOVE_RECURSE "${depends_package}")
-		file(REMOVE "${package_uncompressed_file}")
+		# file(REMOVE_RECURSE "${depends_bin_package}")
+		# file(REMOVE_RECURSE "${depends_package}")
+		# file(REMOVE "${package_uncompressed_file}")
 		#
 		# ojo: estoy hay que mejorarlo
 		# no queremos usar "-o", queremos que trate de compilar las dependencias (sin -o)
@@ -172,9 +172,9 @@ function(cmaki_find_package)
 			)
 		if(artifacts_result)
 			message(FATAL_ERROR "can't create artifact ${PACKAGE}: error ${artifacts_result}")
-			file(REMOVE_RECURSE "${depends_bin_package}")
-			file(REMOVE_RECURSE "${depends_package}")
-			file(REMOVE "${package_uncompressed_file}")
+			# file(REMOVE_RECURSE "${depends_bin_package}")
+			# file(REMOVE_RECURSE "${depends_package}")
+			# file(REMOVE "${package_uncompressed_file}")
 		endif()
 
 		# TODO: como obtener la version recien compilada ?
@@ -208,10 +208,10 @@ function(cmaki_find_package)
 			)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_cmake_generated_file} failed! Error ${uncompress_result}")
-			file(REMOVE_RECURSE "${depends_bin_package}")
-			file(REMOVE_RECURSE "${depends_package}")
-			file(REMOVE "${package_uncompressed_file}")
-			file(REMOVE "${package_generated_file}")
+			# file(REMOVE_RECURSE "${depends_bin_package}")
+			# file(REMOVE_RECURSE "${depends_package}")
+			# file(REMOVE "${package_uncompressed_file}")
+			# file(REMOVE "${package_generated_file}")
 		endif()
 
 		# y tambien descomprimo el propio tar gz
@@ -222,10 +222,10 @@ function(cmaki_find_package)
 			)
 		if(uncompress_result2)
 			message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
-			file(REMOVE_RECURSE "${depends_bin_package}")
-			file(REMOVE_RECURSE "${depends_package}")
-			file(REMOVE "${package_uncompressed_file}")
-			file(REMOVE "${package_generated_file}")
+			# file(REMOVE_RECURSE "${depends_bin_package}")
+			# file(REMOVE_RECURSE "${depends_package}")
+			# file(REMOVE "${package_uncompressed_file}")
+			# file(REMOVE "${package_generated_file}")
 		endif()
 
 	# lo tengo, y solo es descomprimirlo
@@ -245,7 +245,7 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "Extracting ${package_uncompressed_file} failed! Error ${uncompress_result}")
 		endif()
 		# borrar si acaba en .tmp
-		file(REMOVE "${package_uncompressed_file}")
+		# file(REMOVE "${package_uncompressed_file}")
 
 	endif()
 
@@ -391,6 +391,7 @@ macro(cmaki_download_package)
 			file(REMOVE_RECURSE "${_DIR}")
 		endif()
 	elseif(EXISTS "${package_target}")
+		message("-- exists mark (skip download)")
 		# si existe la marca y el fichero a descargar, hacemos este trick para evitar una descarga innecesaria
 		set(package_compessed "${package_target}")
 		set(SUPOSITION_ALREADY_UPLOAD FALSE)
