@@ -99,7 +99,7 @@ def packing(node, parameters, compiler_replace_maps):
                 f.write('%s\n' % package_md5)
 
     # marker is a empty file
-    prefix_package_marker = os.path.join(output_3rdparty, '%s.cache' % get_identifier('ALL'))
+    prefix_package_marker = os.path.join(folder_mark, '%s.cache' % get_identifier('ALL'))
     logging.info('generating marker %s' % prefix_package_marker)
     open(prefix_package_marker, 'a').close()
 
