@@ -119,7 +119,6 @@ function(cmaki_find_package)
 	set(depends_dir "${DEPENDS_PATH}")
 	set(depends_bin_package "${depends_dir}/${PACKAGE}-${VERSION}")
 	set(depends_package "${depends_dir}/${PACKAGE}-${VERSION}")
-	# set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	# pido un paquete, en funcion de:
 	#		- paquete
 	#		- version
@@ -128,7 +127,6 @@ function(cmaki_find_package)
 	# Recibo el que mejor se adapta a mis especificaciones
 	# Otra opcion es enviar todos los ficheros de cmake de todas las versiones
 	set(package_cmake_uncompressed_file "${depends_dir}/${PACKAGE}-${VERSION}-cmake.tmp")
-	# set(package_binary_filename "${depends_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 	set(DOWNLOADED FALSE)
 	###
@@ -361,69 +359,57 @@ macro(cmaki_download_package)
 	set(http_package_filename ${CMAKI_REPOSITORY}/download.php?file=${package_filename})
 	set(depends_dir "${DEPENDS_PATH}")
 	get_filename_component(depends_dir "${depends_dir}" ABSOLUTE)
-	set(package_compessed "${depends_dir}/${package_name_version}.tar.gz")
-	set(package_target "${depends_dir}/${package_filename}")
+	set(package_binary_filename "${depends_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(package_uncompressed_dir "${depends_dir}/${package_name_version}-binary.tmp")
-	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
 	set(package_compressed_md5 "${package_dir}/${package_name_version}-${CMAKI_IDENTIFIER}.md5")
 	set(_MY_DIR "${package_dir}")
 	set(_DIR "${depends_dir}/${package_name_version}")
 
-	message("marca: ${package_marker}")
+	# message("marca: ${package_marker}")
 
 	# TODO: check esta logica
 	set(SUPOSITION_ALREADY_UPLOAD TRUE)
-	if(NOT EXISTS "${package_marker}")
+	if(NOT EXISTS "${package_binary_filename}")
 		#######
-		message("download ${package_compessed}")
+		message("download ${package_binary_filename}")
 		#######
-		file(REMOVE "${package_compessed}")
 		if(EXISTS "${package_compressed_md5}")
 			file(READ "${package_compressed_md5}" md5sum )
 			string(REGEX MATCH "[0-9a-fA-F]*" md5sum "${md5sum}")
 			# TODO: use md5sum (use python for download)
-			# cmaki_download_file("${http_package_filename}" "${package_compessed}" "${md5sum}" )
+			# cmaki_download_file("${http_package_filename}" "${package_binary_filename}" "${md5sum}" )
 			message("downloading ${http_package_filename}")
-			cmaki_download_file("${http_package_filename}" "${package_compessed}")
+			cmaki_download_file("${http_package_filename}" "${package_binary_filename}")
 			if(NOT "${COPY_SUCCESFUL}")
-				file(REMOVE "${package_compessed}")
+				file(REMOVE "${package_binary_filename}")
 				message(FATAL_ERROR "Error downloading ${http_package_filename}")
 			endif()
 		else()
-			MESSAGE("Checksum for ${package_name_version}-${CMAKI_IDENTIFIER}.tar.gz not found. Rejecting to download an untrustworthy file.")
 			file(REMOVE_RECURSE "${package_dir}")
 			file(REMOVE_RECURSE "${_DIR}")
+			MESSAGE(FATAL_ERROR "Checksum for ${package_name_version}-${CMAKI_IDENTIFIER}.tar.gz not found. Rejecting to download an untrustworthy file.")
 		endif()
-	elseif(EXISTS "${package_target}")
-		message("-- exists mark (skip download)")
-		# si existe la marca y el fichero a descargar, hacemos este trick para evitar una descarga innecesaria
-		set(package_compessed "${package_target}")
-		set(SUPOSITION_ALREADY_UPLOAD FALSE)
 	endif()
 
-	if(EXISTS "${package_compessed}")
+	if(NOT EXISTS "${package_marker}")
 		######
-		message("Extracting ${package_compessed} into ${package_uncompressed_dir}...")
+		message("Extracting ${package_binary_filename} into ${package_uncompressed_dir}...")
 		######
 		file(MAKE_DIRECTORY "${package_uncompressed_dir}")
 
 		###############################################################
 		execute_process(
-			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_compessed}"
+			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_binary_filename}"
 			WORKING_DIRECTORY "${package_uncompressed_dir}"
 			RESULT_VARIABLE uncompress_result)
 		if(uncompress_result)
-			message(FATAL_ERROR "Extracting ${package_compessed} failed! Error ${uncompress_result}")
+			message(FATAL_ERROR "Extracting ${package_binary_filename} failed! Error ${uncompress_result}")
 		endif()
 		file(COPY "${package_uncompressed_dir}/${package_name_version}" DESTINATION "${depends_dir}")
 		###############################################################
 	
-		if(SUPOSITION_ALREADY_UPLOAD)
-			message("removing ${package_compessed} ...")
-			file(REMOVE "${package_compessed}")
-		endif()
 		file(REMOVE_RECURSE "${package_uncompressed_dir}")
-		file(WRITE "${package_marker}" "")
 	endif()
 	message("-- end cmaki_download_package")
 
