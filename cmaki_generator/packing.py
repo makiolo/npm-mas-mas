@@ -98,11 +98,6 @@ def packing(node, parameters, compiler_replace_maps):
             with open(prefix_package_md5, 'wt') as f:
                 f.write('%s\n' % package_md5)
 
-    # marker is a empty file
-    prefix_package_marker = os.path.join(folder_mark, '%s.cache' % get_identifier('ALL'))
-    logging.info('generating marker %s' % prefix_package_marker)
-    open(prefix_package_marker, 'a').close()
-
     # packing cmakefiles (more easy distribution)
     if not parameters.no_packing_cmakefiles:
         for plat in platforms:
@@ -117,6 +112,11 @@ def packing(node, parameters, compiler_replace_maps):
                 if not os.path.exists(prefix_package_cmake):
                     logging.error('No such file: {}'.format(prefix_package_cmake))
                     return False
+
+    # marker is a empty file
+    prefix_package_marker = os.path.join(output_3rdparty, '%s.cache' % get_identifier('ALL'))
+    logging.info('generating marker %s' % prefix_package_marker)
+    open(prefix_package_marker, 'a').close()
 
     # finish well
     return True

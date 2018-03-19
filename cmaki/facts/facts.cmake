@@ -119,7 +119,7 @@ function(cmaki_find_package)
 	set(depends_dir "${DEPENDS_PATH}")
 	set(depends_bin_package "${depends_dir}/${PACKAGE}-${VERSION}")
 	set(depends_package "${depends_dir}/${PACKAGE}-${VERSION}")
-	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	# pido un paquete, en funcion de:
 	#		- paquete
 	#		- version
@@ -362,7 +362,7 @@ macro(cmaki_download_package)
 	set(package_compessed "${depends_dir}/${package_name_version}.tar.gz")
 	set(package_target "${depends_dir}/${package_filename}")
 	set(package_uncompressed_dir "${depends_dir}/${package_name_version}-binary.tmp")
-	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
+	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cache")
 	set(package_compressed_md5 "${package_dir}/${package_name_version}-${CMAKI_IDENTIFIER}.md5")
 	set(_MY_DIR "${package_dir}")
 	set(_DIR "${depends_dir}/${package_name_version}")
@@ -405,8 +405,7 @@ macro(cmaki_download_package)
 		######
 		file(MAKE_DIRECTORY "${package_uncompressed_dir}")
 
-		# TODO: se podria descomprimir en un solo paso
-		############################################
+		###############################################################
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_compessed}"
 			WORKING_DIRECTORY "${package_uncompressed_dir}"
@@ -415,7 +414,7 @@ macro(cmaki_download_package)
 			message(FATAL_ERROR "Extracting ${package_compessed} failed! Error ${uncompress_result}")
 		endif()
 		file(COPY "${package_uncompressed_dir}/${package_name_version}" DESTINATION "${depends_dir}")
-		#############################################
+		###############################################################
 	
 		if(SUPOSITION_ALREADY_UPLOAD)
 			message("removing ${package_compessed} ...")
