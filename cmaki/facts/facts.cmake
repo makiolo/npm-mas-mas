@@ -130,8 +130,9 @@ function(cmaki_find_package)
 	set(package_uncompressed_file "${depends_dir}/${PACKAGE}-${VERSION}-cmake.tmp")
 	set(package_binary_filename "${depends_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(DOWNLOADED FALSE)
-	# message("marca: ${package_marker}")
-	# message("binario: ${package_binary_filename}")
+	###
+	message("marca2: ${package_marker}")
+	###
 	IF(EXISTS "${package_marker}" AND EXISTS "${package_binary_filename}")
 		message("-- reusing file ${package_binary_filename} for avoid download")
 		set(package_uncompressed_file "${package_binary_filename}")
@@ -367,7 +368,7 @@ macro(cmaki_download_package)
 	set(_MY_DIR "${package_dir}")
 	set(_DIR "${depends_dir}/${package_name_version}")
 
-	# message("marca: ${package_marker}")
+	message("marca: ${package_marker}")
 
 	# TODO: check esta logica
 	set(SUPOSITION_ALREADY_UPLOAD TRUE)
