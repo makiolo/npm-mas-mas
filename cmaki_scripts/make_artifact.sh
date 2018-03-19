@@ -10,10 +10,10 @@ if [ "$YMLFILE" == "undefined" ]; then
 		echo Error: must define env var YMLFILE or PACKAGE
 	else
 		echo building $PACKAGE ...
-		./build $PACKAGE --server=http://192.168.0.4:8080
+		./build $PACKAGE --server=http://192.168.0.4:8080 --no-back-yaml --no-run-tests
 	fi
 else
 	echo building from yaml file: ${YMLFILE} ...
-	./build --yaml=${YMLFILE} --server=http://192.168.0.4:8080
+	./build --yaml=${YMLFILE} --server=http://192.168.0.4:8080 --no-run-tests
 fi
 
