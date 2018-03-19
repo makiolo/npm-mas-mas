@@ -55,7 +55,7 @@
                 dynamic:
                     debug:
                         so:
-                            lib/lib$TARGET.so
+                            lib/lib$TARGET-d.so
                     relwithdebinfo:
                         so:
                             lib/lib$TARGET.so

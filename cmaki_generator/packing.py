@@ -113,10 +113,10 @@ def packing(node, parameters, compiler_replace_maps):
                     logging.error('No such file: {}'.format(prefix_package_cmake))
                     return False
 
-    # marker is a empty file
-    prefix_package_marker = os.path.join(output_3rdparty, '%s.cache' % get_identifier('ALL'))
-    logging.info('generating marker %s' % prefix_package_marker)
-    open(prefix_package_marker, 'a').close()
+    # # marker is a empty file
+    # prefix_package_marker = os.path.join(output_3rdparty, '%s.cache' % get_identifier('ALL'))
+    # logging.info('generating marker %s' % prefix_package_marker)
+    # open(prefix_package_marker, 'a').close()
 
     # finish well
     return True
