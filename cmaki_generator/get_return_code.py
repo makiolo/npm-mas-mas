@@ -1,11 +1,13 @@
 import logging
 
+
 def set_state(rets, key, value):
     if not key in rets:
         rets[key] = value
     else:
         logging.warning('Received in pipeline multiples packages with same name and version: %s' % key)
         set_state(rets, key + '_', value)
+
 
 def get_return_code(parameters, rets):
     def process(packages):

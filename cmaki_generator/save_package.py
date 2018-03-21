@@ -18,7 +18,6 @@ if __name__ == '__main__':
     depends_file = parameters.depends
     if os.path.exists(depends_file):
         data = utils.deserialize(depends_file)
-        # data = utils.deserialize_json(depends_file)
     else:
         data = {}
     # serialize if is new data

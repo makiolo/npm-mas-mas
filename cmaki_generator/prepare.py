@@ -11,7 +11,6 @@ from third_party import prefered
 def prepare(node, parameters, compiler_replace_maps):
 
     package = node.get_package_name()
-    environment = node.get_first_environment(compiler_replace_maps)
 
     # source folder
     source_dir = os.path.join(os.getcwd(), package)

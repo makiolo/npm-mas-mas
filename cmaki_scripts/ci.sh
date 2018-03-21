@@ -30,10 +30,6 @@ if [[ -d "node_modules" ]]; then
 	rm -Rf node_modules
 fi
 
-if [ -f "package-lock.json" ]; then
-	rm package-lock.json
-fi
-
 if [ -f "artifacts.json" ]; then
 	rm artifacts.json
 fi

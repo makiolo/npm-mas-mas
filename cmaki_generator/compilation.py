@@ -8,6 +8,7 @@ from third_party import CMAKELIB_URL
 from third_party import HTTP_URL_NPSERVER
 from third_party import get_identifier
 
+
 def search_cmakelib():
     # compilando desde cmaki_generator
     cmakelib_dir = os.path.join('output', '3rdparties', 'cmaki')
@@ -199,7 +200,7 @@ def compilation(node, parameters, compiler_replace_maps):
                     logging.debug('configure command: %s' % cmake_configure)
 
                     ret = utils.safe_system(cmake_configure, env=env_modified)
-                    if(ret == 0):
+                    if ret == 0:
                         node.ret += abs(utils.safe_system(cmake_build, env=env_modified))
                     else:
                         logging.warning('Configuration failed. See log: %s' % parameters.log)
@@ -241,4 +242,3 @@ def compilation(node, parameters, compiler_replace_maps):
 
     # finish well
     return True
-

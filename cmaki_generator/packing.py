@@ -20,7 +20,6 @@ def packing(node, parameters, compiler_replace_maps):
     if manager == "git":
         build_modes = node.get_build_modes()
         for plat, build_mode in product(platforms, build_modes):
-            workspace = node.get_workspace(plat)
             build_directory = os.path.join(os.getcwd(), node.get_build_directory(plat, build_mode))
             revision_git = hash_version.get_last_changeset(build_directory, short=False)
             version_old = node.get_version()
@@ -78,7 +77,6 @@ def packing(node, parameters, compiler_replace_maps):
 
             source_folder = node.get_base_folder()
             prefix_package = os.path.join(parameters.prefix, '%s.tar.gz' % workspace)
-            prefix_package_cmake = os.path.join(parameters.prefix, '%s-cmake.tar.gz' % workspace)
             prefix_package_md5 = os.path.join(output_3rdparty, '%s.md5' % workspace)
 
             logging.info('generating package %s from source %s' % (prefix_package, os.path.join(os.getcwd(), source_folder)))
@@ -112,11 +110,6 @@ def packing(node, parameters, compiler_replace_maps):
                 if not os.path.exists(prefix_package_cmake):
                     logging.error('No such file: {}'.format(prefix_package_cmake))
                     return False
-
-    # # marker is a empty file
-    # prefix_package_marker = os.path.join(output_3rdparty, '%s.cache' % get_identifier('ALL'))
-    # logging.info('generating marker %s' % prefix_package_marker)
-    # open(prefix_package_marker, 'a').close()
 
     # finish well
     return True

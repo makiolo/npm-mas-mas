@@ -7,6 +7,7 @@ from utils import get_stdout
 # be careful: ignore tz
 from email.utils import parsedate
 
+
 def get_revision_svn(repo):
     '''
     This command need svn in PATH
@@ -17,6 +18,7 @@ def get_revision_svn(repo):
             pos = line.rindex(':')
             return int(line[pos+2:])
     return -1
+
 
 def get_timestamp_from_changeset(repo, changeset_searched):
     '''
@@ -35,6 +37,7 @@ def get_timestamp_from_changeset(repo, changeset_searched):
                 return timestamp
     raise Exception('Error in get timestamp from changeset {}'.format(changeset_searched))
 
+
 def git_log_gen(repo, number=1, extra=''):
     '''
     generator of commits
@@ -46,6 +49,7 @@ def git_log_gen(repo, number=1, extra=''):
                 assert(len(parts) == 2)
                 commit_name = parts[1]
                 yield commit_name
+
 
 def get_changeset_git_from_position(repo, position = 0):
     with utils.working_directory(repo):
@@ -64,6 +68,7 @@ def get_changeset_git_from_position(repo, position = 0):
                     i += 1
     raise Exception('Error in get git hash from position {}'.format(position))
 
+
 def get_changeset_from_timestamp(repo, timestamp_searched):
     with utils.working_directory(repo):
         lines = []
@@ -77,6 +82,7 @@ def get_changeset_from_timestamp(repo, timestamp_searched):
             if timestamp_searched == timestamp:
                 return changeset
     raise Exception('Error in get git hash from timestamp {}'.format(timestamp_searched))
+
 
 def get_position_git_from_changeset(repo, changeset):
     with working_directory(repo):
@@ -95,6 +101,7 @@ def get_position_git_from_changeset(repo, changeset):
                         i += 1
     return -1
 
+
 def get_last_changeset(repo, short=False):
     for changeset in git_log_gen(repo, number=1):
         if short:
@@ -103,16 +110,15 @@ def get_last_changeset(repo, short=False):
             return changeset
     return ""
 
+
 def get_last_version(repo):
     return to_cmaki_version(repo, get_last_changeset(repo))
 
+
 def rehash_simple(commit_name, position):
-    SEPARETOR = '000'
-    return int(SEPARETOR.join(list(str(ord(character)) for character in commit_name))) % position
-    # add = 0
-    # for c in commit_name:
-    #     add += (ord(c) * ord(c))
-    # return add
+    separator = '000'
+    return int(separator.join(list(str(ord(character)) for character in commit_name))) % position
+
 
 @contextlib.contextmanager
 def working_directory(path):
@@ -122,6 +128,7 @@ def working_directory(path):
         yield
     finally:
         os.chdir(prev_cwd)
+
 
 def to_cmaki_version(repo, changeset):
     '''
@@ -136,6 +143,7 @@ def to_cmaki_version(repo, changeset):
     versions.append(str(position))
     versions.append(str(hash_simple))
     return '.'.join(versions)
+
 
 def to_git_version(repo, version):
     '''
@@ -153,13 +161,9 @@ def to_git_version(repo, version):
     assert( hash_simple == pseudohash )
     return changeset
 
+
 if __name__ == '__main__':
 
-    # print(Fore.RED + 'some red text')
-    # print(Back.GREEN + 'and with a green background')
-    # print(Style.DIM + 'and in dim text')
-    # print(Style.RESET_ALL)
-    # print('back to normal now')
     local_path = r'/home/ricardo/dev/fast-event-system'
 
     for commit_name in git_log_gen(local_path, 10):
@@ -168,4 +172,3 @@ if __name__ == '__main__':
         commit_name2 = to_git_version(local_path, cmaki_version)
         print "%s -> %s" % (cmaki_version, commit_name2)
         print
-

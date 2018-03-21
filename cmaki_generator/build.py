@@ -249,7 +249,8 @@ def init_parameter_path(value, default):
         value = os.path.abspath(value)
     return value
 
-if __name__ == '__main__':
+
+def parse_arguments():
 
     parser = argparse.ArgumentParser(prog="""
 
@@ -259,123 +260,157 @@ cmaki_generator:
 
 usage:""")
     group_main = parser.add_argument_group('basic usage')
-    group_main.add_argument('packages', metavar='packages', type=str, nargs='*', help='name (or list names) third party')
-    group_main.add_argument('--plan', '--dry-run', dest='plan', action='store_true', help='Show packages plan (like a dry-run)', default=False)
+    group_main.add_argument('packages', metavar='packages', type=str, nargs='*',
+                            help='name (or list names) third party')
+    group_main.add_argument('--plan', '--dry-run', dest='plan', action='store_true',
+                            help='Show packages plan (like a dry-run)', default=False)
     group_main.add_argument('--server', dest='server', help='artifact server', default='http://192.168.0.4:8080')
-    group_main.add_argument('--no-back-yaml', dest='no_back_yaml', action='store_true', help='no search back yaml', default=False)
-
+    group_main.add_argument('--no-back-yaml', dest='no_back_yaml', action='store_true', help='no search back yaml',
+                            default=False)
     group_layer = group_main.add_mutually_exclusive_group()
-    group_layer.add_argument('--layer', dest='priority', help='filter by layername. Valid values: (minimal|tools|third_party)', default=None)
-    group_layer.add_argument('--no-layer', dest='no_priority', help='negation filter by layername. Valid values: (minimal|tools|third_party)', default=None)
+    group_layer.add_argument('--layer', dest='priority',
+                             help='filter by layername. Valid values: (minimal|tools|third_party)', default=None)
+    group_layer.add_argument('--no-layer', dest='no_priority',
+                             help='negation filter by layername. Valid values: (minimal|tools|third_party)',
+                             default=None)
     # group_main.add_argument('-t', '--tag', action='append', metavar='tag', type=str, help='NOT IMPLEMMENTED YET: filter tag third party')
-
     group_padawan = parser.add_argument_group('padawan')
     group_purge = group_padawan.add_mutually_exclusive_group()
-    group_purge.add_argument('--no-purge', dest='no_purge', action='store_true', help='remove purge from pipeline', default=False)
-    group_purge.add_argument('--only-purge', dest='only_purge', action='store_true', help='execute only purge in pipeline', default=False)
-
+    group_purge.add_argument('--no-purge', dest='no_purge', action='store_true', help='remove purge from pipeline',
+                             default=False)
+    group_purge.add_argument('--only-purge', dest='only_purge', action='store_true',
+                             help='execute only purge in pipeline', default=False)
     group_prepare = group_padawan.add_mutually_exclusive_group()
-    group_prepare.add_argument('--no-prepare', dest='no_prepare', action='store_true', help='remove prepare from pipeline', default=False)
-    group_prepare.add_argument('--only-prepare', dest='only_prepare', action='store_true', help='execute only prepare in pipeline', default=False)
+    group_prepare.add_argument('--no-prepare', dest='no_prepare', action='store_true',
+                               help='remove prepare from pipeline', default=False)
+    group_prepare.add_argument('--only-prepare', dest='only_prepare', action='store_true',
+                               help='execute only prepare in pipeline', default=False)
     group_compilation = group_padawan.add_mutually_exclusive_group()
-    group_compilation.add_argument('--no-compilation', dest='no_compilation', action='store_true', help='remove compilation from pipeline', default=False)
-    group_compilation.add_argument('--only-compilation', dest='only_compilation', action='store_true', help='execute only compilation in pipeline', default=False)
+    group_compilation.add_argument('--no-compilation', dest='no_compilation', action='store_true',
+                                   help='remove compilation from pipeline', default=False)
+    group_compilation.add_argument('--only-compilation', dest='only_compilation', action='store_true',
+                                   help='execute only compilation in pipeline', default=False)
     group_packing = group_padawan.add_mutually_exclusive_group()
-    group_packing.add_argument('--no-packing', dest='no_packing', action='store_true', help='remove packing from pipeline', default=False)
-    group_packing.add_argument('--only-packing', dest='only_packing', action='store_true', help='execute only packing in pipeline', default=False)
+    group_packing.add_argument('--no-packing', dest='no_packing', action='store_true',
+                               help='remove packing from pipeline', default=False)
+    group_packing.add_argument('--only-packing', dest='only_packing', action='store_true',
+                               help='execute only packing in pipeline', default=False)
     group_run_tests = group_padawan.add_mutually_exclusive_group()
-    group_run_tests.add_argument('--no-run-tests', dest='no_run_tests', action='store_true', help='remove run_tests from pipeline', default=False)
-    group_run_tests.add_argument('--only-run-tests', dest='only_run_tests', action='store_true', help='execute only run_tests in pipeline', default=False)
+    group_run_tests.add_argument('--no-run-tests', dest='no_run_tests', action='store_true',
+                                 help='remove run_tests from pipeline', default=False)
+    group_run_tests.add_argument('--only-run-tests', dest='only_run_tests', action='store_true',
+                                 help='execute only run_tests in pipeline', default=False)
     group_upload = group_padawan.add_mutually_exclusive_group()
-    group_upload.add_argument('--no-upload', dest='no_upload', action='store_true', help='remove upload from pipeline', default=False)
-    group_upload.add_argument('--only-upload', dest='only_upload', action='store_true', help='execute only upload in pipeline', default=False)
+    group_upload.add_argument('--no-upload', dest='no_upload', action='store_true', help='remove upload from pipeline',
+                              default=False)
+    group_upload.add_argument('--only-upload', dest='only_upload', action='store_true',
+                              help='execute only upload in pipeline', default=False)
     # creador de third parties
     group_jedi = parser.add_argument_group('jedi')
-    group_jedi.add_argument('-o', '--only', dest='build_only', action='store_true', help='build only explicit packages and not your depends')
+    group_jedi.add_argument('-o', '--only', dest='build_only', action='store_true',
+                            help='build only explicit packages and not your depends')
     group_jedi.add_argument('-v', '--verbose', action='count', help='verbose mode', default=0)
     group_jedi.add_argument('-q', '--quiet', dest='quiet', action='store_true', help='quiet mode', default=False)
     group_jedi.add_argument('-d', '--debug', action='store_true', help='Ridiculous debugging (probably not useful)')
-    group_jedi.add_argument('--purge-if-fail', dest='purge_if_fail', action='store_true', help='purge even if a package finish with fail', default=False)
+    group_jedi.add_argument('--purge-if-fail', dest='purge_if_fail', action='store_true',
+                            help='purge even if a package finish with fail', default=False)
     group_jedi.add_argument('--with-svn', dest='with_svn', help='svn executable', default=None)
     group_jedi.add_argument('--fast', dest='fast', action='store_true', default=False, help=argparse.SUPPRESS)
-    group_jedi.add_argument('--log', dest='log', help='specified full path log (default is "gtc.log")', default='gtc.log')
-    group_jedi.add_argument('--no-packing-cmakefiles', action='store_true', dest='no_packing_cmakefiles', help='no packing cmakefiles', default=False)
-    group_jedi.add_argument('--blacklist', dest='blacklist', help='third party in quarantine (default is $ROOTDIR + "blacklist.txt")', default=None)
-    group_jedi.add_argument('--no-blacklist', action='append', dest='no_blacklist', help='list packages (separated with comma), for annular blacklist effect.', default=[])
+    group_jedi.add_argument('--log', dest='log', help='specified full path log (default is "gtc.log")',
+                            default='gtc.log')
+    group_jedi.add_argument('--no-packing-cmakefiles', action='store_true', dest='no_packing_cmakefiles',
+                            help='no packing cmakefiles', default=False)
+    group_jedi.add_argument('--blacklist', dest='blacklist',
+                            help='third party in quarantine (default is $ROOTDIR + "blacklist.txt")', default=None)
+    group_jedi.add_argument('--no-blacklist', action='append', dest='no_blacklist',
+                            help='list packages (separated with comma), for annular blacklist effect.', default=[])
     group_master_jedi = parser.add_argument_group('master jedi')
-    group_master_jedi.add_argument('--rootdir', dest='rootdir', help='input folder with yamls, is recursive (default is current directory)', default=None)
-    group_master_jedi.add_argument('--prefix', dest='prefix', help='output folder where packages will be generated (default is $ROOTDIR + "artifacts")', default=None)
-    group_master_jedi.add_argument('--cmakefiles', dest='cmakefiles', help='input folder with cmake scripts (default is $PREFIX + "cmakelib")', default=None)
-    group_master_jedi.add_argument('--third-party-dir', dest='third_party_dir', help='output folder for cmakefiles (default is $CMAKEFILES + "3rdparty")', default=None)
+    group_master_jedi.add_argument('--rootdir', dest='rootdir',
+                                   help='input folder with yamls, is recursive (default is current directory)',
+                                   default=None)
+    group_master_jedi.add_argument('--prefix', dest='prefix',
+                                   help='output folder where packages will be generated (default is $ROOTDIR + "artifacts")',
+                                   default=None)
+    group_master_jedi.add_argument('--cmakefiles', dest='cmakefiles',
+                                   help='input folder with cmake scripts (default is $PREFIX + "cmakelib")',
+                                   default=None)
+    group_master_jedi.add_argument('--third-party-dir', dest='third_party_dir',
+                                   help='output folder for cmakefiles (default is $CMAKEFILES + "3rdparty")',
+                                   default=None)
     group_master_jedi.add_argument('--depends', dest='depends', help='json for save versions', default=None)
     group_master_jedi.add_argument('--yaml', dest='yaml', help='unique file with third party to compile', default=None)
     parameters = parser.parse_args()
-
     '''
-    MODE=Release ./build boost-headers --third-party-dir=$(pwd)/artifacts/cmaki_find_package --cmakefiles=$(pwd)/node_modules/cmaki --prefix=$(pwd)/artifacts
-    '''
-
+        TODO:
+        refactor:
+        prefix = DEPENDS_PATH (cmake3p) (artifacts)
+        cmakefiles = CMAKI_PATH, CMAKE_MODULE_PATH (cmakelib, cmaki_find_package)
+        third-party-dir = CMAKE_PREFIX_PATH (directorio artifacts/cmaki_find_package) (3rdparty)
+        rootdir = ARTIFACTS_PATH, es la base de donde esta build.py (cmaki_generator) (scripts de generacion) tambien podria ser CMAKI_PWD
+        CMAKI_INSTALL: donde se espera tener instalado el cmaki_identifier
+        '''
     # parameters cmd line are paths
-
-    # if 'CMAKI_PWD' in os.environ:
-    #     parameters.rootdir = init_parameter_path(parameters.rootdir, os.environ.get('CMAKI_PWD'))
-    # else:
     parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
     parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, '..', 'artifacts'))
-    parameters.third_party_dir = init_parameter_path(parameters.third_party_dir, os.path.join(parameters.prefix, 'cmaki_find_package'))
+    parameters.third_party_dir = init_parameter_path(parameters.third_party_dir,
+                                                     os.path.join(parameters.prefix, 'cmaki_find_package'))
     parameters.cmakefiles = init_parameter_path(parameters.cmakefiles, os.path.join(parameters.rootdir, '..', 'cmaki'))
     parameters.blacklist = init_parameter_path(parameters.blacklist, os.path.join(parameters.rootdir, 'blacklist.txt'))
     parameters.depends = init_parameter_path(parameters.depends, os.path.join(parameters.prefix, '..', 'depends.json'))
-
     # convert priority to int
     parameters.priority = convert_priority_to_integer(parameters.priority)
     parameters.no_priority = convert_priority_to_integer(parameters.no_priority)
-
-    if(parameters.only_purge):
+    if parameters.only_purge:
         parameters.no_purge = False
         parameters.no_prepare = True
         parameters.no_compilation = True
         parameters.no_packing = True
         parameters.no_run_tests = True
         parameters.no_upload = True
-    elif(parameters.only_prepare):
+    elif parameters.only_prepare:
         parameters.no_purge = True
         parameters.no_prepare = False
         parameters.no_compilation = True
         parameters.no_packing = True
         parameters.no_run_tests = True
         parameters.no_upload = True
-    elif(parameters.only_compilation):
+    elif parameters.only_compilation:
         parameters.no_purge = True
         parameters.no_prepare = True
         parameters.no_compilation = False
         parameters.no_packing = True
         parameters.no_run_tests = True
         parameters.no_upload = True
-    elif(parameters.only_packing):
+    elif parameters.only_packing:
         parameters.no_purge = True
         parameters.no_prepare = True
         parameters.no_compilation = True
         parameters.no_packing = False
         parameters.no_run_tests = True
         parameters.no_upload = True
-    elif(parameters.only_run_tests):
+    elif parameters.only_run_tests:
         parameters.no_purge = True
         parameters.no_prepare = True
         parameters.no_compilation = True
         parameters.no_packing = True
         parameters.no_run_tests = False
         parameters.no_upload = True
-    elif(parameters.only_upload):
+    elif parameters.only_upload:
         parameters.no_purge = True
         parameters.no_prepare = True
         parameters.no_compilation = True
         parameters.no_packing = True
         parameters.no_run_tests = True
         parameters.no_upload = False
+    return parameters
+
+
+if __name__ == '__main__':
+
+    parameters = parse_arguments()
 
     # prepare logging
-    if(parameters.debug):
+    if parameters.debug:
         utils.setup_logging(logging.DEBUG, parameters.log)
     else:
         utils.setup_logging(logging.INFO, parameters.log)
@@ -388,9 +423,11 @@ usage:""")
     logging.info('---- depends: {}'.format(parameters.depends))
 
     # if not set svn, use default
+    '''
     if parameters.with_svn is None:
         if 'SUBVERSION' in os.environ:
             parameters.with_svn = os.environ['SUBVERSION']
+    '''
 
     # fetch remotes yaml
     # i = 0
@@ -409,7 +446,6 @@ usage:""")
     #         parameters.packages[i] = repo.split('/')[1]
     #     i += 1
 
-    # prepare cmakelin
     prepare_cmakefiles(parameters.cmakefiles)
 
     # generate amalgaimation yaml
@@ -474,7 +510,8 @@ usage:""")
             # no need create relations
             pass
 
-    # 1/4: Generate solutions in each node
+
+    # 1/7: Generate solutions in each node
     solutions = []
     for key, select_node in selected:
         resolved = []
@@ -484,10 +521,12 @@ usage:""")
         else:
             solutions.append( [select_node] )
 
-    # 2/4: clean subset
+
+    # 2/7: clean subset
     groups = clean_subset(solutions)
 
-    # 3/4: merge solutions with same root
+
+    # 3/7: merge solutions with same root
     sols3 = {}
     for packages in groups:
         first = packages[0]
@@ -499,7 +538,8 @@ usage:""")
                 if node not in chunk:
                     chunk.append(node)
 
-    # 4/4: write final plan
+
+    # 4/7: write final plan
     groups = []
     for key, value in sols3.iteritems():
         newsolution = [key]
@@ -507,10 +547,11 @@ usage:""")
             newsolution.append(node)
         groups.append(newsolution)
 
-    # 2/4: clean subset
+
+    # 5/7: clean subset
     groups = clean_subset(groups)
 
-    # 5/4: sort groups
+    # 6/7: sort groups
     groups_ordered = []
     for packages in groups:
         priority_total = 0
@@ -520,7 +561,7 @@ usage:""")
         groups_ordered.append( (priority_group, packages) )
     groups_ordered.sort(key=lambda tup: tup[0], reverse=False)
 
-    # 6/4: validate groups
+    # 7/7: validate groups
     for priority_total, packages in groups_ordered:
         if len(packages) > 0:
             priority_initial = packages[0].get_priority()
@@ -603,7 +644,7 @@ usage:""")
                     node.generate_scripts_headers(compiler_replace_maps)
 
             try:
-                if (not parameters.no_purge):
+                if not parameters.no_purge:
                     run_purge(packages)
 
                 # create pipeline
@@ -612,23 +653,23 @@ usage:""")
                 # feed third parties
                 p = pipeline.feed(packages)(p)
 
-                if (not parameters.no_prepare):
+                if not parameters.no_prepare:
                     # download sources
                     p = pipeline.do(prepare, False, parameters, compiler_replace_maps)(p)
 
-                if (not parameters.no_compilation):
+                if not parameters.no_compilation:
                     # ./configure && make (configuration and compilation)
                     p = pipeline.do(compilation, False, parameters, compiler_replace_maps)(p)
 
-                if (not parameters.no_packing):
+                if not parameters.no_packing:
                     # packing (generate .tar.gz)
                     p = pipeline.do(packing, False, parameters, compiler_replace_maps)(p)
 
-                if (not parameters.no_run_tests):
+                if not parameters.no_run_tests:
                     # execute unittests and save results in "unittests"
                     p = pipeline.do(run_tests, False, parameters, compiler_replace_maps, unittests)(p)
 
-                if (not parameters.no_upload):
+                if not parameters.no_upload:
                     # upload artifacts
                     p = pipeline.do(upload, False, parameters, compiler_replace_maps)(p)
 
@@ -650,7 +691,7 @@ usage:""")
             finally:
                 # only purge when you are executing a full group
                 if (not parameters.build_only) and (not parameters.no_purge):
-                    if (parameters.purge_if_fail):
+                    if parameters.purge_if_fail:
                         run_purge(packages)
                     else:
                         # purge only if all packages are ok
@@ -658,7 +699,7 @@ usage:""")
                         for node in packages:
                             ret += node.ret
 
-                        if (ret == 0):
+                        if ret == 0:
                             run_purge(packages)
                         else:
                             if len(packages) > 1:

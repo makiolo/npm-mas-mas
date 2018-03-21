@@ -18,7 +18,6 @@ def upload(node, parameters, compiler_replace_maps):
                 return False
             command = "python upload_package.py --url=%s/upload.php --filename=%s" % (parameters.server, prefix_package)
             node.ret += abs(utils.safe_system(command))
-            # node.ret += abs(os.system(command))
 
         if node.ret != 0:
             return False
@@ -33,6 +32,5 @@ def upload(node, parameters, compiler_replace_maps):
                     return False
                 command = "python upload_package.py --url=%s/upload.php --filename=%s" % (parameters.server, prefix_package_cmake)
                 node.ret += abs(utils.safe_system(command))
-                # node.ret += abs(os.system(command))
 
     return True

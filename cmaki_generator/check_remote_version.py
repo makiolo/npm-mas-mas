@@ -7,6 +7,11 @@ import cStringIO
 import csv
 import utils
 
+
+version_separator = '.'
+version_count_max = 4
+
+
 def read_remote_csv(url):
     f = urllib.urlopen(url)
     try:
@@ -15,8 +20,6 @@ def read_remote_csv(url):
         f.close()
     return csv
 
-version_separator = '.'
-version_count_max = 4
 
 def version_to_tuple(version_str):
     try:
@@ -31,11 +34,13 @@ def version_to_tuple(version_str):
     except ValueError:
         return None
 
+
 class package(object):
     def __init__(self, name,  version, local):
         self._name = name
         self._version = version_to_tuple(version)
         self._local = local
+
     def __repr__(self):
         if self._version is not None:
             list_version = list(self._version)
@@ -63,11 +68,13 @@ class package(object):
     def is_local(self):
         return self._local
 
+
 def sort_versions(local_swap):
     if not local_swap:
         one = 1
     else:
         one = -1
+
     def cmp(a, b):
         if a.get_version() < b.get_version():
             return 1
@@ -83,6 +90,7 @@ def sort_versions(local_swap):
             else:
                 return one
     return cmp
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -112,10 +120,10 @@ if __name__ == '__main__':
         # local
         utils.trymkdir(parameters.artifacts)
         for path in os.listdir(parameters.artifacts):
-            fullpath = os.path.join(parameters.artifacts, path)
+            full_path = os.path.join(parameters.artifacts, path)
             # directorios que contengan "-"
-            if os.path.isdir(fullpath) and (fullpath.find('-') != -1):
-                basename = os.path.basename(fullpath)
+            if os.path.isdir(full_path) and (full_path.find('-') != -1):
+                basename = os.path.basename(full_path)
                 try:
                     separator = basename.rindex('-')
                     package_name = basename[:separator]
@@ -132,26 +140,27 @@ if __name__ == '__main__':
     if parameters.artifacts is not None:
         # local
         for path in os.listdir(parameters.artifacts):
-            fullpath = os.path.join(parameters.artifacts, path)
+            full_path = os.path.join(parameters.artifacts, path)
             terminator = '-cmake.tar.gz'
-            if os.path.isfile(fullpath) and (fullpath.endswith(terminator)):
+            if os.path.isfile(full_path) and (full_path.endswith(terminator)):
                 if parameters.platform is None:
                     logging.error('Platform is needed!')
                     sys.exit(1)
                 terminator = '-%s-cmake.tar.gz' % parameters.platform
-                basename = os.path.basename(fullpath)
-		try:
-		        separator = basename.rindex(terminator)
-		        basename = basename[:separator]
-		        separator = basename.rindex('-')
-		        package_name = basename[:separator]
-		        package_version =  basename[separator+1:]
-		        new_package = package(package_name, package_version, True)
-		        if new_package == package_request:
-		            packages_found.append(new_package)
-		except ValueError:
-			# not found platform in file
-			pass
+                basename = os.path.basename(full_path)
+        try:
+            separator = basename.rindex(terminator)
+            basename = basename[:separator]
+            separator = basename.rindex('-')
+            package_name = basename[:separator]
+            package_version =  basename[separator+1:]
+            new_package = package(package_name, package_version, True)
+            if new_package == package_request:
+                packages_found.append(new_package)
+        except ValueError:
+            # not found platform in file
+            pass
+
 
     if parameters.server is not None:
         try:
@@ -174,9 +183,10 @@ if __name__ == '__main__':
         except IOError:
             logging.debug('error in cache artifacts: %s' % parameters.server)
 
+
     if len(packages_found) > 0:
 
-        if (parameters.version is None):
+        if parameters.version is None:
             """
             Cuando no hay version, ordeno de mayor a menor.
             Al pasar False al comparador aparece primero local y luego remote en caso de ser la misma version.
@@ -198,7 +208,7 @@ if __name__ == '__main__':
             aparece primero versiones locales y luego las remotas.
             """
             for package in sorted(packages_found, cmp=sort_versions(True), reverse=True):
-                if(package.get_version() >= package_request.get_version()):
+                if package.get_version() >= package_request.get_version():
                     if package_request.is_same_version(package):
                         print("EXACT;%s;%s" % (package, package.get_version()))
                     else:
@@ -208,3 +218,4 @@ if __name__ == '__main__':
     else:
         print("UNSUITABLE;;")
         sys.exit(1)
+

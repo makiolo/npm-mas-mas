@@ -6,7 +6,6 @@ from third_party import platforms
 def purge(node, parameters):
 
     package = node.get_package_name()
-    version = node.get_version()
 
     logging.debug("Cleaning headers and cmakefiles %s" % package)
     node.remove_scripts_headers()

@@ -8,7 +8,7 @@ from third_party import get_identifier
 
 def run_tests(node, parameters, compiler_replace_maps, unittests):
 
-    oldcwd = os.getcwd()
+    old_cwd = os.getcwd()
 
     artifacts_dir = parameters.rootdir
     artifacts_dir = utils.get_norm_path(artifacts_dir)
@@ -106,12 +106,12 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
             # OJO con borrar cmake3p, se borra la marca
             # node.remove_cmake3p( cmake3p_dir )
 
-            builddir = os.path.join(oldcwd, node.get_build_directory(plat, build_mode))
+            builddir = os.path.join(old_cwd, node.get_build_directory(plat, build_mode))
             logging.info('Using builddir %s' % builddir)
             unittest_folder = os.path.join(builddir, build_unittests_foldername)
             unittest_found = os.path.join(unittest_folder, 'main.cpp')
             unittest_found = unittest_found.replace('\\', '/')
-            unittest_root = os.path.join(oldcwd, build_unittests_foldername)
+            unittest_root = os.path.join(old_cwd, build_unittests_foldername)
 
             if os.path.exists(unittest_found):
 
@@ -137,15 +137,7 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
                         utils.tryremove('cmake_install.cmake')
                         utils.tryremove('install_manifest.txt')
                         utils.tryremove_dir('CMakeFiles')
-                        '''
-                        TODO:
-                        refactor:
-                        prefix = DEPENDS_PATH (cmake3p) (artifacts)
-                        cmakefiles = CMAKI_PATH, CMAKE_MODULE_PATH (cmakelib, cmaki_find_package)
-                        third-party-dir = CMAKE_PREFIX_PATH (directorio artifacts/cmaki_find_package) (3rdparty)
-                        rootdir = ARTIFACTS_PATH, es la base de donde esta build.py (cmaki_generator) (scripts de generacion) tambien podria ser CMAKI_PWD
-                        CMAKI_INSTALL: donde se espera tener instalado el cmaki_identifier
-                        '''
+
                         cmd = 'cmake %s %s -DARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (unittest_root, generator_extra, artifacts_dir, get_identifier('COMPILER'), get_identifier('ALL'), cmakelib_dir, package, package_upper, build_mode, cmake_third_party_dir, unittest_found, cmake_prefix, find_packages_str, build_mode, build_mode)
                         ret = utils.safe_system(cmd, env=env_modified)
                         node.ret += abs(ret)

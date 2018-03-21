@@ -185,15 +185,9 @@ def copy(rootdir, folder):
             relfilename = os.path.relpath(line, rootdir)
             destiny = os.path.join(folder, relfilename)
             destiny_dir = os.path.dirname(destiny)
-            # if os.path.isfile(line):
-            # try:
             utils.trymkdir(destiny_dir)
             shutil.copyfile(line, destiny)
             yield destiny
-            # except IOError:
-            #     logging.warning('error in copyfile: "%s"' % line)
-            # else:
-            #     logging.warning('it does not exist filename: "%s"' % line)
     return process
 
 def startswith(pattern):

@@ -28,7 +28,7 @@ class FailPrepare(Exception):
     def __init__(self, node):
         self._node = node
     def __str__(self):
-        return ('Failing preparing package: %s' % self._node.get_package_name())
+        return 'Failing preparing package: %s' % self._node.get_package_name()
 
 
 class AmbiguationLibs(Exception):
@@ -58,15 +58,10 @@ class Found(Exception):
     pass
 
 
-def prepare_cmakefiles(cmakefiles):
-    if not os.path.isdir(cmakefiles):
-        cmakefiles_temp = cmakefiles + '.tmp'
-        logging.info("preparing cmaki: {}".format(cmakefiles))
-        logging.info("clone cmaki: {}".format(cmakefiles_temp))
-        utils.tryremove_dir(cmakefiles_temp)
-        utils.safe_system('git clone %s %s' % (CMAKELIB_URL, cmakefiles_temp))
-        utils.move_folder_recursive(cmakefiles_temp, cmakefiles)
-        utils.tryremove_dir(cmakefiles_temp)
+def prepare_cmakefiles(cmake_files):
+    if not os.path.isdir(cmake_files):
+        logging.error('Invalid cmake files: {}'.format(camkefiles))
+
 
 def get_identifier(mode):
     env = os.environ.copy()
@@ -79,6 +74,7 @@ def get_identifier(mode):
         raise Exception("there is no {} script".format(script_identifier))
     env['CMAKI_INFO'] = mode
     return list(utils.get_stdout(script_identifier, env=env))[0]
+
 
 def search_fuzzy(data, fuzzy_key, fallback='default'):
     for key in data:
@@ -93,12 +89,10 @@ def search_fuzzy(data, fuzzy_key, fallback='default'):
 
 
 if 'MODE' not in os.environ:
-    # raise Exception("not defined environment var: MODE")
     logging.warning('Using Release by default. For explicit use, define environment var MODE')
     os.environ['MODE'] = 'Release'
 
 if 'CMAKI_INSTALL' not in os.environ:
-    # raise Exception("not defined environment var: CMAKI_INSTALL")
     logging.warning('Using CMAKI_INSTALL by default. For explicit use, define environment var CMAKI_INSTALL')
     os.environ['CMAKI_INSTALL'] = os.path.join( os.getcwd(), '..', 'cmaki_identifier', 'bin')
 
@@ -135,8 +129,10 @@ alias_priority_name = { 10: 'minimal',
                         30: 'third_party' }
 alias_priority_name_inverse = {v: k for k, v in alias_priority_name.items()}
 
+
 def is_valid(package_name, mask):
     return (mask.find(somask_id) != -1) and (package_name != 'dummy')
+
 
 def is_blacklisted(blacklist_file, no_blacklist, package_name):
     blacklisted = False
@@ -163,7 +159,6 @@ class ThirdParty:
         self.ret = 0 # Initial return code
         self.fail_stage = ""
         self.blacklisted = is_blacklisted(self.user_parameters.blacklist, self.user_parameters.no_blacklist, self.get_package_name())
-        # para publicar que esta en la blacklist solo una vez
         self.published_invalidation = False
 
     def __hash__(self):
@@ -182,51 +177,50 @@ class ThirdParty:
         return "%s (%s)" % (self.get_package_name(), self.get_mask())
 
     def get_uncompress_strip(self, pos = 0):
-        parms = self.parameters
         try:
-            if isinstance(parms['uncompress_strip'], list):
-                return parms['uncompress_strip'][pos]
+            if isinstance(self.parameters['uncompress_strip'], list):
+                return self.parameters['uncompress_strip'][pos]
             else:
-                return parms['uncompress_strip']
+                return self.parameters['uncompress_strip']
         except KeyError:
             # default value
             return uncompress_strip_default
 
     def get_uncompress_prefix(self, pos = 0):
-        parms = self.parameters
         try:
-            if isinstance(parms['uncompress_prefix'], list):
-                return parms['uncompress_prefix'][pos]
+            if isinstance(self.parameters['uncompress_prefix'], list):
+                return self.parameters['uncompress_prefix'][pos]
             else:
-                return parms['uncompress_prefix']
+                return self.parameters['uncompress_prefix']
         except KeyError:
             # default value
             return uncompress_prefix_default
 
     def get_uncompress(self, pos = 0):
-        parms = self.parameters
         try:
-            if parms['uncompress'] is not None:
-                if isinstance(parms['uncompress'], list):
-                    return (parms['uncompress'][pos].find(somask_id) != -1)
+            if self.parameters['uncompress'] is not None:
+                if isinstance(self.parameters['uncompress'], list):
+                    return self.parameters['uncompress'][pos].find(somask_id) != -1
                 else:
-                    return (parms['uncompress'].find(somask_id) != -1)
+                    return self.parameters['uncompress'].find(somask_id) != -1
             else:
                 return False
         except KeyError:
             # default value
             return True
 
+
     def get_depends_raw(self):
         return self.depends
 
+
     def get_depends(self):
-        parms = self.parameters
         try:
-            return parms['depends']
+            return self.parameters['depends']
         except KeyError:
             # default value
             return None
+
 
     def get_generate_custom_script(self, source_dir):
         path_build = self.get_path_custom_script(source_dir, name='.build')
@@ -235,6 +229,7 @@ class ThirdParty:
             with open(path_build, 'wt') as f:
                 f.write(build_content)
 
+
     def get_path_custom_script(self, source_folder, name = 'build'):
         if utils.is_windows():
             path_build = os.path.join(source_folder, name + '.cmd')
@@ -242,25 +237,26 @@ class ThirdParty:
             path_build = os.path.join(source_folder, name + '.sh')
         return path_build
 
+
     def has_custom_script(self, source_folder):
         script_custom = os.path.exists( self.get_path_custom_script(source_folder) )
         return (self.get_build_script_content() is not None) or script_custom
 
+
     def get_build_script_content(self):
-        parms = self.parameters
         try:
             if not utils.is_windows():
-                return parms['build']
+                return self.parameters['build']
             else:
-                return parms['build_windows']
+                return self.parameters['build_windows']
         except KeyError:
             # default value
             return None
 
+
     def get_source(self):
-        parms = self.parameters
         try:
-            source = parms['source']
+            source = self.parameters['source']
             if source is not None:
                 if not isinstance(source, list):
                     return [source]
@@ -272,10 +268,10 @@ class ThirdParty:
             # default value
             return []
 
+
     def get_source_filename(self, position=0):
-        parms = self.parameters
         try:
-            return parms['source_filename']
+            return self.parameters['source_filename']
         except KeyError:
             # default value
             source = self.get_source()[position]
@@ -283,38 +279,39 @@ class ThirdParty:
             return filename
 
     def get_sources_all(self, position=0):
-        parms = self.parameters
         try:
-            return parms['sources_all']
+            return self.parameters['sources_all']
         except KeyError:
             return False
 
     def get_before_copy(self):
-        parms = self.parameters
         try:
-            return parms['before_copy']
+            return self.parameters['before_copy']
         except KeyError:
             # default value
             return []
 
     def get_short_path(self):
-        parms = self.parameters
         try:
-            return parms['short_path']
+            return self.parameters['short_path']
         except KeyError:
             # default value
             return False
+
 
     def has_library(self, platform_info):
         package = self.get_package_name()
         return ((('static' in platform_info) and (package != 'dummy')) or (('dynamic' in platform_info) and (package != 'dummy')))
 
+
     def needs(self, node):
         if node.is_valid():
             self.depends.append(node)
 
+
     def get_package_name(self):
         return self.name
+
 
     def get_package_name_norm(self):
         package = self.get_package_name()
@@ -322,17 +319,19 @@ class ThirdParty:
             package = package.replace(c, '_')
         return package
 
+
     def get_package_name_norm_upper(self):
         package_norm = self.get_package_name_norm()
         return package_norm.upper()
 
+
     def set_version(self, newversion):
         self.parameters['version'] = newversion
 
+
     def get_version(self):
-        parms = self.parameters
         try:
-            version = parms['version']
+            version = self.parameters['version']
             if version is None:
                 return '0.0.0.0'
             else:
@@ -341,46 +340,47 @@ class ThirdParty:
             if self.get_package_name() != 'dummy':
                 raise Exception('[%s] Version is a mandatory field.' % self.get_package_name())
 
+
     def get_version_manager(self):
-        parms = self.parameters
         try:
             version = self.get_version()
             if version == '0.0.0.0':
-                return parms['version_manager']
+                return self.parameters['version_manager']
             else:
                 # si tiene version -> no usar renombrado git
                 return None
         except KeyError:
             return None
 
+
     def get_cmake_target(self):
-        parms = self.parameters
         try:
-            return parms['cmake_target']
+            return self.parameters['cmake_target']
         except KeyError:
             return 'install'
 
+
     def get_post_install(self):
-        parms = self.parameters
         try:
-            return parms['post_install']
+            return self.parameters['post_install']
         except KeyError:
             return []
 
+
     def get_priority(self):
-        parms = self.parameters
         try:
-            return int(parms['priority'])
+            return int(self.parameters['priority'])
         except KeyError:
             return priority_default
 
+
     def is_packing(self):
-        parms = self.parameters
         try:
-            return parms['packing']
+            return self.parameters['packing']
         except KeyError:
             # default value
             return True
+
 
     def get_branch(self):
         try:
@@ -389,14 +389,14 @@ class ThirdParty:
             # default value
             return None
 
+
     def get_build_modes(self):
-        parms = self.parameters
         build_modes = []
         try:
             if 'MODE' in os.environ and (os.environ['MODE'] != 'UNDEFINED'):
                 build_modes.append(os.environ['MODE'])
             else:
-                mode = parms['mode']
+                mode = self.parameters['mode']
                 if mode.find('d') != -1:
                     build_modes.append('Debug')
                 if mode.find('i') != -1:
@@ -410,20 +410,22 @@ class ThirdParty:
             build_modes.append('Release')
         return build_modes
 
+
     def get_mask(self):
-        parms = self.parameters
         try:
-            return parms['mask']
+            return self.parameters['mask']
         except KeyError:
             return somask_id
 
+
     def is_valid(self):
         if self.blacklisted:
-            if (not self.published_invalidation):
+            if not self.published_invalidation:
                 logging.debug('%s is not built because is blacklisted in %s' % (self.get_package_name(), os.path.basename(self.user_parameters.blacklist)))
                 self.published_invalidation = True
             return False
         return is_valid(self.get_package_name(), self.get_mask())
+
 
     def resolver(self, resolved, seen):
         seen.append(self)
@@ -436,6 +438,7 @@ class ThirdParty:
             resolved.append(self)
         seen.remove(self)
 
+
     def get_targets(self):
         try:
             return self.parameters['targets']
@@ -443,34 +446,34 @@ class ThirdParty:
             # default value
             return []
 
+
     def get_exclude_from_all(self):
-        parms = self.parameters
         try:
-            return parms['exclude_from_all']
+            return self.parameters['exclude_from_all']
         except KeyError:
             # default value
             return False
+
 
     def get_exclude_from_clean(self):
-        parms = self.parameters
         try:
-            return parms['exclude_from_clean']
+            return self.parameters['exclude_from_clean']
         except KeyError:
             # default value
             return False
 
+
     def get_unittest(self):
-        parms = self.parameters
         try:
-            return parms['unittest']
+            return self.parameters['unittest']
         except KeyError:
             # default value
             return None
 
+
     def get_cmake_prefix(self):
-        parms = self.parameters
         try:
-            cmake_prefix = parms['cmake_prefix']
+            cmake_prefix = self.parameters['cmake_prefix']
             if cmake_prefix.endswith('CMakeLists.txt'):
                 return os.path.dirname(cmake_prefix)
             return cmake_prefix
@@ -478,11 +481,10 @@ class ThirdParty:
             # default value
             return "."
 
-    def get_generator_targets(self, plat, compiler_c, compiler_cpp, ext_sta, ext_dyn):
-        '''
-        TODO: create new class "target"
-        '''
-        superpackage = self.get_package_name_norm()
+
+    def get_generator_targets(self, plat, _, compiler_cpp, ext_sta, ext_dyn):
+
+        package = self.get_package_name_norm()
 
         for targets in self.get_targets():
 
@@ -509,8 +511,8 @@ class ThirdParty:
                 platform_info = utils.apply_replaces_vars(platform_info, {
                                                                             'TARGET': target_name,
                                                                             'TARGET_UPPER': target_name.upper(),
-                                                                            'PACKAGE': superpackage,
-                                                                            'PACKAGE_UPPER': superpackage.upper(),
+                                                                            'PACKAGE': package,
+                                                                            'PACKAGE_UPPER': package.upper(),
                                                                             'PLATFORM': plat,
                                                                             'COMPILER': os.path.basename(compiler_cpp),
                                                                             'EXT_DYN': ext_dyn,
@@ -519,11 +521,12 @@ class ThirdParty:
                                                                         })
 
                 if platform_info is None:
-                    logging.error('No platform info in package %s, platform %s' % (superpackage, plat))
+                    logging.error('No platform info in package %s, platform %s' % (package, plat))
                     logging.error("%s" % targets)
                     sys.exit(1)
 
                 yield (target_name, platform_info)
+
 
     def have_any_in_target(self, plat, key, compiler_replace_maps):
         any_static = False
@@ -533,13 +536,14 @@ class ThirdParty:
                     any_static = True
         return any_static
 
+
     def get_generate_find_package(self):
-        parms = self.parameters
         try:
-            return parms['generate_find_package']
+            return self.parameters['generate_find_package']
         except KeyError:
             # default value
             return True
+
 
     def compiler_iterator(self, plat, compiler_replace_maps):
 
@@ -557,9 +561,9 @@ class ThirdParty:
         # resolve map
         compiler_replace_resolved = {}
         for var, value in compiler_replace_maps.iteritems():
-            newvalue = value
-            newvalue = newvalue.replace('$PLATFORM', plat)
-            compiler_replace_resolved[var] = newvalue
+            new_value = value
+            new_value = new_value.replace('$PLATFORM', plat)
+            compiler_replace_resolved[var] = new_value
         compiler_replace_resolved['$ARCH'] = archs[plat]
         compiler_replace_resolved['${ARCH}'] = archs[plat]
 
@@ -569,10 +573,7 @@ class ThirdParty:
         ext_dyn = plat_parms['ext_dyn']
         ext_sta = plat_parms['ext_sta']
         if compilers is None:
-            # if utils.is_windows():
             compilers = [('%s, %s' % (compiler, compiler))]
-            # else:
-            #     compilers = [('%s, %s' % (os.environ.get('CC', 'gcc'), os.environ.get('CXX', 'g++')))]
 
         for compiler in compilers:
             compilers_tuple = compiler.split(',')
@@ -593,10 +594,6 @@ class ThirdParty:
                 env_iter['PACKAGE'] = str(self.get_package_name())
                 env_iter['VERSION'] = str(self.get_version())
                 env_iter['ARCH'] = str(archs[plat])
-
-                # if (compiler_c != 'default') and (compiler_cpp != 'default'):
-                #     env_iter['CC'] = str(compiler_c)
-                #     env_iter['CXX'] = str(compiler_cpp)
 
                 try:
                     environment = plat_parms['environment']
@@ -680,6 +677,7 @@ class ThirdParty:
 
             yield (compiler_c, compiler_cpp, generator, ext_sta, ext_dyn, env_modified, env_new)
 
+
     def remove_cmake3p(self, cmake3p_dir):
         package_cmake3p = os.path.join(cmake3p_dir, self.get_base_folder())
         logging.debug('Removing cmake3p %s' % package_cmake3p)
@@ -688,15 +686,18 @@ class ThirdParty:
         for dep in self.get_depends_raw():
             dep.remove_cmake3p(cmake3p_dir)
 
+
     def get_base_folder(self):
         package = self.get_package_name()
         version = self.get_version()
         return '%s-%s' % (package, version)
 
+
     def get_workspace(self, plat):
         package = self.get_package_name()
         version = self.get_version()
         return '%s-%s-%s' % (package, version, plat)
+
 
     def get_build_directory(self, plat, build_mode):
         package = self.get_package_name()
@@ -706,13 +707,16 @@ class ThirdParty:
         else:
             return '.bs_%s%s%s%s' % (package[:3], version[-1:], plat, build_mode)
 
+
     def get_download_directory(self):
         package = self.get_package_name()
         return '.download_%s' % package
 
+
     def get_original_directory(self):
         package = self.get_package_name()
         return '.download_original_%s' % package
+
 
     def apply_replace_maps(self, compiler_replace_maps):
         package = self.get_package_name()
@@ -722,6 +726,7 @@ class ThirdParty:
         with utils.working_directory(to_package):
             basedir = os.path.abspath('..')
             compiler_replace_maps['$%s_BASE' % package_norm] = os.path.join(basedir, self.get_workspace('$PLATFORM'), self.get_base_folder())
+
 
     def generate_scripts_headers(self, compiler_replace_maps):
         package = self.get_package_name()
@@ -769,6 +774,7 @@ class ThirdParty:
                     f.write("%s_BUILD=%s/%s\n" % (package_norm, basedir, build_directory))
                     f.write("mkdir -p $SELFHOME\n")
 
+
     def remove_cmakefiles(self):
         utils.tryremove('CMakeCache.txt')
         utils.tryremove('cmake_install.cmake')
@@ -788,6 +794,7 @@ class ThirdParty:
             utils.tryremove('.build.cmd')
         utils.tryremove_dir_empty(to_package)
 
+
     def generate_3rdpartyversion(self, output_dir):
         package = self.get_package_name()
         package_norm_upper = self.get_package_name_norm_upper()
@@ -801,6 +808,7 @@ class ThirdParty:
         with utils.working_directory(thirdparty_path):
             with open('%s.cmake' % package, 'wt') as f:
                 f.write('SET(%s_REQUIRED_VERSION %s EXACT)\n' % (package_norm_upper, version))
+
 
     def _smart_uncompress(self, position, package_file_abs, uncompress_directory, destiny_directory, compiler_replace_maps):
         uncompress = self.get_uncompress(position)
@@ -818,6 +826,7 @@ class ThirdParty:
                 utils.tryremove_dir(source_with_strip)
             if not ok:
                 raise Exception('Invalid uncompressed package %s - %s' % (package, package_file_abs))
+
 
     def _prepare_third_party(self, position, url, build_directory, compiler_replace_maps):
         package = self.get_package_name()
@@ -920,6 +929,7 @@ class ThirdParty:
         else:
             raise Exception('Invalid source: %s - %s' % (package, url))
 
+
     def prepare_third_party(self, build_directory, compiler_replace_maps):
         utils.trymkdir(build_directory)
         package = self.get_package_name()
@@ -952,6 +962,7 @@ class ThirdParty:
                 i += 1
             raise FailPrepare(self)
 
+
     def get_prefered_build_mode(self, prefered_build_mode_list):
         build_modes = self.get_build_modes()
         assert(len(prefered_build_mode_list) > 0)
@@ -961,6 +972,7 @@ class ThirdParty:
             if len(prefered_build_mode_list) > 0:
                 prefered_build_mode = prefered_build_mode_list[0]
         return prefered_build_mode
+
 
     def generate_cmake_condition(self, platforms, compiler_replace_maps):
         target_uniques = Set()
@@ -980,6 +992,7 @@ class ThirdParty:
                         i += 1
         return condition
 
+
     def _search_library(self, rootdir, special_pattern):
         '''
         3 cases:
@@ -991,7 +1004,7 @@ class ThirdParty:
 
         if special_pattern is None:
             logging.warning('Failed searching lib in %s' % rootdir)
-            return (False, None)
+            return False, None
 
         package = self.get_package_name()
         if isinstance(special_pattern, list):
@@ -1001,7 +1014,7 @@ class ThirdParty:
                 valid, valid_ff = self._search_library(rootdir, utils.get_norm_path(ff))
                 if valid:
                     break
-            return (valid, valid_ff)
+            return valid, valid_ff
 
         elif special_pattern.startswith('/') and special_pattern.endswith('/'):
             pattern = special_pattern[1:-1]
@@ -1010,22 +1023,23 @@ class ThirdParty:
             utils.verbose(self.user_parameters, 'Candidates %s' % files_found)
             if len(files_found) == 1:
                 relfile = os.path.relpath(files_found[0], rootdir)
-                return (True, utils.get_norm_path(relfile))
+                return True, utils.get_norm_path(relfile)
             elif len(files_found) == 0:
                 msg = 'No library found in %s with pattern %s' % (rootdir, pattern)
                 logging.debug(msg)
-                return (False, None)
+                return False, None
             else:
                 msg = "Ambiguation in %s" % (package)
                 logging.debug(msg)
-                return (False, None)
+                return False, None
         else:
             pathfull = os.path.join(rootdir, special_pattern)
             utils.verbose(self.user_parameters, 'Checking file %s' % pathfull)
             if os.path.exists(pathfull):
-                return (True, utils.get_norm_path(special_pattern))
+                return True, utils.get_norm_path(special_pattern)
             else:
-                return (False, None)
+                return False, None
+
 
     def search_library(self, workbase, dataset, kind, rootdir=None):
         '''
@@ -1046,6 +1060,7 @@ class ThirdParty:
         else:
             raise NotFoundInDataset("Not found in dataset, searching %s - %s" % (build_mode.lower(), kind))
 
+
     def search_library_noexcept(self, workbase, dataset, kind):
         try:
             try:
@@ -1061,6 +1076,7 @@ class ThirdParty:
             finalpath = '%s.%s' % (magic_invalid_file, kind)
             utils.superverbose(self.user_parameters, '[03] path: %s' % finalpath)
             return finalpath
+
 
     def check_parts_exists(self, workbase, package, target, dataset, kindlibs, build_modes=None):
         '''
@@ -1098,8 +1114,10 @@ class ThirdParty:
                         all_ok = False
         return all_ok
 
+
     def is_invalid_lib(self, libpath):
         return (libpath is None) or (utils.get_filename_no_ext(os.path.basename(libpath)) == magic_invalid_file)
+
 
     def generate_cmakefiles(self, platforms, folder_output, compiler_replace_maps):
         errors = 0
@@ -1110,12 +1128,10 @@ class ThirdParty:
         oldcwd = os.getcwd()
         utils.trymkdir(folder_output)
         with utils.working_directory(folder_output):
-            superpackage = self.get_package_name()
-            superpackage_lower = superpackage.lower()
-            superpackage_upper = superpackage.upper()
-            build_modes = self.get_build_modes()
-            parameters = self.parameters
-            with open('%s-config.cmake' % superpackage_lower, 'wt') as f:
+            package = self.get_package_name()
+            package_lower = package.lower()
+            package_upper = package.upper()
+            with open('%s-config.cmake' % package_lower, 'wt') as f:
                 f.write('''CMAKE_POLICY(PUSH)
 CMAKE_POLICY(VERSION 3.0)
 cmake_minimum_required(VERSION 3.0)
@@ -1123,7 +1139,7 @@ cmake_policy(SET CMP0011 NEW)
                 ''')
 
                 condition = self.generate_cmake_condition(platforms, compiler_replace_maps)
-                if(len(condition) > 0):
+                if len(condition) > 0:
                     f.write('\nif(%s)\n' % condition)
 
                 f.write('''\ninclude(${CMAKI_PATH}/facts/facts.cmake)
@@ -1133,14 +1149,14 @@ file(TO_NATIVE_PATH "${_DIR}/${CMAKI_PLATFORM}" %s_PREFIX)
 set(%s_HOME "${%s_HOME}" PARENT_SCOPE)
 set(%s_PREFIX "${%s_PREFIX}" PARENT_SCOPE)
 include(${_MY_DIR}/${CMAKI_PLATFORM}.cmake)
-                ''' % (superpackage_upper, superpackage_upper, superpackage_upper, superpackage_upper, superpackage_upper, superpackage_upper))
+                ''' % (package_upper, package_upper, package_upper, package_upper, package_upper, package_upper))
 
-                if(len(condition) > 0):
+                if len(condition) > 0:
                     f.write('\nendif()\n')
 
                 f.write('\nCMAKE_POLICY(POP)')
 
-            with open('%s-config-version.cmake' % superpackage_lower, 'wt') as f:
+            with open('%s-config-version.cmake' % package_lower, 'wt') as f:
                 f.write('''\
 cmake_minimum_required(VERSION 3.0)
 cmake_policy(SET CMP0011 NEW)
@@ -1164,13 +1180,13 @@ cmaki_package_version_check()
                         system_depends_set = []
                         depends_set = Set()
 
-                        for package, platform_info in self.get_generator_targets(plat, compiler_c, compiler_cpp, ext_sta, ext_dyn):
+                        for target, platform_info in self.get_generator_targets(plat, compiler_c, compiler_cpp, ext_sta, ext_dyn):
 
-                            package_lower = package.lower()
-                            package_upper = package.upper()
+                            target_lower = target.lower()
+                            target_upper = target.upper()
 
-                            if self.has_library(platform_info) and (package != 'dummy'):
-                                f.write('if(NOT TARGET %s)\n\n' % package_lower)
+                            if self.has_library(platform_info) and (target != 'dummy'):
+                                f.write('if(NOT TARGET %s)\n\n' % target_lower)
 
                             try:
                                 add_3rdparty_dependencies = platform_info['add_3rdparty_dependencies']
@@ -1198,75 +1214,75 @@ cmaki_package_version_check()
                                 for sd in system_depends:
                                     system_depends_set.append(sd)
 
-                            if ('targets_paths' in self.parameters):
+                            if 'targets_paths' in self.parameters:
                                 targets_paths = self.parameters['targets_paths']
                                 for key, value in targets_paths.iteritems():
                                     f.write('file(TO_NATIVE_PATH "%s" %s)\n' % (value, key))
 
-                            if ('executable' in platform_info) and (package != 'dummy'):
+                            if ('executable' in platform_info) and (target != 'dummy'):
                                 # a target in mode executable, dont need install
                                 install_3rdparty_dependencies = False
 
                                 if 'use_run_with_libs' in platform_info:
                                     # if plat.startswith('win'):
                                     if utils.is_windows():
-                                        f.write('file(TO_NATIVE_PATH "${_MY_DIR}/../../run_with_libs.cmd" %s_LAUNCHER)\n' % package_upper)
+                                        f.write('file(TO_NATIVE_PATH "${_MY_DIR}/../../run_with_libs.cmd" %s_LAUNCHER)\n' % target_upper)
                                     else:
-                                        f.write('file(TO_NATIVE_PATH "${_MY_DIR}/../../run_with_libs.sh" %s_LAUNCHER)\n' % package_upper)
+                                        f.write('file(TO_NATIVE_PATH "${_MY_DIR}/../../run_with_libs.sh" %s_LAUNCHER)\n' % target_upper)
 
                                 executable = platform_info['executable']
-                                workbase = os.path.join(oldcwd, workspace, base_folder, plat)
-                                if not self.check_parts_exists(workbase, superpackage, package, executable, [('bin', True)], build_modes=['Release']):
+                                work_base = os.path.join(oldcwd, workspace, base_folder, plat)
+                                if not self.check_parts_exists(work_base, package, target, executable, [('bin', True)], build_modes=['Release']):
                                     errors += 1
-                                release_bin = self.search_library_noexcept(workbase, executable, 'bin')
+                                release_bin = self.search_library_noexcept(work_base, executable, 'bin')
 
                                 for suffix in ['', '_EXECUTABLE']:
                                     if 'use_run_with_libs' in platform_info:
-                                        f.write('set(%s%s "${%s_LAUNCHER}" "${_DIR}/%s/%s" PARENT_SCOPE)\n' % (package_upper, suffix, package_upper, plat, utils.get_norm_path(release_bin, native=False)))
+                                        f.write('set(%s%s "${%s_LAUNCHER}" "${_DIR}/%s/%s" PARENT_SCOPE)\n' % (target_upper, suffix, target_upper, plat, utils.get_norm_path(release_bin, native=False)))
                                     else:
-                                        f.write('set(%s%s "${_DIR}/%s/%s" PARENT_SCOPE)\n' % (package_upper, suffix, plat, utils.get_norm_path(release_bin, native=False)))
-                                    f.write('file(TO_NATIVE_PATH "${%s%s}" %s%s)\n' % (package_upper, suffix, package_upper, suffix))
+                                        f.write('set(%s%s "${_DIR}/%s/%s" PARENT_SCOPE)\n' % (target_upper, suffix, plat, utils.get_norm_path(release_bin, native=False)))
+                                    f.write('file(TO_NATIVE_PATH "${%s%s}" %s%s)\n' % (target_upper, suffix, target_upper, suffix))
                                 f.write('\n')
 
-                            if ('dynamic' in platform_info) and (package != 'dummy'):
+                            if ('dynamic' in platform_info) and (target != 'dummy'):
 
                                 dynamic = platform_info['dynamic']
 
                                 # add depend
                                 if add_3rdparty_dependencies:
-                                    f.write('list(APPEND %s_LIBRARIES %s)\n' % (superpackage_upper, package_lower))
+                                    f.write('list(APPEND %s_LIBRARIES %s)\n' % (package_upper, target_lower))
 
                                 # if plat.startswith('win'):
                                 if utils.is_windows():
-                                    workbase = os.path.join(oldcwd, workspace, base_folder, plat)
-                                    if not self.check_parts_exists(workbase, superpackage, package, dynamic, [('dll', True), ('lib', lib_provided), ('pdb', False)]):
+                                    work_base = os.path.join(oldcwd, workspace, base_folder, plat)
+                                    if not self.check_parts_exists(work_base, package, target, dynamic, [('dll', True), ('lib', lib_provided), ('pdb', False)]):
                                         errors += 1
 
-                                    debug_dll = self.search_library_noexcept(workbase, dynamic, 'dll')
-                                    release_dll = self.search_library_noexcept(workbase, dynamic, 'dll')
-                                    relwithdebinfo_dll = self.search_library_noexcept(workbase, dynamic, 'dll')
-                                    minsizerel_dll = self.search_library_noexcept(workbase, dynamic, 'dll')
+                                    debug_dll = self.search_library_noexcept(work_base, dynamic, 'dll')
+                                    release_dll = self.search_library_noexcept(work_base, dynamic, 'dll')
+                                    relwithdebinfo_dll = self.search_library_noexcept(work_base, dynamic, 'dll')
+                                    minsizerel_dll = self.search_library_noexcept(work_base, dynamic, 'dll')
 
-                                    debug_lib = self.search_library_noexcept(workbase, dynamic, 'lib')
-                                    release_lib = self.search_library_noexcept(workbase, dynamic, 'lib')
-                                    relwithdebinfo_lib = self.search_library_noexcept(workbase, dynamic, 'lib')
-                                    minsizerel_lib = self.search_library_noexcept(workbase, dynamic, 'lib')
+                                    debug_lib = self.search_library_noexcept(work_base, dynamic, 'lib')
+                                    release_lib = self.search_library_noexcept(work_base, dynamic, 'lib')
+                                    relwithdebinfo_lib = self.search_library_noexcept(work_base, dynamic, 'lib')
+                                    minsizerel_lib = self.search_library_noexcept(work_base, dynamic, 'lib')
 
                                     try:
-                                        relwithdebinfo_pdb = self.search_library(workbase, dynamic, 'pdb')
+                                        relwithdebinfo_pdb = self.search_library(work_base, dynamic, 'pdb')
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         relwithdebinfo_pdb = None
 
                                     try:
-                                        debug_pdb = self.search_library(workbase, dynamic, 'pdb')
+                                        debug_pdb = self.search_library(work_base, dynamic, 'pdb')
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         debug_pdb = None
 
-                                    f.write('ADD_LIBRARY(%s SHARED IMPORTED)\n' % package_lower)
-                                    f.write('SET_PROPERTY(TARGET %s APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n' % package_lower)
-                                    f.write('SET_TARGET_PROPERTIES(%s PROPERTIES\n' % package_lower)
+                                    f.write('ADD_LIBRARY(%s SHARED IMPORTED)\n' % target_lower)
+                                    f.write('SET_PROPERTY(TARGET %s APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n' % target_lower)
+                                    f.write('SET_TARGET_PROPERTIES(%s PROPERTIES\n' % target_lower)
 
                                     # dll
                                     f.write('\tIMPORTED_LOCATION_DEBUG "${_DIR}/%s/%s"\n' % (plat, utils.get_norm_path(debug_dll, native=False)))
@@ -1296,46 +1312,46 @@ cmaki_package_version_check()
                                     f.write(')\n')
                                 else:
 
-                                    workbase = os.path.join(oldcwd, workspace, base_folder, plat)
-                                    if not self.check_parts_exists(workbase, superpackage, package, dynamic, [('so', True)]):
+                                    work_base = os.path.join(oldcwd, workspace, base_folder, plat)
+                                    if not self.check_parts_exists(work_base, package, target, dynamic, [('so', True)]):
                                         errors += 1
 
-                                    debug_so = self.search_library_noexcept(workbase, dynamic, 'so')
-                                    release_so = self.search_library_noexcept(workbase, dynamic, 'so')
-                                    relwithdebinfo_so = self.search_library_noexcept(workbase, dynamic, 'so')
-                                    minsizerel_so = self.search_library_noexcept(workbase, dynamic, 'so')
+                                    debug_so = self.search_library_noexcept(work_base, dynamic, 'so')
+                                    release_so = self.search_library_noexcept(work_base, dynamic, 'so')
+                                    relwithdebinfo_so = self.search_library_noexcept(work_base, dynamic, 'so')
+                                    minsizerel_so = self.search_library_noexcept(work_base, dynamic, 'so')
 
                                     try:
-                                        debug_so_full = os.path.join(oldcwd, workbase, debug_so)
+                                        debug_so_full = os.path.join(oldcwd, work_base, debug_so)
                                         debug_soname = utils.get_soname(debug_so_full, env=env_modified)
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         debug_soname = None
 
                                     try:
-                                        release_so_full = os.path.join(oldcwd, workbase, release_so)
+                                        release_so_full = os.path.join(oldcwd, work_base, release_so)
                                         release_soname = utils.get_soname(release_so_full, env=env_modified)
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         release_soname = None
 
                                     try:
-                                        relwithdebinfo_so_full = os.path.join(oldcwd, workbase, relwithdebinfo_so)
+                                        relwithdebinfo_so_full = os.path.join(oldcwd, work_base, relwithdebinfo_so)
                                         relwithdebinfo_soname = utils.get_soname(relwithdebinfo_so_full, env=env_modified)
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         relwithdebinfo_soname = None
 
                                     try:
-                                        minsizerel_so_full = os.path.join(oldcwd, workbase, minsizerel_so)
+                                        minsizerel_so_full = os.path.join(oldcwd, work_base, minsizerel_so)
                                         minsizerel_soname = utils.get_soname(minsizerel_so_full, env=env_modified)
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         minsizerel_soname = None
 
-                                    f.write('ADD_LIBRARY(%s SHARED IMPORTED)\n' % package_lower)
-                                    f.write('SET_PROPERTY(TARGET %s APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n' % package_lower)
-                                    f.write('SET_TARGET_PROPERTIES(%s PROPERTIES\n' % package_lower)
+                                    f.write('ADD_LIBRARY(%s SHARED IMPORTED)\n' % target_lower)
+                                    f.write('SET_PROPERTY(TARGET %s APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n' % target_lower)
+                                    f.write('SET_TARGET_PROPERTIES(%s PROPERTIES\n' % target_lower)
 
                                     # so
                                     f.write('\tIMPORTED_LOCATION_DEBUG "${_DIR}/%s/%s"\n' % (plat, utils.get_norm_path(debug_so, native=False)))
@@ -1359,26 +1375,26 @@ cmaki_package_version_check()
 
                                     f.write(')\n')
 
-                            if ('static' in platform_info) and (package != 'dummy'):
+                            if ('static' in platform_info) and (target != 'dummy'):
 
                                 static = platform_info['static']
 
-                                workbase = os.path.join(oldcwd, workspace, base_folder, plat)
-                                if not self.check_parts_exists(workbase, superpackage, package, static, [('lib', True)]):
+                                work_base = os.path.join(oldcwd, workspace, base_folder, plat)
+                                if not self.check_parts_exists(work_base, package, target, static, [('lib', True)]):
                                     errors += 1
 
-                                debug_lib = self.search_library_noexcept(workbase, static, 'lib')
-                                release_lib = self.search_library_noexcept(workbase, static, 'lib')
-                                relwithdebinfo_lib = self.search_library_noexcept(workbase, static, 'lib')
-                                minsizerel_lib = self.search_library_noexcept(workbase, static, 'lib')
+                                debug_lib = self.search_library_noexcept(work_base, static, 'lib')
+                                release_lib = self.search_library_noexcept(work_base, static, 'lib')
+                                relwithdebinfo_lib = self.search_library_noexcept(work_base, static, 'lib')
+                                minsizerel_lib = self.search_library_noexcept(work_base, static, 'lib')
 
                                 if add_3rdparty_dependencies:
                                     # register target
-                                    f.write('list(APPEND %s_LIBRARIES %s)\n' % (superpackage_upper, package_lower))
+                                    f.write('list(APPEND %s_LIBRARIES %s)\n' % (package_upper, target_lower))
 
-                                f.write('ADD_LIBRARY(%s STATIC IMPORTED)\n' % package_lower)
-                                f.write('SET_PROPERTY(TARGET %s APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n' % package_lower)
-                                f.write('SET_TARGET_PROPERTIES(%s PROPERTIES\n' % package_lower)
+                                f.write('ADD_LIBRARY(%s STATIC IMPORTED)\n' % target_lower)
+                                f.write('SET_PROPERTY(TARGET %s APPEND PROPERTY IMPORTED_CONFIGURATIONS DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n' % target_lower)
+                                f.write('SET_TARGET_PROPERTIES(%s PROPERTIES\n' % target_lower)
 
                                 # lib
                                 f.write('\tIMPORTED_LOCATION_DEBUG "${_DIR}/%s/%s"\n' % (plat, utils.get_norm_path(debug_lib, native=False)))
@@ -1388,31 +1404,29 @@ cmaki_package_version_check()
 
                                 f.write(')\n')
 
-                            if install_3rdparty_dependencies and (package != 'dummy'):
-                                f.write('cmaki_install_3rdparty(%s)\n' % package_lower)
+                            if install_3rdparty_dependencies and (target != 'dummy'):
+                                f.write('cmaki_install_3rdparty(%s)\n' % target_lower)
                             f.write('\n')
 
-                            if self.has_library(platform_info) and (package != 'dummy'):
+                            if self.has_library(platform_info) and (target != 'dummy'):
                                 f.write('endif()\n\n')
 
                         # print includes
                         if len(includes_set) > 0:
                             for d in list(set(includes_set)):
-                                f.write('list(APPEND %s_INCLUDE_DIRS ${_DIR}/%s)\n' % (superpackage_upper, d))
+                                f.write('list(APPEND %s_INCLUDE_DIRS ${_DIR}/%s)\n' % (package_upper, d))
 
                             f.write('\n')
 
                         if len(definitions_set) > 0:
-                            # TODO: remove repeats
                             for d in list(set(definitions_set)):
                                 f.write('add_definitions(%s)\n' % d)
                             f.write('\n')
 
                         if len(system_depends_set) > 0:
-                            # TODO: remove repeats
                             f.write('# begin system depends\n')
                             for sd in list(set(system_depends_set)):
-                                f.write('list(APPEND %s_LIBRARIES %s)\n' % (superpackage_upper, sd))
+                                f.write('list(APPEND %s_LIBRARIES %s)\n' % (package_upper, sd))
                             f.write('# end system depends\n')
 
                         if self.get_generate_find_package():
@@ -1434,6 +1448,7 @@ cmaki_package_version_check()
 
         return errors
 
+
     def show_environment_vars(self, env_modified):
         package = self.get_package_name()
         logging.debug('------- begin print environment variables for compile %s ---------' % package)
@@ -1441,11 +1456,13 @@ cmaki_package_version_check()
             logging.debug("%s=%s" % (key, value))
         logging.debug('------- end print environment variables for compile %s -----------' % package)
 
+
     def get_first_environment(self, compiler_replace_maps):
         for plat in platforms:
             for _, _, _, _, _, env_modified, _ in self.compiler_iterator(plat, compiler_replace_maps):
                 return env_modified
         return os.environ.copy()
+
 
     def safe_system(self, cmd, compiler_replace_maps):
         return utils.safe_system(cmd, env=self.get_first_environment(compiler_replace_maps))

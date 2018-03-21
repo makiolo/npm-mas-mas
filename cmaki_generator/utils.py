@@ -24,14 +24,17 @@ except ImportError:
     logging.debug('python module bz2 built-in is not available')
     python_has_bz2 = False
 
+
 class NotFoundProgram(Exception):
     def __init__(self, msg):
         self._msg = msg
     def __repr__(self):
         return "%s" % self._msg
 
+
 def is_windows():
     return sys.platform.startswith("win")
+
 
 def smart_merge(dict1, dict2):
     assert(dict1 is not None)
@@ -50,6 +53,7 @@ def smart_merge(dict1, dict2):
         else:
             dict1[key] = value
     return dict1
+
 
 def apply_replaces(element, dictionary):
     if isinstance(element, dict):
@@ -74,6 +78,7 @@ def apply_replaces(element, dictionary):
     else:
         return None
 
+
 def apply_replaces_vars(element, dictionary):
     newdict = {}
     for k,v in dictionary.iteritems():
@@ -81,12 +86,14 @@ def apply_replaces_vars(element, dictionary):
         newdict['${%s}' % k] = v
     return apply_replaces(element, newdict)
 
+
 def tryremove(filename):
     try:
         logging.debug('Removing file %s' % (filename))
         os.remove(filename)
     except OSError:
         pass
+
 
 def _tryremove_dir(directory):
     i = 0
@@ -105,6 +112,7 @@ def _tryremove_dir(directory):
         finally:
             i += 1
 
+
 def tryremove_dir(source):
     logging.debug('Removing directory %s' % (source))
     if sys.platform.startswith('win'):
@@ -113,6 +121,7 @@ def tryremove_dir(source):
     else:
         _tryremove_dir(source)
 
+
 def tryremove_dir_empty(source):
     try:
         os.rmdir(source)
@@ -120,8 +129,10 @@ def tryremove_dir_empty(source):
         if ex.errno != errno.ENOTEMPTY:
             logging.debug('Removing empty directory %s' % (source))
 
+
 def download_from_url(url, filename):
     urllib.urlretrieve(url, filename=filename)
+
 
 def setup_logging(level, logname):
     format_console_log = '%(asctime)s %(levelname)-7s %(message)s'
@@ -142,6 +153,7 @@ def setup_logging(level, logname):
     handler2.setFormatter(logging.Formatter(format_console_log, format_date))
     logger.addHandler(handler2)
 
+
 def prompt_yes_no(default = False):
     # raw_input returns the empty string for "enter"
     yes = set(['yes','y', 'ye', ''])
@@ -156,6 +168,7 @@ def prompt_yes_no(default = False):
         sys.stdout.write("Please respond with 'yes' or 'no'")
     return default
 
+
 def show_element(element, deep = 0):
     if isinstance(element, dict):
         for k,v in element.iteritems():
@@ -166,6 +179,7 @@ def show_element(element, deep = 0):
             show_element(e, deep + 1)
     else:
         logging.info('%s%s' % ('\t'*deep, element))
+
 
 def _rec_glob(result, rootdir, pattern, deep_max, exclusions, deep):
     if(os.path.isdir(rootdir)):
@@ -183,14 +197,17 @@ def _rec_glob(result, rootdir, pattern, deep_max, exclusions, deep):
                 # process file
                 result.append( os.path.abspath(fullpath) )
 
+
 def rec_glob(rootdir, pattern, deep_max=99, exclusions=[]):
     result = []
     _rec_glob(result, rootdir, pattern, deep_max, exclusions, 0)
     return result
 
+
 def trymkdir(directory):
     if not os.path.exists( directory ):
         os.makedirs( directory )
+
 
 def move_folder_recursive(source, destiny):
     if not os.path.exists(source):
@@ -213,6 +230,7 @@ def move_folder_recursive(source, destiny):
             # move file
             shutil.move(archive2, destiny2)
 
+
 def copy_folder_recursive(source, destiny):
     if not os.path.exists(source):
         raise Exception('Error in copy_folder_recursive: source not exists: %s' % source)
@@ -232,6 +250,7 @@ def copy_folder_recursive(source, destiny):
             trymkdir( os.path.dirname(destiny2) )
             # copy file (and stat)
             shutil.copy2(archive2, destiny2)
+
 
 def extract_file(path, to_directory, environment):
 
@@ -299,9 +318,11 @@ def extract_file(path, to_directory, environment):
             file.close()
     return True
 
+
 # Copy Paste from run_tests (handler.py)
 def detect_ncpus():
     return multiprocessing.cpu_count()
+
 
 def get_norm_path(pathfile, native=True):
     if native and is_windows():
@@ -309,8 +330,10 @@ def get_norm_path(pathfile, native=True):
     else:
         return pathfile.replace('\\', '/')
 
+
 def get_filename_no_ext(filename):
     return os.path.splitext(filename)[0]
+
 
 def get_soname(libfile, env=os.environ.copy()):
 
@@ -324,6 +347,7 @@ def get_soname(libfile, env=os.environ.copy()):
             return line.split()[1]
     raise Exception('No soname detected in %s' % libfile)
 
+
 def get_needed(libfile, env=os.environ.copy()):
 
     if is_windows():
@@ -334,6 +358,7 @@ def get_needed(libfile, env=os.environ.copy()):
     for line in get_stdout(cmd, env, 'objdump'):
         if line.find('NEEDED') != -1:
             yield line.split()[1]
+
 
 def get_real_home():
     if sys.platform.startswith("sun"):
@@ -347,6 +372,7 @@ def get_real_home():
     else:
         return os.path.expanduser('~')
 
+
 @contextlib.contextmanager
 def working_directory(path):
     prev_cwd = os.getcwd()
@@ -355,6 +381,7 @@ def working_directory(path):
         yield
     finally:
         os.chdir(prev_cwd)
+
 
 def walklevel(some_dir, level=1):
     '''
@@ -371,6 +398,7 @@ def walklevel(some_dir, level=1):
         num_sep_this = root.count(os.path.sep)
         if num_sep + level <= num_sep_this:
             del dirs[:]
+
 
 def get_revision_svn(repo, path_svn='svn', env=os.environ.copy()):
     '''
@@ -400,17 +428,21 @@ def get_revision_svn(repo, path_svn='svn', env=os.environ.copy()):
                         return int(line[len(separator):])
     return -1
 
+
 def verbose(parameters, msg):
     if parameters.verbose > 0:
         logging.info(msg)
+
 
 def superverbose(parameters, msg):
     if parameters.verbose > 1:
         logging.info(msg)
 
+
 def hyperverbose(parameters, msg):
     if parameters.verbose > 2:
         logging.info(msg)
+
 
 def md5sum(filename, blocksize=65536):
     hash = hashlib.md5()
@@ -419,31 +451,38 @@ def md5sum(filename, blocksize=65536):
             hash.update(block)
     return hash.hexdigest()
 
+
 def serialize(pythonDict, fileName):
     serialize_json(pythonDict, fileName)
 
+
 def deserialize(fileName):
     return deserialize_json(fileName)
+
 
 def serialize_yaml(pythonDict, fileName):
     serialiedData = yaml.dump(pythonDict, default_flow_style=True)
     with open(fileName, 'wt') as f:
         f.write(serialiedData)
 
+
 def deserialize_yaml(fileName):
     with open(fileName, 'rt') as f:
         stringData = f.read()
     return yaml.load(stringData)
+
 
 def serialize_json(pythonDict, fileName):
     serialiedData = json.dumps(pythonDict)
     with open(fileName, 'wt') as f:
         f.write(serialiedData)
 
+
 def deserialize_json(fileName):
     with open(fileName, 'rt') as f:
         stringData = f.read()
     return json.loads(stringData)
+
 
 def get_stdout(cmd, env=os.environ.copy(), program_required=None):
     if isinstance(cmd, list):
@@ -464,21 +503,6 @@ def get_stdout(cmd, env=os.environ.copy(), program_required=None):
     else:
         raise NotFoundProgram('Not found program %s, for execute: %s' % (program_required, cmd))
 
-# def safe_system(cmd, env=os.environ.copy(), log=False):
-#     logging.debug("exec command: %s" % cmd)
-#     p = subprocess.Popen(cmd, shell=True, stdout = subprocess.PIPE, stderr = subprocess.STDOUT, universal_newlines=True, env=env)
-#     data, err = p.communicate()
-#     data = [line for line in data.split('\n')]
-#     if p.returncode != 0:
-#         logging.error("begin@output: %s" % cmd)
-#     for line in data:
-#         if (p.returncode != 0) or log:
-#             logging.warning(line)
-#         else:
-#             logging.debug(line)
-#     if p.returncode != 0:
-#         logging.error("end@output: %s" % cmd)
-#     return p.returncode
 
 def safe_system(cmd, env=None):
     if env is None:
