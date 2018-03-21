@@ -161,20 +161,26 @@ class ThirdParty:
         self.blacklisted = is_blacklisted(self.user_parameters.blacklist, self.user_parameters.no_blacklist, self.get_package_name())
         self.published_invalidation = False
 
+
     def __hash__(self):
         return hash((self.get_package_name(), self.get_priority(), self.get_mask()))
+
 
     def __eq__(self, other):
         return (self.get_package_name() == other.get_package_name()) and (self.get_priority() == other.get_priority()) and (self.get_mask() == other.get_mask())
 
+
     def __ne__(self, other):
         return not self.__eq__(other)
+
 
     def __repr__(self):
         return "%s (%s)" % (self.get_package_name(), self.get_mask())
 
+
     def __str__(self):
         return "%s (%s)" % (self.get_package_name(), self.get_mask())
+
 
     def get_uncompress_strip(self, pos = 0):
         try:
@@ -186,6 +192,7 @@ class ThirdParty:
             # default value
             return uncompress_strip_default
 
+
     def get_uncompress_prefix(self, pos = 0):
         try:
             if isinstance(self.parameters['uncompress_prefix'], list):
@@ -195,6 +202,7 @@ class ThirdParty:
         except KeyError:
             # default value
             return uncompress_prefix_default
+
 
     def get_uncompress(self, pos = 0):
         try:
@@ -278,11 +286,13 @@ class ThirdParty:
             filename = source.split('/')[-1]
             return filename
 
+
     def get_sources_all(self, position=0):
         try:
             return self.parameters['sources_all']
         except KeyError:
             return False
+
 
     def get_before_copy(self):
         try:
@@ -290,6 +300,7 @@ class ThirdParty:
         except KeyError:
             # default value
             return []
+
 
     def get_short_path(self):
         try:
@@ -301,7 +312,7 @@ class ThirdParty:
 
     def has_library(self, platform_info):
         package = self.get_package_name()
-        return ((('static' in platform_info) and (package != 'dummy')) or (('dynamic' in platform_info) and (package != 'dummy')))
+        return (('static' in platform_info) and (package != 'dummy')) or (('dynamic' in platform_info) and (package != 'dummy'))
 
 
     def needs(self, node):

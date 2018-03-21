@@ -8,6 +8,7 @@ from third_party import build_unittests_foldername
 from itertools import product
 from third_party import prefered
 
+
 def prepare(node, parameters, compiler_replace_maps):
 
     package = node.get_package_name()
@@ -46,9 +47,7 @@ def prepare(node, parameters, compiler_replace_maps):
     build_modes = node.get_build_modes()
     for plat, build_mode in product(platforms, build_modes):
         logging.info('Preparing mode %s - %s' % (plat, build_mode))
-        workspace = node.get_workspace(plat)
         build_directory = os.path.join(os.getcwd(), node.get_build_directory(plat, build_mode))
-        install_base_directory = os.path.join(os.getcwd(), workspace, node.get_base_folder())
         utils.trymkdir(build_directory)
 
         # download source and prepare in build_directory
@@ -62,7 +61,7 @@ def prepare(node, parameters, compiler_replace_maps):
         with utils.working_directory(build_directory):
             for bc in node.get_before_copy():
                 chunks = [x.strip() for x in bc.split(' ') if x]
-                if(len(chunks) != 2):
+                if len(chunks) != 2:
                     raise Exception('Invalid value in before_copy: %s' % bc)
                 logging.debug('Copy "%s" to "%s"' % (chunks[0], chunks[1]))
                 shutil.copy2(chunks[0], chunks[1])

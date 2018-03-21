@@ -27,7 +27,6 @@ def packing(node, parameters, compiler_replace_maps):
             logging.info('[git] Renamed version from %s to %s' % (version_old, version_git))
 
             # renombrar package-version-platform/package-version
-
             workspace = node.get_workspace(plat)
             source_folder = node.get_base_folder()
             oldversion = node.get_version()

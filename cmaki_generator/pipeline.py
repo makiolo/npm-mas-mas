@@ -8,15 +8,18 @@ from third_party import exceptions_fail_group
 from third_party import exceptions_fail_program
 from third_party import FailThirdParty
 
+
 def make_pipe():
     def process():
         pass
     return process
 
+
 def end_pipe():
     def process(p):
         _ = list(p)
     return process
+
 
 def _create():
     b = make_pipe()
@@ -24,17 +27,20 @@ def _create():
     end_pipe()(e)
     yield
 
+
 @contextlib.contextmanager
 def create():
     c = _create()
     p = next(c)
     yield (p, c)
 
+
 def feed(packages):
     def process(_):
         for node in packages:
             yield node
     return process
+
 
 def do(function, force, *args, **kwargs):
     '''
@@ -118,10 +124,12 @@ def do(function, force, *args, **kwargs):
 
 ####################### PIPELINE PROOF CONCEPT (UNDER CODE IS NOT USED) ###############
 
+
 def echo(line):
     def process(_):
         yield line
     return process
+
 
 def cat():
     def process(p):
@@ -134,6 +142,7 @@ def cat():
                 logging.warning('<cat> filename %s not exists' % line)
     return process
 
+
 def find(folder, level=999):
     def process(_):
         for root, dirs, files in utils.walklevel(folder, level):
@@ -141,12 +150,14 @@ def find(folder, level=999):
                     yield os.path.join(root, name)
     return process
 
+
 def grep(pattern):
     def process(p):
         for line in p:
             if line.find(pattern) != -1:
                 yield line
     return process
+
 
 def grep_basename(pattern):
     def process(p):
@@ -165,6 +176,7 @@ def grep_basename(pattern):
                     yield line.replace('\\', '/')
     return process
 
+
 def grep_v(pattern):
     def process(p):
         for line in p:
@@ -172,12 +184,14 @@ def grep_v(pattern):
                 yield line
     return process
 
+
 def endswith(pattern):
     def process(p):
         for line in p:
             if line.endswith(pattern):
                 yield line
     return process
+
 
 def copy(rootdir, folder):
     def process(p):
@@ -190,12 +204,14 @@ def copy(rootdir, folder):
             yield destiny
     return process
 
+
 def startswith(pattern):
     def process(p):
         for line in p:
             if line.startswith(pattern):
                 yield line
     return process
+
 
 def printf(prefix = ''):
     def process(p):
@@ -204,12 +220,14 @@ def printf(prefix = ''):
             yield line
     return process
 
+
 def debug(prefix = ''):
     def process(p):
         for line in p:
             logging.debug("%s%s" % (prefix, line.rstrip()))
             yield line
     return process
+
 
 def write_file(filename, mode='wt'):
     def process(p):
@@ -223,6 +241,7 @@ def write_file(filename, mode='wt'):
             yield line
     return process
 
+
 def tee(filename):
     def process(p):
         p = printf()(p)
@@ -230,6 +249,7 @@ def tee(filename):
         for line in p:
             yield line
     return process
+
 
 def example_context():
     # using context
@@ -240,6 +260,7 @@ def example_context():
         p = tee('result.txt')(p)
         # send last part
         finisher.send(p)
+
 
 def example_simple():
     # not using context
@@ -254,4 +275,3 @@ def example_simple():
 
 if __name__ == '__main__':
     example_simple()
-

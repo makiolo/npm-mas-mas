@@ -4,7 +4,6 @@ import utils
 import time
 from datetime import datetime
 from utils import get_stdout
-# be careful: ignore tz
 from email.utils import parsedate
 
 
@@ -93,7 +92,7 @@ def get_position_git_from_changeset(repo, changeset):
         for line in reversed(lines):
             if line.startswith('commit'):
                 parts = line.split(' ')
-                if(len(parts) == 2):
+                if len(parts) == 2:
                     commit_name = parts[1]
                     if commit_name == changeset:
                         return i
@@ -134,7 +133,6 @@ def to_cmaki_version(repo, changeset):
     '''
     git hash ----> 0.0.x.x
     '''
-    # position = get_position_git_from_changeset(repo, changeset)
     position = get_timestamp_from_changeset(repo, changeset)
     hash_simple = rehash_simple(changeset, position)
     versions = []
@@ -153,10 +151,8 @@ def to_git_version(repo, version):
     assert(len(version) == 4)
     position = int(version[2])
     pseudohash = int(version[3])
-    # changeset = get_changeset_git_from_position(repo, position=position)
     changeset = get_changeset_from_timestamp(repo, position)
     hash_simple = rehash_simple(changeset, position)
-    # assert( get_position_git_from_changeset(repo, changeset) == position )
     assert( get_timestamp_from_changeset(repo, changeset) == position )
     assert( hash_simple == pseudohash )
     return changeset

@@ -37,7 +37,7 @@ def compilation(node, parameters, compiler_replace_maps):
     cmake3p_dir = utils.get_norm_path(cmake3p_dir)
     cmake3p_dir = cmake3p_dir.replace('\\', '/')
 
-    cmakelib_dir = search_cmakelib()
+    cmakefiles_dir = search_cmakelib()
 
     package_upper = node.get_package_name_norm_upper()
     parms = node.parameters
@@ -94,7 +94,7 @@ def compilation(node, parameters, compiler_replace_maps):
                 env_modified['BUILD_MODE'] = str(build_mode)
                 env_modified['HTTP_URL_NPSERVER'] = HTTP_URL_NPSERVER
                 env_modified['SOURCES'] = os.path.abspath(os.path.join('..', node.get_download_directory()))
-                env_modified['CMAKI_DIR'] = cmakelib_dir
+                env_modified['CMAKI_DIR'] = cmakefiles_dir
                 env_modified['SELFHOME'] = install_directory
 
                 #################
@@ -116,8 +116,8 @@ def compilation(node, parameters, compiler_replace_maps):
                 if generator is not None:
                     generator_extra = '-G"%s"' % generator
 
-                cmakelib_dir = parameters.cmakefiles
-                cmakelib_dir = cmakelib_dir.replace('\\', '/')
+                cmakefiles_dir = parameters.cmakefiles
+                cmakefiles_dir = cmakefiles_dir.replace('\\', '/')
 
                 cmake_prefix_path = parameters.third_party_dir
                 cmake_prefix_path = cmake_prefix_path.replace('\\', '/')
@@ -164,13 +164,13 @@ def compilation(node, parameters, compiler_replace_maps):
                     cmake_toolchain_file_filepath=' -DCMAKE_TOOLCHAIN_FILE="{}"'.format(env_modified['CMAKE_TOOLCHAIN_FILE'])
 
                 cmake_prefix = node.get_cmake_prefix()
-                cmake_configure = 'cmake %s %s -DARTIFACTS_PATH="%s" -DCMAKE_MODULE_PATH=%s -DCMAKI_PATH=%s -DCMAKE_BUILD_TYPE=%s -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH=%s -DPACKAGE=%s -DPACKAGE_UPPER=%s -DPACKAGE_VERSION=%s -DPACKAGE_BUILD_DIRECTORY=%s -DCMAKI_COMPILER=%s -DCMAKI_PLATFORM=%s %s %s' % (generator_extra, cmake_prefix, artifacts_dir, cmakelib_dir, cmakelib_dir, build_mode, cmake_prefix_path, package, package_upper, version, build_directory, get_identifier('COMPILER'), get_identifier('ALL'), definitions_extra, cmake_toolchain_file_filepath)
+                cmake_configure = 'cmake %s %s -DARTIFACTS_PATH="%s" -DCMAKE_MODULE_PATH=%s -DCMAKI_PATH=%s -DCMAKE_BUILD_TYPE=%s -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH=%s -DPACKAGE=%s -DPACKAGE_UPPER=%s -DPACKAGE_VERSION=%s -DPACKAGE_BUILD_DIRECTORY=%s -DCMAKI_COMPILER=%s -DCMAKI_PLATFORM=%s %s %s' % (generator_extra, cmake_prefix, artifacts_dir, cmakefiles_dir, cmakefiles_dir, build_mode, cmake_prefix_path, package, package_upper, version, build_directory, get_identifier('COMPILER'), get_identifier('ALL'), definitions_extra, cmake_toolchain_file_filepath)
 
                 target = node.get_cmake_target()
                 if target is not None:
                     cmake_build = 'cmake --build . --target %s --config %s' % (target, build_mode)
                 else:
-                    cmake_build = 'cmake --build . --config %s' % (build_mode)
+                    cmake_build = 'cmake --build . --config %s' % build_mode
 
                 env_modified['CMAKE_CONFIGURE'] = cmake_configure.replace(r'"', r"'")
                 env_modified['CMAKE_BUILD'] = cmake_build.replace(r'"', r"'")
@@ -187,8 +187,6 @@ def compilation(node, parameters, compiler_replace_maps):
                 else:
                     for build_script in ['.build.sh', 'build.sh']:
                         if os.path.exists(build_script):
-                            with open(build_script, 'r') as f:
-                                content = f.read()
 
                             # show vars
                             node.show_environment_vars(env_modified)
