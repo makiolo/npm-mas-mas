@@ -89,8 +89,8 @@ def search_fuzzy(data, fuzzy_key, fallback='default'):
 
 
 if 'MODE' not in os.environ:
-    logging.warning('Using Release by default. For explicit use, define environment var MODE')
-    os.environ['MODE'] = 'Release'
+    logging.warning('Using Debug by default. For explicit use, define environment var MODE')
+    os.environ['MODE'] = 'Debug'
 
 if 'CMAKI_INSTALL' not in os.environ:
     logging.warning('Using CMAKI_INSTALL by default. For explicit use, define environment var CMAKI_INSTALL')
