@@ -3,6 +3,8 @@
     version: 2.0.8.0
     source: https://www.libsdl.org/release/SDL2-2.0.8.tar.gz
     uncompress_strip: SDL2-2.0.8
+    # uncompress_prefix: build
+    # cmake_prefix: build/CMakeLists.txt
     depends:
         - dune-glew
     mode: dr
@@ -34,6 +36,7 @@
             #!/bin/bash
             source $(pwd)/../sdl2/find.script
             export SDL2_CONFIG=$sdl2_HOME/bin/sdl2-config
+            ./autogen.sh
             ./configure --prefix=$SELFHOME --with-sdl2=$sdl2_HOME && make -j12 && make install
             exit $?
     targets:
