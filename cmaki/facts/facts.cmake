@@ -15,7 +15,6 @@ IF(NOT DEFINED ARTIFACTS_PATH)
 ENDIF()
 
 IF(NOT DEFINED DEPENDS_PATHFILE)
-	# rename to ".cmaki.yml" ?
 	set(DEPENDS_PATHFILE ${CMAKI_PATH}/../../../artifacts.json)
 ENDIF()
 

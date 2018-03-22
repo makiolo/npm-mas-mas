@@ -12,18 +12,8 @@ export CMAKI_PWD="${CMAKI_PWD:-$(pwd)}"
 export CMAKI_INSTALL="${CMAKI_INSTALL:-$CMAKI_PWD/bin}"
 export CMAKI_EMULATOR="${CMAKI_EMULATOR:-}"
 
-# 
-# echo "DIRPROGRAM = $DIRPROGRAM"
-# echo "CMAKI_PWD = $CMAKI_PWD"
-# echo "CMAKI_INSTALL = $CMAKI_INSTALL"
-# echo "CMAKI_EMULATOR = $CMAKI_EMULATOR"
-# echo "BASENAMEPROGRAM = $BASENAMEPROGRAM"
-# 
+cd ${DIRPROGRAM}
 
-# TODO: dont use identification based in docker image
-# avoid acoplation with docker here
-
-cd $DIRPROGRAM
 if [[ "$DEFAULT_DOCKCROSS_IMAGE" = "makiolo/windows-x86" ]]; then
 	wine ./$BASENAMEPROGRAM "${@:2}"
 elif [[ "$DEFAULT_DOCKCROSS_IMAGE" = "makiolo/windows-x64" ]]; then

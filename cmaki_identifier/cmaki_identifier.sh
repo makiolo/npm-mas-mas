@@ -12,4 +12,3 @@ if [ -f "cmaki_identifier.exe" ]; then
 else
 	$DIRSCRIPT/cmaki_emulator.sh $CMAKI_INSTALL/cmaki_identifier
 fi
-
