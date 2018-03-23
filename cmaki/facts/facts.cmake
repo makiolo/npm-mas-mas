@@ -127,6 +127,7 @@ function(cmaki_find_package)
 	# Otra opcion es enviar todos los ficheros de cmake de todas las versiones
 	set(package_cmake_uncompressed_file "${depends_dir}/${PACKAGE}-${VERSION}-cmake.tmp")
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
+	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
 	set(DOWNLOADED FALSE)
 	###
 	# message("marca2: ${package_marker}")
@@ -228,7 +229,7 @@ function(cmaki_find_package)
 		endif()
 
 	# lo tengo, y solo es descomprimirlo
-	elseif(EXISTS "${package_cmake_uncompressed_file}")
+	elseif(EXISTS "${package_cmake_uncompressed_file}" AND NOT EXISTS "${package_marker}")
 
 		message("-- only uncompress")
 		################
