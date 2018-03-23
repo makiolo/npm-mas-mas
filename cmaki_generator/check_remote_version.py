@@ -139,6 +139,7 @@ if __name__ == '__main__':
     """
     if parameters.artifacts is not None:
         # local
+        basename = None
         for path in os.listdir(parameters.artifacts):
             full_path = os.path.join(parameters.artifacts, path)
             terminator = '-cmake.tar.gz'
@@ -149,14 +150,15 @@ if __name__ == '__main__':
                 terminator = '-%s-cmake.tar.gz' % parameters.platform
                 basename = os.path.basename(full_path)
         try:
-            separator = basename.rindex(terminator)
-            basename = basename[:separator]
-            separator = basename.rindex('-')
-            package_name = basename[:separator]
-            package_version =  basename[separator+1:]
-            new_package = package(package_name, package_version, True)
-            if new_package == package_request:
-                packages_found.append(new_package)
+            if basename is not None:
+                separator = basename.rindex(terminator)
+                basename = basename[:separator]
+                separator = basename.rindex('-')
+                package_name = basename[:separator]
+                package_version =  basename[separator+1:]
+                new_package = package(package_name, package_version, True)
+                if new_package == package_request:
+                    packages_found.append(new_package)
         except ValueError:
             # not found platform in file
             pass
