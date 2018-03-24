@@ -1438,17 +1438,17 @@ cmaki_package_version_check()
                                 f.write('list(APPEND %s_LIBRARIES %s)\n' % (package_upper, sd))
                             f.write('# end system depends\n')
 
-                        if self.get_generate_find_package():
-                            f.write('# Depends of %s (%s)\n' % (self.get_package_name(), self.get_version()))
-                            for dep in self.get_depends_raw():
-                                package_name = dep.get_package_name()
-                                if package_name not in depends_set:
-                                    if dep.have_any_in_target(plat, 'dynamic', compiler_replace_maps):
-                                        f.write('cmaki_find_package(%s)\n' % (package_name))
-                                    else:
-                                        f.write('# cmaki_find_package(%s) # static package\n' % (package_name))
-                                    depends_set.add(package_name)
-                            f.write('\n')
+                        # if self.get_generate_find_package():
+                        #     f.write('# Depends of %s (%s)\n' % (self.get_package_name(), self.get_version()))
+                        #     for dep in self.get_depends_raw():
+                        #         package_name = dep.get_package_name()
+                        #         if package_name not in depends_set:
+                        #             if dep.have_any_in_target(plat, 'dynamic', compiler_replace_maps):
+                        #                 f.write('cmaki_find_package(%s)\n' % (package_name))
+                        #             else:
+                        #                 f.write('# cmaki_find_package(%s) # static package\n' % (package_name))
+                        #             depends_set.add(package_name)
+                        #     f.write('\n')
 
                 logging.info('----------------------------------------------------')
                 if self.user_parameters.fast:
