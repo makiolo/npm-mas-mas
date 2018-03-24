@@ -151,12 +151,12 @@ function(cmaki_find_package)
 
 	foreach(DEP ${DEPENDS_PACKAGES})
 		if(PACKAGE STREQUAL "${DEP}")
-			message(" XXXXXXXXXXXXXXXXXXXXXXXXXXX ${DEP}")
+			message("-- skip: ${DEP}")
 		else()
-			message(" --------------------------- ${DEP}")
+			message("-- cmaki_find_package: ${DEP}")
+			cmaki_find_package("${DEP}")
 		endif()
 	endforeach()
-
 
 	if(NOT "${COPY_SUCCESFUL}")
 		message("fail download")
@@ -176,10 +176,10 @@ function(cmaki_find_package)
 		# pero queremos que evite compilar cosas que estan en cache remota
 		#
 		###
-		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests")
+		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -o")
 		###
 		execute_process(
-			COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests
+			COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -o
 			WORKING_DIRECTORY "${ARTIFACTS_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
