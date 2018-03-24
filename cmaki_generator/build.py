@@ -264,7 +264,7 @@ usage:""")
                             help='name (or list names) third party')
     group_main.add_argument('--plan', '--dry-run', dest='plan', action='store_true',
                             help='Show packages plan (like a dry-run)', default=False)
-    group_main.add_argument('--server', dest='server', help='artifact server', default='http://192.168.0.4:8080')
+    group_main.add_argument('--server', dest='server', help='artifact server', default='http://artifacts.myftp.biz')
     group_main.add_argument('--no-back-yaml', dest='no_back_yaml', action='store_true', help='no search back yaml',
                             default=False)
     group_layer = group_main.add_mutually_exclusive_group()
