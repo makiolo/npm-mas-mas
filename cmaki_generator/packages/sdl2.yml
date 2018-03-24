@@ -3,8 +3,6 @@
     version: 2.0.8.0
     source: https://www.libsdl.org/release/SDL2-2.0.8.tar.gz
     uncompress_strip: SDL2-2.0.8
-    # uncompress_prefix: build
-    # cmake_prefix: build/CMakeLists.txt
     depends:
         - dune-glew
     mode: dr
@@ -13,12 +11,6 @@
             info:
                 <<: *library_dynamic_exact
             extra:
-                win32:
-                    include:
-                        - include/SDL2
-                win64:
-                    include:
-                        - include/SDL2
                 default:
                     include:
                         - include/SDL2
@@ -44,12 +36,6 @@
             info:
                 <<: *library_dynamic_exact
             extra:
-                win32:
-                    include:
-                        - include/SDL2
-                win64:
-                    include:
-                        - include/SDL2
                 default:
                     include:
                         - include/SDL2
