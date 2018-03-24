@@ -585,7 +585,7 @@ if __name__ == '__main__':
                 for node in packages:
                     sys.stdout.write("%s" % node.get_package_name())
                     if ((len(packages)-1) != j):
-                        sys.stdout.write(" ")
+                        sys.stdout.write(";")
                     j += 1
                 sys.stdout.write('\n')
             else:

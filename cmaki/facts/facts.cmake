@@ -147,8 +147,10 @@ function(cmaki_find_package)
 		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
 		OUTPUT_VARIABLE DEPENDS_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-	message(" ------------------------------ ${DEPENDS_PACKAGES}")
 
+	foreach(DEP ${DEPENDS_PACKAGES})
+		message(" ------------------------------ ${DEP}")
+	endforeach()
 
 
 	if(NOT "${COPY_SUCCESFUL}")
