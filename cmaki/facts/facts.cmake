@@ -145,7 +145,9 @@ function(cmaki_find_package)
 	execute_process(
 		COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
 		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
-		RESULT_VARIABLE artifacts_result)
+		OUTPUT_VARIABLE DEPENDS_PACKAGES
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	message(" ------------------------------ ${DEPENDS_PACKAGES}")
 
 
 
