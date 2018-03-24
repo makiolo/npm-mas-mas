@@ -127,9 +127,10 @@ function(cmaki_find_package)
 	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cmake")
 	set(package_cmake_abspath "${depends_dir}/${package_cmake_filename}")
 
+	set(COPY_SUCCESFUL FALSE)
 	IF(EXISTS "${package_cmake_abspath}")
 		message("-- reusing cmake file ${package_cmake_abspath}")
-		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
+		set(COPY_SUCCESFUL TRUE)
 	else()
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
 		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_abspath}")
@@ -138,6 +139,12 @@ function(cmaki_find_package)
 		else()
 			message("WARN: no using cache remote for: ${PACKAGE}")
 		endif()
+	endif()
+
+	if(NOT "${COPY_SUCCESFUL}")
+		message("fail download")
+	else
+		message("reused or downloaded")
 	endif()
 
 	# si la descarga no ha ido bien O no quieres utilizar cache
