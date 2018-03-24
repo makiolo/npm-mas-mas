@@ -127,7 +127,7 @@ function(cmaki_find_package)
 	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cmake")
 	set(package_cmake_abspath "${depends_dir}/${package_cmake_filename}")
 
-	IF(EXISTS "${package_marker}" AND EXISTS "${package_cmake_abspath}")
+	IF(EXISTS "${package_cmake_abspath}")
 		message("-- reusing cmake file ${package_cmake_abspath}")
 		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
 	else()
@@ -195,15 +195,15 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "Extracting ${package_cmake_abspath} failed! Error ${uncompress_result}")
 		endif()
 
-		# y tambien descomprimo el propio tar gz
-		execute_process(
-			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
-			WORKING_DIRECTORY "${depends_dir}/"
-			RESULT_VARIABLE uncompress_result2
-			)
-		if(uncompress_result2)
-			message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
-		endif()
+		# # y tambien descomprimo el propio tar gz
+		# execute_process(
+		# 	COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
+		# 	WORKING_DIRECTORY "${depends_dir}/"
+		# 	RESULT_VARIABLE uncompress_result2
+		# 	)
+		# if(uncompress_result2)
+		# 	message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
+		# endif()
 
 	# lo tengo, y solo es descomprimirlo
 	elseif(EXISTS "${package_cmake_abspath}" AND NOT EXISTS "${package_marker}")
@@ -226,6 +226,8 @@ function(cmaki_find_package)
 
 		# tengo cmake, y esta descomprmido
 		message("-- nothing to do")
+		message("-- ${package_cmake_abspath}")
+		message("-- ${package_marker}")
 
 	endif()
 
