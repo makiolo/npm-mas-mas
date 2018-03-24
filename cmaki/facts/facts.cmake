@@ -112,9 +112,9 @@ function(cmaki_find_package)
 	get_filename_component(package_name_version "${package_dir}" NAME)
 
 	# 3. si no tengo los ficheros de cmake, los intento descargar
-	set(depends_dir "${DEPENDS_PATH}")
-	set(depends_bin_package "${depends_dir}/${PACKAGE}-${VERSION}")
-	set(depends_package "${depends_dir}/${PACKAGE}-${VERSION}")
+	set(artifacts_dir "${DEPENDS_PATH}")
+	set(depends_bin_package "${artifacts_dir}/${PACKAGE}-${VERSION}")
+	set(depends_package "${artifacts_dir}/${PACKAGE}-${VERSION}")
 	# pido un paquete, en funcion de:
 	#		- paquete
 	#		- version
@@ -125,7 +125,7 @@ function(cmaki_find_package)
 
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cmake")
-	set(package_cmake_abspath "${depends_dir}/${package_cmake_filename}")
+	set(package_cmake_abspath "${artifacts_dir}/${package_cmake_filename}")
 
 	set(COPY_SUCCESFUL FALSE)
 	IF(EXISTS "${package_cmake_abspath}")
@@ -136,19 +136,26 @@ function(cmaki_find_package)
 		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_abspath}")
 		if(NOT "${NO_USE_CACHE_REMOTE}")
 			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_abspath}")
+			if(NOT "${COPY_SUCCESFUL}")
+				file(REMOVE "${package_binary_filename}")
+				message("Error downloading ${http_package_cmake_filename}")
+			endif()
 		else()
 			message("WARN: no using cache remote for: ${PACKAGE}")
 		endif()
 	endif()
 
+	if(NOT "${COPY_SUCCESFUL}")
+		message("fail download")
+	else()
+		message("reused or downloaded")
+	endif()
 
 	execute_process(
 		COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
 		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
 		OUTPUT_VARIABLE DEPENDS_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-
 	foreach(DEP ${DEPENDS_PACKAGES})
 		if(PACKAGE STREQUAL "${DEP}")
 			message("-- skip: ${DEP}")
@@ -158,23 +165,12 @@ function(cmaki_find_package)
 		endif()
 	endforeach()
 
-	if(NOT "${COPY_SUCCESFUL}")
-		message("fail download")
-	else()
-		message("reused or downloaded")
-	endif()
-
 	# si la descarga no ha ido bien O no quieres utilizar cache
 	if(NOT "${COPY_SUCCESFUL}" OR NO_USE_CACHE_REMOTE STREQUAL "TRUE")
 
 		# 5. compilo y genera el paquete en local
 		message("Generating artifact ${PACKAGE} ...")
 
-		#
-		# ojo: estoy hay que mejorarlo
-		# no queremos usar "-o", queremos que trate de compilar las dependencias (sin -o)
-		# pero queremos que evite compilar cosas que estan en cache remota
-		#
 		###
 		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-purge --no-run-tests -o")
 		###
@@ -186,8 +182,6 @@ function(cmaki_find_package)
 		if(artifacts_result)
 			message(FATAL_ERROR "can't create artifact ${PACKAGE}: error ${artifacts_result}")
 		endif()
-
-		# TODO: como obtener la version recien compilada ?
 
 		#######################################################
 		# 6: obtengo la version del paquete creado
@@ -207,7 +201,7 @@ function(cmaki_find_package)
 
 		set(package_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz)
 		set(package_cmake_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz)
-		set(package_generated_file ${depends_dir}/${package_filename})
+		set(package_generated_file ${artifacts_dir}/${package_filename})
 
 		# 7. descomprimo el artefacto
 		execute_process(
@@ -222,7 +216,7 @@ function(cmaki_find_package)
 		# # y tambien descomprimo el propio tar gz
 		# execute_process(
 		# 	COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
-		# 	WORKING_DIRECTORY "${depends_dir}/"
+		# 	WORKING_DIRECTORY "${artifacts_dir}/"
 		# 	RESULT_VARIABLE uncompress_result2
 		# 	)
 		# if(uncompress_result2)
@@ -270,7 +264,7 @@ function(cmaki_find_package)
 		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	if(RESULT_VERSION)
-		message("error saving ${PACKAGE}:${VERSION} in ${depends_dir}")
+		message("error saving ${PACKAGE}:${VERSION} in ${artifacts_dir}")
 	endif()
 
 	# 13 add includes
@@ -363,23 +357,17 @@ macro(cmaki_download_package)
 	get_filename_component(package_name_version "${package_dir}" NAME)
 	set(package_filename "${package_name_version}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(http_package_filename ${CMAKI_REPOSITORY}/download.php?file=${package_filename})
-	set(depends_dir "${DEPENDS_PATH}")
-	get_filename_component(depends_dir "${depends_dir}" ABSOLUTE)
-	set(package_binary_filename "${depends_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
-	set(package_uncompressed_dir "${depends_dir}/${package_name_version}-binary.tmp")
-	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
+	set(artifacts_dir "${DEPENDS_PATH}")
+	get_filename_component(artifacts_dir "${artifacts_dir}" ABSOLUTE)
+	set(package_binary_filename "${artifacts_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
+	set(package_uncompressed_dir "${artifacts_dir}/${package_name_version}-binary.tmp")
+	set(package_marker "${artifacts_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
 	set(package_compressed_md5 "${package_dir}/${package_name_version}-${CMAKI_IDENTIFIER}.md5")
 	set(_MY_DIR "${package_dir}")
-	set(_DIR "${depends_dir}/${package_name_version}")
+	set(_DIR "${artifacts_dir}/${package_name_version}")
 
-	# message("marca: ${package_marker}")
-
-	# TODO: check esta logica
-	set(SUPOSITION_ALREADY_UPLOAD TRUE)
 	if(NOT EXISTS "${package_binary_filename}")
-		#######
-		message("download ${package_binary_filename}")
-		#######
+		message("download ${package_binary_filename} ...")
 		if(EXISTS "${package_compressed_md5}")
 			file(READ "${package_compressed_md5}" md5sum )
 			string(REGEX MATCH "[0-9a-fA-F]*" md5sum "${md5sum}")
@@ -399,12 +387,8 @@ macro(cmaki_download_package)
 	endif()
 
 	if(NOT EXISTS "${package_marker}")
-		######
 		message("Extracting ${package_binary_filename} into ${package_uncompressed_dir}...")
-		######
 		file(MAKE_DIRECTORY "${package_uncompressed_dir}")
-
-		###############################################################
 		execute_process(
 			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_binary_filename}"
 			WORKING_DIRECTORY "${package_uncompressed_dir}"
@@ -412,9 +396,7 @@ macro(cmaki_download_package)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_binary_filename} failed! Error ${uncompress_result}")
 		endif()
-		file(COPY "${package_uncompressed_dir}/${package_name_version}" DESTINATION "${depends_dir}")
-		###############################################################
-	
+		file(COPY "${package_uncompressed_dir}/${package_name_version}" DESTINATION "${artifacts_dir}")
 		file(REMOVE_RECURSE "${package_uncompressed_dir}")
 	endif()
 	message("-- end cmaki_download_package")
