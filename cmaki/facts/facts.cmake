@@ -46,6 +46,8 @@ set(CMAKI_PLATFORM "${RESULT_VERSION}")
 
 function(cmaki_find_package)
 
+	message("-- begin cmaki_find_package")
+
 	set(PARAMETERS ${ARGV})
 	list(LENGTH PARAMETERS ARGV_LENGTH)
 	list(GET PARAMETERS 0 PACKAGE)
@@ -122,11 +124,11 @@ function(cmaki_find_package)
 	# Otra opcion es enviar todos los ficheros de cmake de todas las versiones
 
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
-	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
+	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cmake")
 	set(package_cmake_abspath "${depends_dir}/${package_cmake_filename}")
 
 	IF(EXISTS "${package_marker}" AND EXISTS "${package_cmake_abspath}")
-		message("-- reusing file ${package_cmake_abspath} for avoid download")
+		message("-- reusing cmake file ${package_cmake_abspath}")
 		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
 	else()
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
@@ -222,6 +224,7 @@ function(cmaki_find_package)
 
 	else()
 
+		# tengo cmake, y esta descomprmido
 		message("-- nothing to do")
 
 	endif()
@@ -262,6 +265,8 @@ function(cmaki_find_package)
 	# 16. add vars globals
 	set(CMAKI_INCLUDE_DIRS "${CMAKI_INCLUDE_DIRS}" PARENT_SCOPE)
 	set(CMAKI_LIBRARIES "${CMAKI_LIBRARIES}" PARENT_SCOPE)
+
+	message("-- end cmaki_find_package")
 
 endfunction()
 
