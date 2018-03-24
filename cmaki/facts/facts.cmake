@@ -136,6 +136,7 @@ function(cmaki_find_package)
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 	set(package_marker "${CMAKE_PREFIX_PATH}/${package_name_version}/${CMAKI_IDENTIFIER}.cmake")
 	set(package_cmake_abspath "${artifacts_dir}/${package_cmake_filename}")
+	set(package_generated_file ${artifacts_dir}/${package_filename})
 
 	set(COPY_SUCCESFUL FALSE)
 	IF(EXISTS "${package_cmake_abspath}")
@@ -214,7 +215,6 @@ function(cmaki_find_package)
 
 		set(package_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz)
 		set(package_cmake_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz)
-		set(package_generated_file ${artifacts_dir}/${package_filename})
 
 		# 7. descomprimo el artefacto
 		execute_process(
@@ -226,17 +226,17 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "Extracting ${package_cmake_abspath} failed! Error ${uncompress_result}")
 		endif()
 
-		# # y tambien descomprimo el propio tar gz
-		# execute_process(
-		# 	COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
-		# 	WORKING_DIRECTORY "${artifacts_dir}/"
-		# 	RESULT_VARIABLE uncompress_result2
-		# 	)
-		# if(uncompress_result2)
-		# 	message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
-		# endif()
+		# y tambien descomprimo el propio tar gz
+		execute_process(
+			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
+			WORKING_DIRECTORY "${artifacts_dir}/"
+			RESULT_VARIABLE uncompress_result2
+			)
+		if(uncompress_result2)
+			message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
+		endif()
 
-	# lo tengo, y solo es descomprimirlo
+	# tengo el cmake pero no esta descomprimido
 	elseif(EXISTS "${package_cmake_abspath}" AND NOT EXISTS "${package_marker}")
 
 		message("-- only uncompress")
@@ -253,6 +253,15 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "Extracting ${package_cmake_abspath} failed! Error ${uncompress_result}")
 		endif()
 
+		# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
+		if(${PACKAGE_MODE} STREQUAL "EXACT")
+			message("-- using ${PACKAGE} ${VERSION} in EXACT")
+			find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
+		else()
+			message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
+			find_package(${PACKAGE} ${VERSION} REQUIRED)
+		endif()
+
 	else()
 
 		# tengo cmake, y esta descomprmido
@@ -260,15 +269,15 @@ function(cmaki_find_package)
 		message("-- ${package_cmake_abspath}")
 		message("-- ${package_marker}")
 
-	endif()
+		# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
+		if(${PACKAGE_MODE} STREQUAL "EXACT")
+			message("-- using ${PACKAGE} ${VERSION} in EXACT")
+			find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
+		else()
+			message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
+			find_package(${PACKAGE} ${VERSION} REQUIRED)
+		endif()
 
-	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
-	if(${PACKAGE_MODE} STREQUAL "EXACT")
-		message("-- using ${PACKAGE} ${VERSION} in EXACT")
-		find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
-	else()
-		message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
-		find_package(${PACKAGE} ${VERSION} REQUIRED)
 	endif()
 
 	# generate json
