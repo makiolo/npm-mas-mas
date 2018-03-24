@@ -123,17 +123,18 @@ function(cmaki_find_package)
 
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
+	set(package_cmake_abspath "${depends_dir}/${package_cmake_filename}")
 
-	IF(EXISTS "${package_marker}" AND EXISTS "${package_cmake_filename}")
-		message("-- reusing file ${package_cmake_filename} for avoid download")
+	IF(EXISTS "${package_marker}" AND EXISTS "${package_cmake_abspath}")
+		message("-- reusing file ${package_cmake_abspath} for avoid download")
 		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
 	else()
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
-		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_filename}")
+		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_abspath}")
 		if(NOT "${NO_USE_CACHE_REMOTE}")
-			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_filename}")
+			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_abspath}")
 		else()
-			message("WARN: no using cache remote for: ${package_cmake_filename}")
+			message("WARN: no using cache remote for: ${PACKAGE}")
 		endif()
 	endif()
 
@@ -143,8 +144,6 @@ function(cmaki_find_package)
 		# 5. compilo y genera el paquete en local
 		message("Generating artifact ${PACKAGE} ...")
 
-		# file(REMOVE_RECURSE "${depends_bin_package}")
-		# file(REMOVE_RECURSE "${depends_package}")
 		#
 		# ojo: estoy hay que mejorarlo
 		# no queremos usar "-o", queremos que trate de compilar las dependencias (sin -o)
@@ -160,9 +159,6 @@ function(cmaki_find_package)
 			)
 		if(artifacts_result)
 			message(FATAL_ERROR "can't create artifact ${PACKAGE}: error ${artifacts_result}")
-			# file(REMOVE_RECURSE "${depends_bin_package}")
-			# file(REMOVE_RECURSE "${depends_package}")
-			# file(REMOVE "${package_cmake_filename}")
 		endif()
 
 		# TODO: como obtener la version recien compilada ?
@@ -186,16 +182,15 @@ function(cmaki_find_package)
 		set(package_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz)
 		set(package_cmake_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz)
 		set(package_generated_file ${depends_dir}/${package_filename})
-		set(package_cmake_generated_file ${depends_dir}/${package_cmake_filename})
 
 		# 7. descomprimo el artefacto
 		execute_process(
-			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_generated_file}"
+			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_abspath}"
 			WORKING_DIRECTORY "${CMAKE_PREFIX_PATH}"
 			RESULT_VARIABLE uncompress_result
 			)
 		if(uncompress_result)
-			message(FATAL_ERROR "Extracting ${package_cmake_generated_file} failed! Error ${uncompress_result}")
+			message(FATAL_ERROR "Extracting ${package_cmake_abspath} failed! Error ${uncompress_result}")
 		endif()
 
 		# y tambien descomprimo el propio tar gz
@@ -209,20 +204,20 @@ function(cmaki_find_package)
 		endif()
 
 	# lo tengo, y solo es descomprimirlo
-	elseif(EXISTS "${package_cmake_filename}" AND NOT EXISTS "${package_marker}")
+	elseif(EXISTS "${package_cmake_abspath}" AND NOT EXISTS "${package_marker}")
 
 		message("-- only uncompress")
 		################
-		message("${CMAKE_COMMAND} -E tar zxf ${package_cmake_filename}")
+		message("${CMAKE_COMMAND} -E tar zxf ${package_cmake_abspath}")
 		################
 
 		# 10. lo descomprimo
 		execute_process(
-			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_filename}"
+			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_abspath}"
 			WORKING_DIRECTORY "${CMAKE_PREFIX_PATH}/"
 			RESULT_VARIABLE uncompress_result)
 		if(uncompress_result)
-			message(FATAL_ERROR "Extracting ${package_cmake_filename} failed! Error ${uncompress_result}")
+			message(FATAL_ERROR "Extracting ${package_cmake_abspath} failed! Error ${uncompress_result}")
 		endif()
 
 	else()
