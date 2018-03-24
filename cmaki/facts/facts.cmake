@@ -126,9 +126,10 @@ function(cmaki_find_package)
 	# Recibo el que mejor se adapta a mis especificaciones
 	# Otra opcion es enviar todos los ficheros de cmake de todas las versiones
 	set(package_cmake_uncompressed_file "${depends_dir}/${PACKAGE}-${VERSION}-cmake.tmp")
+	file(REMOVE "${package_cmake_uncompressed_file}")
+
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
-	set(DOWNLOADED FALSE)
 	###
 	# message("marca2: ${package_marker}")
 	###
@@ -143,7 +144,6 @@ function(cmaki_find_package)
 		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_uncompressed_file}")
 		if(NOT "${NO_USE_CACHE_REMOTE}")
 			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_uncompressed_file}")
-			set(DOWNLOADED TRUE)
 		else()
 			message("WARN: no using cache remote for: ${package_cmake_uncompressed_file}")
 		endif()
@@ -157,7 +157,6 @@ function(cmaki_find_package)
 
 		# file(REMOVE_RECURSE "${depends_bin_package}")
 		# file(REMOVE_RECURSE "${depends_package}")
-		file(REMOVE "${package_cmake_uncompressed_file}")
 		#
 		# ojo: estoy hay que mejorarlo
 		# no queremos usar "-o", queremos que trate de compilar las dependencias (sin -o)
@@ -209,10 +208,6 @@ function(cmaki_find_package)
 			)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_cmake_generated_file} failed! Error ${uncompress_result}")
-			# file(REMOVE_RECURSE "${depends_bin_package}")
-			# file(REMOVE_RECURSE "${depends_package}")
-			# file(REMOVE "${package_cmake_uncompressed_file}")
-			# file(REMOVE "${package_generated_file}")
 		endif()
 
 		# y tambien descomprimo el propio tar gz
@@ -223,10 +218,6 @@ function(cmaki_find_package)
 			)
 		if(uncompress_result2)
 			message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
-			# file(REMOVE_RECURSE "${depends_bin_package}")
-			# file(REMOVE_RECURSE "${depends_package}")
-			# file(REMOVE "${package_cmake_uncompressed_file}")
-			# file(REMOVE "${package_generated_file}")
 		endif()
 
 	# lo tengo, y solo es descomprimirlo
@@ -245,9 +236,10 @@ function(cmaki_find_package)
 		if(uncompress_result)
 			message(FATAL_ERROR "Extracting ${package_cmake_uncompressed_file} failed! Error ${uncompress_result}")
 		endif()
-		if(DOWNLOADED)
-			file(REMOVE "${package_cmake_uncompressed_file}")
-		endif()
+
+	else()
+
+		message("-- nothing to do")
 
 	endif()
 
