@@ -148,8 +148,13 @@ function(cmaki_find_package)
 		OUTPUT_VARIABLE DEPENDS_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+
 	foreach(DEP ${DEPENDS_PACKAGES})
-		message(" ------------------------------ ${DEP}")
+		if(PACKAGE STREQUAL "${DEP}")
+			message(" XXXXXXXXXXXXXXXXXXXXXXXXXXX ${DEP}")
+		else()
+			message(" --------------------------- ${DEP}")
+		endif()
 	endforeach()
 
 
