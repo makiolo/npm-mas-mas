@@ -422,12 +422,12 @@ if __name__ == '__main__':
     else:
         utils.setup_logging(logging.INFO, parameters.log)
 
-    logging.info('---- rootdir: {}'.format(parameters.rootdir))
-    logging.info('---- prefix: {}'.format(parameters.prefix))
-    logging.info('---- cmakefiles: {}'.format(parameters.cmakefiles))
-    logging.info('---- third_party_dir: {}'.format(parameters.third_party_dir))
-    logging.info('---- blacklist: {}'.format(parameters.blacklist))
-    logging.info('---- depends: {}'.format(parameters.depends))
+    # logging.info('---- rootdir: {}'.format(parameters.rootdir))
+    # logging.info('---- prefix: {}'.format(parameters.prefix))
+    # logging.info('---- cmakefiles: {}'.format(parameters.cmakefiles))
+    # logging.info('---- third_party_dir: {}'.format(parameters.third_party_dir))
+    # logging.info('---- blacklist: {}'.format(parameters.blacklist))
+    # logging.info('---- depends: {}'.format(parameters.depends))
 
     # fetch remotes yaml
     # i = 0
