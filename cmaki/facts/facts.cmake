@@ -141,6 +141,14 @@ function(cmaki_find_package)
 		endif()
 	endif()
 
+
+	execute_process(
+		COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan
+		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+		RESULT_VARIABLE artifacts_result)
+
+
+
 	if(NOT "${COPY_SUCCESFUL}")
 		message("fail download")
 	else()
