@@ -2,7 +2,7 @@
     <<: *thirdparty_defaults
     version: 1.65.0.0
     mode: dr
-    source: $HTTP_URL_NPSERVER/boost_1_65_0.tar.bz2
+    source: $NPP_SERVER/sources/boost_1_65_0.tar.bz2
     cmake_definitions:
         - BASENAME_STRIP=boost_1_65_0
         - BOOST_INSTALL_HEADERS=1

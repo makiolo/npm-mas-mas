@@ -5,7 +5,6 @@ import pipeline
 from itertools import product
 from third_party import platforms
 from third_party import CMAKELIB_URL
-from third_party import HTTP_URL_NPSERVER
 from third_party import get_identifier
 
 
@@ -92,7 +91,7 @@ def compilation(node, parameters, compiler_replace_maps):
                 env_modified['GTC_PREFIX'] = parameters.prefix
                 env_modified['CMAKELIB_URL'] = CMAKELIB_URL
                 env_modified['BUILD_MODE'] = str(build_mode)
-                env_modified['HTTP_URL_NPSERVER'] = HTTP_URL_NPSERVER
+                # env_modified['NPP_SERVER'] = ...
                 env_modified['SOURCES'] = os.path.abspath(os.path.join('..', node.get_download_directory()))
                 env_modified['CMAKI_DIR'] = cmakefiles_dir
                 env_modified['SELFHOME'] = install_directory

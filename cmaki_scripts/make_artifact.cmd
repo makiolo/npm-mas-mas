@@ -19,11 +19,12 @@ IF DEFINED MODE (
 )
 
 IF DEFINED YMLFILE (
-  build --yaml=%YMLFILE% --server=http://artifacts.myftp.biz:8080 -d
+  build --yaml=%YMLFILE% -d
 ) else (
   IF DEFINED PACKAGE (
-    build %PACKAGE% --server=http://artifacts.myftp.biz:8080 -d
+    build %PACKAGE% -d
   ) else (
     echo Error: must define env var YMLFILE or PACKAGE
   )
 )
+

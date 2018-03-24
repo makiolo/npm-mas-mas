@@ -101,8 +101,6 @@ if 'CMAKI_INSTALL' not in os.environ:
 # INMUTABLE GLOBALS
 #
 
-# HTTP_URL_NPSERVER = 'http://artifacts.myftp.biz:8080/sources'
-HTTP_URL_NPSERVER = 'http://artifacts.myftp.biz/sources'
 CMAKELIB_URL='https://github.com/makiolo/cmaki.git'
 prefered = {}
 prefered['Debug'] = ['Debug', 'RelWithDebInfo', 'Release']
@@ -854,7 +852,7 @@ class ThirdParty:
         logging.debug('uncompress = %s' % uncompress)
 
         # resolve url vars
-        url = url.replace('$HTTP_URL_NPSERVER', HTTP_URL_NPSERVER)
+        url = url.replace('$NPP_SERVER', os.environ['NPP_SERVER'])
 
         # files in svn
         if(url.startswith('svn://')):

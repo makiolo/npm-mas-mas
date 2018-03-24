@@ -10,7 +10,7 @@ else
 	run=""
 fi
 
-command="ag -w --cpp $1 -l --ignore cmaki --ignore cmaki_generator --ignore depends --ignore gcc --ignore clang --ignore bin"
+command="ag -w $1 -l --ignore artifacts --ignore node_modules --ignore gcc --ignore clang --ignore bin"
 command_search_files="$command | grep -e $1.cpp$ -e $1.h$"
 command_search_files_count="$command_search_files | xargs -I{} grep -h -e ^#include {} | grep -h $1 | wc -l"
 count=$(eval $command_search_files_count)

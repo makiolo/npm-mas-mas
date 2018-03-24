@@ -264,7 +264,7 @@ usage:""")
                             help='name (or list names) third party')
     group_main.add_argument('--plan', '--dry-run', dest='plan', action='store_true',
                             help='Show packages plan (like a dry-run)', default=False)
-    group_main.add_argument('--server', dest='server', help='artifact server', default='http://artifacts.myftp.biz')
+    group_main.add_argument('--server', dest='server', help='artifact server', default=None)
     group_main.add_argument('--no-back-yaml', dest='no_back_yaml', action='store_true', help='no search back yaml',
                             default=False)
     group_layer = group_main.add_mutually_exclusive_group()
@@ -402,6 +402,13 @@ usage:""")
         parameters.no_packing = True
         parameters.no_run_tests = True
         parameters.no_upload = False
+
+    if parameters.server is None:
+        if 'NPP_SERVER' not in os.environ:
+            logging.warning('Using artifacts server by default. If you need, can explicit define environment var NPP_SERVER')
+            os.environ['NPP_SERVER'] = 'http://artifacts.myftp.biz'
+        parameters.server = os.environ['NPP_SERVER']
+
     return parameters
 
 
@@ -421,13 +428,6 @@ if __name__ == '__main__':
     logging.info('---- third_party_dir: {}'.format(parameters.third_party_dir))
     logging.info('---- blacklist: {}'.format(parameters.blacklist))
     logging.info('---- depends: {}'.format(parameters.depends))
-
-    # if not set svn, use default
-    '''
-    if parameters.with_svn is None:
-        if 'SUBVERSION' in os.environ:
-            parameters.with_svn = os.environ['SUBVERSION']
-    '''
 
     # fetch remotes yaml
     # i = 0

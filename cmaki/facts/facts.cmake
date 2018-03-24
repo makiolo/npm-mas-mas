@@ -55,7 +55,7 @@ function(cmaki_find_package)
 	endif()
 
 	IF(NOT DEFINED CMAKI_REPOSITORY)
-		set(CMAKI_REPOSITORY "http://artifacts.myftp.biz")
+		set(CMAKI_REPOSITORY "$ENV{NPP_SERVER}")
 	ENDIF()
 
 	if(VERSION_REQUEST STREQUAL "")
@@ -351,7 +351,7 @@ macro(cmaki_download_package)
 
 	message("-- begin cmaki_download_package")
 	if(NOT DEFINED CMAKI_REPOSITORY)
-		set(CMAKI_REPOSITORY "http://artifacts.myftp.biz")
+		set(CMAKI_REPOSITORY "$ENV{NPP_SERVER}")
 	endif()
 	get_filename_component(package_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 	get_filename_component(package_name_version "${package_dir}" NAME)

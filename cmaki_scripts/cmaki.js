@@ -31,6 +31,16 @@ else
 	shelljs.env['CMAKI_INSTALL'] = process.env['CMAKI_INSTALL'];
 }
 
+if(!process.env.NPP_SERVER)
+{
+	shelljs.env['NPP_SERVER'] = 'http://artifacts.myftp.biz'
+	process.env['NPP_SERVER'] = 'http://artifacts.myftp.biz'
+}
+else
+{
+	shelljs.env['NPP_SERVER'] = process.env['NPP_SERVER'];
+}
+
 if(is_win)
 {
 	cmaki_identifier = 'cmaki_identifier.cmd'

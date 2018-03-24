@@ -10,10 +10,10 @@ if [ "$YMLFILE" == "undefined" ]; then
 		echo Error: must define env var YMLFILE or PACKAGE
 	else
 		echo building $PACKAGE ...
-		./build $PACKAGE --server=http://artifacts.myftp.biz --no-back-yaml --no-run-tests
+		./build $PACKAGE --no-back-yaml --no-run-tests
 	fi
 else
 	echo building from yaml file: ${YMLFILE} ...
-	./build --yaml=${YMLFILE} --server=http://artifacts.myftp.biz --no-run-tests
+	./build --yaml=${YMLFILE} --no-run-tests
 fi
 

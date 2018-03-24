@@ -1,7 +1,7 @@
 - fmod:
     <<: *thirdparty_defaults
     version: 1.0.1.0
-    source: $HTTP_URL_NPSERVER/fmodstudioapi11000linux.tar.gz
+    source: $NPP_SERVER/sources/fmodstudioapi11000linux.tar.gz
     uncompress_strip: fmodstudioapi11000linux/api/lowlevel
     post_install:
         - ./lib/x86_64/* lib/

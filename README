@@ -6,4 +6,12 @@
 - cmaki_docker
 - cmaki_generator
 - servfactor
-_
+
+# variables de entorno
+- Servidor de artefactos:
+- NPP_SERVER = htpp://....
+- Modo de compilación:
+- NPP_MODE = Debug, Release ....
+- Directorio de instalación:
+- NPP_INSTALL
+
