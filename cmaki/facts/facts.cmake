@@ -143,7 +143,7 @@ function(cmaki_find_package)
 
 	if(NOT "${COPY_SUCCESFUL}")
 		message("fail download")
-	else
+	else()
 		message("reused or downloaded")
 	endif()
 
