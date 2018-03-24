@@ -79,11 +79,6 @@ function(cmaki_find_package)
 	endif()
 
 	# 2.5. define flags
-	if(NOT DEFINED NOCACHE_LOCAL)
-		set(NO_USE_CACHE_LOCAL "FALSE")
-	else()
-		set(NO_USE_CACHE_LOCAL "${NOCACHE_LOCAL}")
-	endif()
 	if(NOT DEFINED NOCACHE_REMOTE)
 		set(NO_USE_CACHE_REMOTE "FALSE")
 	else()
@@ -125,31 +120,24 @@ function(cmaki_find_package)
 	#		- modo (COMPATIBLE / EXACT)
 	# Recibo el que mejor se adapta a mis especificaciones
 	# Otra opcion es enviar todos los ficheros de cmake de todas las versiones
-	set(package_cmake_uncompressed_file "${depends_dir}/${PACKAGE}-${VERSION}-cmake.tmp")
-	file(REMOVE "${package_cmake_uncompressed_file}")
 
 	set(package_cmake_filename "${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz")
 	set(package_marker "${depends_dir}/${package_name_version}/${CMAKI_IDENTIFIER}")
-	###
-	# message("marca2: ${package_marker}")
-	###
-	# IF(EXISTS "${package_marker}" AND EXISTS "${package_binary_filename}")
+
 	IF(EXISTS "${package_marker}" AND EXISTS "${package_cmake_filename}")
-	# IF(EXISTS "${package_cmake_filename}")
 		message("-- reusing file ${package_cmake_filename} for avoid download")
-		set(package_cmake_uncompressed_file "${package_cmake_filename}")
 		set(COPY_SUCCESFUL TRUE PARENT_SCOPE)
 	else()
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
-		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_uncompressed_file}")
+		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_filename}")
 		if(NOT "${NO_USE_CACHE_REMOTE}")
-			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_uncompressed_file}")
+			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_filename}")
 		else()
-			message("WARN: no using cache remote for: ${package_cmake_uncompressed_file}")
+			message("WARN: no using cache remote for: ${package_cmake_filename}")
 		endif()
 	endif()
 
-	# Si no puede descargar el artefacto ya hecho (es que necesito compilarlo y subirlo)
+	# si la descarga no ha ido bien O no quieres utilizar cache
 	if(NOT "${COPY_SUCCESFUL}" OR NO_USE_CACHE_REMOTE STREQUAL "TRUE")
 
 		# 5. compilo y genera el paquete en local
@@ -174,7 +162,7 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "can't create artifact ${PACKAGE}: error ${artifacts_result}")
 			# file(REMOVE_RECURSE "${depends_bin_package}")
 			# file(REMOVE_RECURSE "${depends_package}")
-			# file(REMOVE "${package_cmake_uncompressed_file}")
+			# file(REMOVE "${package_cmake_filename}")
 		endif()
 
 		# TODO: como obtener la version recien compilada ?
@@ -221,20 +209,20 @@ function(cmaki_find_package)
 		endif()
 
 	# lo tengo, y solo es descomprimirlo
-	elseif(EXISTS "${package_cmake_uncompressed_file}" AND NOT EXISTS "${package_marker}")
+	elseif(EXISTS "${package_cmake_filename}" AND NOT EXISTS "${package_marker}")
 
 		message("-- only uncompress")
 		################
-		message("${CMAKE_COMMAND} -E tar zxf ${package_cmake_uncompressed_file}")
+		message("${CMAKE_COMMAND} -E tar zxf ${package_cmake_filename}")
 		################
 
 		# 10. lo descomprimo
 		execute_process(
-			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_uncompressed_file}"
+			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_cmake_filename}"
 			WORKING_DIRECTORY "${CMAKE_PREFIX_PATH}/"
 			RESULT_VARIABLE uncompress_result)
 		if(uncompress_result)
-			message(FATAL_ERROR "Extracting ${package_cmake_uncompressed_file} failed! Error ${uncompress_result}")
+			message(FATAL_ERROR "Extracting ${package_cmake_filename} failed! Error ${uncompress_result}")
 		endif()
 
 	else()
