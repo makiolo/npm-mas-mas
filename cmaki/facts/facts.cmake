@@ -234,14 +234,14 @@ function(cmaki_find_package)
 		endif()
 
 		# y tambien descomprimo el propio tar gz
-		execute_process(
-			COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
-			WORKING_DIRECTORY "${artifacts_dir}/"
-			RESULT_VARIABLE uncompress_result2
-			)
-		if(uncompress_result2)
-			message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
-		endif()
+		# execute_process(
+		# 	COMMAND "${CMAKE_COMMAND}" -E tar zxf "${package_generated_file}"
+		# 	WORKING_DIRECTORY "${artifacts_dir}/"
+		# 	RESULT_VARIABLE uncompress_result2
+		# 	)
+		# if(uncompress_result2)
+		# 	message(FATAL_ERROR "Extracting ${package_generated_file} failed! Error ${uncompress_result2}")
+		# endif()
 
 	# tengo el cmake pero no esta descomprimido
 	elseif(EXISTS "${package_cmake_abspath}" AND NOT EXISTS "${package_marker}")
@@ -260,15 +260,6 @@ function(cmaki_find_package)
 			message(FATAL_ERROR "Extracting ${package_cmake_abspath} failed! Error ${uncompress_result}")
 		endif()
 
-		# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
-		if(${PACKAGE_MODE} STREQUAL "EXACT")
-			message("-- using ${PACKAGE} ${VERSION} in EXACT")
-			find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
-		else()
-			message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
-			find_package(${PACKAGE} ${VERSION} REQUIRED)
-		endif()
-
 	else()
 
 		# tengo cmake, y esta descomprmido
@@ -276,15 +267,15 @@ function(cmaki_find_package)
 		message("-- ${package_cmake_abspath}")
 		message("-- ${package_marker}")
 
-		# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
-		if(${PACKAGE_MODE} STREQUAL "EXACT")
-			message("-- using ${PACKAGE} ${VERSION} in EXACT")
-			find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
-		else()
-			message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
-			find_package(${PACKAGE} ${VERSION} REQUIRED)
-		endif()
+	endif()
 
+	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
+	if(${PACKAGE_MODE} STREQUAL "EXACT")
+		message("-- using ${PACKAGE} ${VERSION} in EXACT")
+		find_package(${PACKAGE} ${VERSION} EXACT REQUIRED)
+	else()
+		message("-- using ${PACKAGE} ${VERSION} in COMPATIBLE")
+		find_package(${PACKAGE} ${VERSION} REQUIRED)
 	endif()
 
 	# generate json
