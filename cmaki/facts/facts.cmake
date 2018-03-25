@@ -221,6 +221,8 @@ function(cmaki_find_package)
 
 		set(package_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz)
 		set(package_cmake_filename ${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}-cmake.tar.gz)
+		# refresh name (NEW $VERSION is generated)
+		set(package_cmake_abspath "${artifacts_dir}/${package_cmake_filename}")
 
 		# 7. descomprimo el artefacto
 		execute_process(
