@@ -41,6 +41,16 @@ else
 	shelljs.env['NPP_SERVER'] = process.env['NPP_SERVER'];
 }
 
+if(!process.env.NPP_CACHE)
+{
+	shelljs.env['NPP_CACHE'] = 'TRUE'
+	process.env['NPP_CACHE'] = 'TRUE'
+}
+else
+{
+	shelljs.env['NPP_CACHE'] = process.env['NPP_CACHE'];
+}
+
 if(is_win)
 {
 	cmaki_identifier = 'cmaki_identifier.cmd'

@@ -409,6 +409,11 @@ usage:""")
             os.environ['NPP_SERVER'] = 'http://artifacts.myftp.biz'
         parameters.server = os.environ['NPP_SERVER']
 
+
+    if 'NPP_CACHE' not in os.environ:
+        logging.warning('Using enablibing npm++ cache by default.')
+        os.environ['NPP_CACHE'] = 'TRUE'
+
     return parameters
 
 

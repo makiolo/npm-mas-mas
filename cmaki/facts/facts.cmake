@@ -67,6 +67,9 @@ function(cmaki_find_package)
 		set(CMAKI_REPOSITORY "$ENV{NPP_SERVER}")
 	ENDIF()
 
+	# 2.5. define flags
+	set(FORCE_GENERATION NOT "$ENV{NPP_CACHE}")
+
 	if(VERSION_REQUEST STREQUAL "")
 		##
 		message("COMMAND python ${ARTIFACTS_PATH}/get_package.py --name=${PACKAGE} --depends=${DEPENDS_PATHFILE}")
@@ -89,13 +92,6 @@ function(cmaki_find_package)
 		set(EXTRA_VERSION "--version=${VERSION_REQUEST}")
 	endif()
 
-	# 2.5. define flags
-	if(NOT DEFINED NOCACHE_REMOTE)
-		set(NO_USE_CACHE_REMOTE "FALSE")
-	else()
-		set(NO_USE_CACHE_REMOTE "${NOCACHE_REMOTE}")
-	endif()
-
 	message("python ${ARTIFACTS_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}")
 	#######################################################
 	# 2. obtener la mejor version buscando en la cache local y remota
@@ -115,14 +111,14 @@ function(cmaki_find_package)
 			set(VERSION ${VERSION_REQUEST})
 			message("-- need build package ${PACKAGE} can't get version: ${VERSION_REQUEST}, will be generated... (error 1)")
 			# avoid remote cache, need build
-			set(NO_USE_CACHE_REMOTE "TRUE")
+			set(FORCE_GENERATION "TRUE")
 		endif()
 	else()
 		set(PACKAGE_MODE "EXACT")
 		set(VERSION ${VERSION_REQUEST})
 		message("-- need build package ${PACKAGE} can't get version: ${VERSION_REQUEST}, will be generated... (error 2)")
 		# avoid remote cache, need build
-		set(NO_USE_CACHE_REMOTE "TRUE")
+		set(FORCE_GENERATION "TRUE")
 	endif()
 	#######################################################
 
@@ -154,7 +150,7 @@ function(cmaki_find_package)
 	else()
 		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
 		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_abspath}")
-		if(NOT "${NO_USE_CACHE_REMOTE}")
+		if(NOT "${FORCE_GENERATION}")
 			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_abspath}")
 			if(NOT "${COPY_SUCCESFUL}")
 				file(REMOVE "${package_binary_filename}")
@@ -186,7 +182,7 @@ function(cmaki_find_package)
 	endforeach()
 
 	# si la descarga no ha ido bien O no quieres utilizar cache
-	if(NOT "${COPY_SUCCESFUL}" OR NO_USE_CACHE_REMOTE STREQUAL "TRUE")
+	if(NOT "${COPY_SUCCESFUL}" OR FORCE_GENERATION STREQUAL "TRUE")
 
 		# 5. compilo y genera el paquete en local
 		message("Generating artifact ${PACKAGE} ...")
