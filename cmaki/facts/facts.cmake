@@ -68,7 +68,9 @@ function(cmaki_find_package)
 	ENDIF()
 
 	if(VERSION_REQUEST STREQUAL "")
-
+		##
+		message("COMMAND python ${ARTIFACTS_PATH}/get_package.py --name=${PACKAGE} --depends=${DEPENDS_PATHFILE}")
+		##
 		# 1. obtener la version actual (o ninguno en caso de no tener el artefacto)
 		execute_process(
 			COMMAND python ${ARTIFACTS_PATH}/get_package.py --name=${PACKAGE} --depends=${DEPENDS_PATHFILE}
