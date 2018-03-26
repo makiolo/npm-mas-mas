@@ -2,29 +2,29 @@ cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0011 NEW)
 cmake_policy(SET CMP0045 OLD)
 
-IF(NOT DEFINED DEPENDS_PATH)
-	set(DEPENDS_PATH ${CMAKI_PATH}/../../../artifacts)
+IF(NOT DEFINED NPP_ARTIFACTS_PATH)
+	set(NPP_ARTIFACTS_PATH ${CMAKI_PATH}/../../../artifacts)
 ENDIF()
 
 IF(NOT DEFINED CMAKE_PREFIX_PATH)
-	set(CMAKE_PREFIX_PATH ${DEPENDS_PATH}/cmaki_find_package)
+	set(CMAKE_PREFIX_PATH ${NPP_ARTIFACTS_PATH}/cmaki_find_package)
 ENDIF()
 
-IF(NOT DEFINED ARTIFACTS_PATH)
-	set(ARTIFACTS_PATH ${CMAKI_PATH}/../cmaki_generator)
+IF(NOT DEFINED NPP_GENERATOR_PATH)
+	set(NPP_GENERATOR_PATH ${CMAKI_PATH}/../cmaki_generator)
 ENDIF()
 
-IF(NOT DEFINED DEPENDS_PATHFILE)
-	set(DEPENDS_PATHFILE ${CMAKI_PATH}/../../../artifacts.json)
+IF(NOT DEFINED NPP_PACKAGE_JSON_FILE)
+	set(NPP_PACKAGE_JSON_FILE ${CMAKI_PATH}/../../../artifacts.json)
 ENDIF()
 
 if(DEFINED CMAKI_DEBUG)
 	MESSAGE("CMAKI_PATH = ${CMAKI_PATH}")
-	MESSAGE("DEPENDS_PATH = ${DEPENDS_PATH}")
+	MESSAGE("NPP_ARTIFACTS_PATH = ${NPP_ARTIFACTS_PATH}")
+	MESSAGE("NPP_GENERATOR_PATH = ${NPP_GENERATOR_PATH}")
+	MESSAGE("NPP_PACKAGE_JSON_FILE = ${NPP_PACKAGE_JSON_FILE}")
 	MESSAGE("CMAKE_PREFIX_PATH = ${CMAKE_PREFIX_PATH}")
 	MESSAGE("CMAKE_MODULE_PATH = ${CMAKE_MODULE_PATH}")
-	MESSAGE("ARTIFACTS_PATH = ${ARTIFACTS_PATH}")
-	MESSAGE("DEPENDS_PATHFILE = ${DEPENDS_PATHFILE}")
 endif()
 
 set(ENV{CMAKI_INFO} ALL)
@@ -56,7 +56,9 @@ function(cmaki_find_package)
 	set(PARM1 "")
 	if(ARGV_LENGTH GREATER 1)
 		list(GET PARAMETERS 1 PARM1)
+		message("-- extra parm1: ${PARM1}")
 		if(PARM1 STREQUAL "NONRECURSIVE")
+			message("${PACKAGE} is not recursive")
 			set(RECURSIVE "FALSE")
 		else()
 			set(VERSION_REQUEST "${PARM1}")
@@ -72,12 +74,12 @@ function(cmaki_find_package)
 
 	if(VERSION_REQUEST STREQUAL "")
 		##
-		message("COMMAND python ${ARTIFACTS_PATH}/get_package.py --name=${PACKAGE} --depends=${DEPENDS_PATHFILE}")
+		message("COMMAND python ${NPP_GENERATOR_PATH}/get_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE}")
 		##
 		# 1. obtener la version actual (o ninguno en caso de no tener el artefacto)
 		execute_process(
-			COMMAND python ${ARTIFACTS_PATH}/get_package.py --name=${PACKAGE} --depends=${DEPENDS_PATHFILE}
-			WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+			COMMAND python ${NPP_GENERATOR_PATH}/get_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE}
+			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 		if(RESULT_VERSION)
 			set(VERSION_REQUEST "${RESULT_VERSION}")
@@ -92,12 +94,12 @@ function(cmaki_find_package)
 		set(EXTRA_VERSION "--version=${VERSION_REQUEST}")
 	endif()
 
-	message("python ${ARTIFACTS_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}")
+	message("python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}")
 	#######################################################
 	# 2. obtener la mejor version buscando en la cache local y remota
 	execute_process(
-		COMMAND python ${ARTIFACTS_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}
-		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+		COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}
+		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	if(RESULT_VERSION)
 		list(GET RESULT_VERSION 0 PACKAGE_MODE)
@@ -127,7 +129,7 @@ function(cmaki_find_package)
 	get_filename_component(package_name_version "${package_dir}" NAME)
 
 	# 3. si no tengo los ficheros de cmake, los intento descargar
-	set(artifacts_dir "${DEPENDS_PATH}")
+	set(artifacts_dir "${NPP_ARTIFACTS_PATH}")
 	set(depends_bin_package "${artifacts_dir}/${PACKAGE}-${VERSION}")
 	set(depends_package "${artifacts_dir}/${PACKAGE}-${VERSION}")
 	# pido un paquete, en funcion de:
@@ -148,9 +150,9 @@ function(cmaki_find_package)
 		message("-- reusing cmake file ${package_cmake_abspath}")
 		set(COPY_SUCCESFUL TRUE)
 	else()
-		set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
-		message("-- download file: ${http_package_cmake_filename} in ${package_cmake_abspath}")
 		if(NOT "${FORCE_GENERATION}")
+			set(http_package_cmake_filename "${CMAKI_REPOSITORY}/download.php?file=${package_cmake_filename}")
+			message("-- download file: ${http_package_cmake_filename} in ${package_cmake_abspath}")
 			cmaki_download_file("${http_package_cmake_filename}" "${package_cmake_abspath}")
 			if(NOT "${COPY_SUCCESFUL}")
 				file(REMOVE "${package_binary_filename}")
@@ -167,21 +169,6 @@ function(cmaki_find_package)
 		message("reused or downloaded")
 	endif()
 
-	message("COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
-	execute_process(
-		COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
-		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
-		OUTPUT_VARIABLE DEPENDS_PACKAGES
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
-	foreach(DEP ${DEPENDS_PACKAGES})
-		if(PACKAGE STREQUAL "${DEP}")
-			message("-- skip: ${DEP}")
-		else()
-			message("-- cmaki_find_package: ${DEP}")
-			cmaki_find_package("${DEP}" NONRECURSIVE)
-		endif()
-	endforeach()
-
 	# si la descarga no ha ido bien O no quieres utilizar cache
 	if(NOT "${COPY_SUCCESFUL}" OR FORCE_GENERATION STREQUAL "TRUE")
 
@@ -189,11 +176,11 @@ function(cmaki_find_package)
 		message("Generating artifact ${PACKAGE} ...")
 
 		###
-		message("python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests")
+		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests")
 		###
 		execute_process(
-			COMMAND python ${ARTIFACTS_PATH}/build.py ${PACKAGE} --depends=${DEPENDS_PATHFILE} --cmakefiles=${CMAKI_PATH} --prefix=${DEPENDS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests
-			WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests
+			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
 		if(artifacts_result)
@@ -203,9 +190,9 @@ function(cmaki_find_package)
 		#######################################################
 		# 6: obtengo la version del paquete creado
 		execute_process(
-			# COMMAND python ${ARTIFACTS_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}
-			COMMAND python ${ARTIFACTS_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE}
-			WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+			# COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}
+			COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE}
+			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 		if(RESULT_VERSION)
 			list(GET RESULT_VERSION 0 PACKAGE_MODE)
@@ -270,6 +257,23 @@ function(cmaki_find_package)
 
 	endif()
 
+
+	# cmaki_find_package of depends
+	message("COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
+	execute_process(
+		COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
+		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
+		OUTPUT_VARIABLE DEPENDS_PACKAGES
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+	foreach(DEP ${DEPENDS_PACKAGES})
+		if(PACKAGE STREQUAL "${DEP}")
+			message("-- skip: ${DEP}")
+		else()
+			message("-- cmaki_find_package: ${DEP}")
+			cmaki_find_package("${DEP}" NONRECURSIVE)
+		endif()
+	endforeach()
+
 	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
 	if(${PACKAGE_MODE} STREQUAL "EXACT")
 		message("-- using ${PACKAGE} ${VERSION} in EXACT")
@@ -281,8 +285,8 @@ function(cmaki_find_package)
 
 	# generate json
 	execute_process(
-		COMMAND python ${ARTIFACTS_PATH}/save_package.py --name=${PACKAGE} --depends=${DEPENDS_PATHFILE} --version=${VERSION}
-		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+		COMMAND python ${NPP_GENERATOR_PATH}/save_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --version=${VERSION}
+		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	if(RESULT_VERSION)
 		message("error saving ${PACKAGE}:${VERSION} in ${artifacts_dir}")
@@ -315,8 +319,8 @@ macro(cmaki_package_version_check)
 	# llamar a check_remote_version
 	# dando el nombre recibo la version
 	execute_process(
-		COMMAND python ${ARTIFACTS_PATH}/check_remote_version.py --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE_FIND_NAME} --version=${PACKAGE_FIND_VERSION}
-		WORKING_DIRECTORY "${ARTIFACTS_PATH}"
+		COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE_FIND_NAME} --version=${PACKAGE_FIND_VERSION}
+		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	list(GET RESULT_VERSION 0 RESULT)
 	list(GET RESULT_VERSION 1 NAME)
@@ -378,7 +382,7 @@ macro(cmaki_download_package)
 	get_filename_component(package_name_version "${package_dir}" NAME)
 	set(package_filename "${package_name_version}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(http_package_filename ${CMAKI_REPOSITORY}/download.php?file=${package_filename})
-	set(artifacts_dir "${DEPENDS_PATH}")
+	set(artifacts_dir "${NPP_ARTIFACTS_PATH}")
 	get_filename_component(artifacts_dir "${artifacts_dir}" ABSOLUTE)
 	set(package_binary_filename "${artifacts_dir}/${PACKAGE}-${VERSION}-${CMAKI_IDENTIFIER}.tar.gz")
 	set(package_uncompressed_dir "${artifacts_dir}/${package_name_version}-binary.tmp")
