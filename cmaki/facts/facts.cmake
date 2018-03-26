@@ -176,10 +176,10 @@ function(cmaki_find_package)
 		message("Generating artifact ${PACKAGE} ...")
 
 		###
-		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests")
+		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
 		###
 		execute_process(
-			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests
+			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
 			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
