@@ -16,7 +16,7 @@ if(!is_writable($artifacts))
 {
 	chmod($artifacts, 0777);
 	echo "I don't have permission";
-	exit;
+	exit 1;
 }
 
 $uploaded_file = $artifacts . "/" . basename($_FILES['uploaded']['name']);

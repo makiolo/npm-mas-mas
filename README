@@ -20,3 +20,18 @@
 - Utilizar artefactos cacheados o compilar siempre:
 - NPP_CACHE=TRUE/FALSE
 
+
+
+
+
+
+refactor cmake
+-----------------------------------
+
+cmaki_library ---------> npp_shared
+cmaki_static_library --> npp_static
+cmaki_executable ------> npp_executable
+cmaki_test ------------> npp_test
+cmaki_google_test -----> npp_google_test
+cmaki_python_test -----> npp_python_test
+
