@@ -96,6 +96,7 @@ def compilation(node, parameters, compiler_replace_maps):
                 env_modified['CMAKI_DIR'] = cmakefiles_dir
                 env_modified['SELFHOME'] = install_directory
                 # env_modified['CMAKI_INSTALL'] = install_directory
+                del env_modified['CMAKI_INSTALL']
 
                 #################
                 # remove cmake3p of node
