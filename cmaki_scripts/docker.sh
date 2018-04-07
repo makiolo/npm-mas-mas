@@ -18,7 +18,6 @@ fi
 error=$?
 
 # clean container
-# docker rmi -f makiolo/$IMAGE
+docker rmi -f makiolo/$IMAGE
 
 exit $error
-
