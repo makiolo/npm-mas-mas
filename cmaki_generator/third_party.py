@@ -65,11 +65,11 @@ def prepare_cmakefiles(cmake_files):
 
 def get_identifier(mode):
     env = os.environ.copy()
-    cmaki_install = env['CMAKI_INSTALL']
+    cmaki_pwd = env['CMAKI_PWD']
     if utils.is_windows():
-        script_identifier = os.path.join(cmaki_install, 'cmaki_identifier.exe')
+        script_identifier = os.path.join(cmaki_pwd, 'bin', 'cmaki_identifier.exe')
     else:
-        script_identifier = os.path.join(cmaki_install, 'cmaki_identifier.sh')
+        script_identifier = os.path.join(cmaki_pwd, 'bin', 'cmaki_identifier.sh')
     if not os.path.isfile(script_identifier):
         raise Exception("there is no {} script".format(script_identifier))
     env['CMAKI_INFO'] = mode
