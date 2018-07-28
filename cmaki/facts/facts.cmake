@@ -2,8 +2,16 @@ cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0011 NEW)
 cmake_policy(SET CMP0045 OLD)
 
+IF(NOT DEFINED CMAKI_PWD)
+	set(CMAKI_PWD ${CMAKI_PATH}/../../..)
+ENDIF()
+
+IF(NOT DEFINED CMAKI_INSTALL)
+	set(CMAKI_INSTALL $ENV{CMAKI_INSTALL})
+ENDIF()
+
 IF(NOT DEFINED NPP_ARTIFACTS_PATH)
-	set(NPP_ARTIFACTS_PATH ${CMAKI_PATH}/../../../artifacts)
+	set(NPP_ARTIFACTS_PATH ${CMAKI_PWD}/artifacts)
 ENDIF()
 
 IF(NOT DEFINED CMAKE_PREFIX_PATH)
@@ -15,10 +23,12 @@ IF(NOT DEFINED NPP_GENERATOR_PATH)
 ENDIF()
 
 IF(NOT DEFINED NPP_PACKAGE_JSON_FILE)
-	set(NPP_PACKAGE_JSON_FILE ${CMAKI_PATH}/../../../artifacts.json)
+	set(NPP_PACKAGE_JSON_FILE ${CMAKI_PWD}/artifacts.json)
 ENDIF()
 
 # if(DEFINED CMAKI_DEBUG)
+	MESSAGE("CMAKI_PWD = ${CMAKI_PWD}")
+	MESSAGE("CMAKI_INSTALL = ${CMAKI_INSTALL}")
 	MESSAGE("CMAKI_PATH = ${CMAKI_PATH}")
 	MESSAGE("NPP_ARTIFACTS_PATH = ${NPP_ARTIFACTS_PATH}")
 	MESSAGE("NPP_GENERATOR_PATH = ${NPP_GENERATOR_PATH}")
@@ -28,20 +38,7 @@ ENDIF()
 # endif()
 
 set(ENV{CMAKI_INFO} ALL)
-include($ENV{CMAKI_INSTALL}/cmaki_identifier.cmake)
-# if(WIN32)
-# 	execute_process(
-# 		COMMAND cmaki_identifier.exe
-# 		WORKING_DIRECTORY $ENV{CMAKI_INSTALL}
-# 		OUTPUT_VARIABLE RESULT_VERSION
-# 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-# else()
-# 	execute_process(
-# 		COMMAND bash cmaki_identifier.sh
-# 		WORKING_DIRECTORY $ENV{CMAKI_INSTALL}
-# 		OUTPUT_VARIABLE RESULT_VERSION
-# 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-# endif()
+include(${CMAKI_INSTALL}/cmaki_identifier.cmake)
 set(CMAKI_IDENTIFIER "${PLATFORM}")
 set(CMAKI_PLATFORM "${PLATFORM}")
 
@@ -53,14 +50,14 @@ function(cmaki_find_package)
 	list(LENGTH PARAMETERS ARGV_LENGTH)
 	list(GET PARAMETERS 0 PACKAGE)
 	set(VERSION_REQUEST "")
-	set(RECURSIVE "TRUE")
+	set(CALL_RECURSIVE "TRUE")
 	set(PARM1 "")
 	if(ARGV_LENGTH GREATER 1)
 		list(GET PARAMETERS 1 PARM1)
 		message("-- extra parm1: ${PARM1}")
 		if(PARM1 STREQUAL "NONRECURSIVE")
 			message("${PACKAGE} is not recursive")
-			set(RECURSIVE "FALSE")
+			set(CALL_RECURSIVE "FALSE")
 		else()
 			set(VERSION_REQUEST "${PARM1}")
 		endif()
@@ -177,10 +174,10 @@ function(cmaki_find_package)
 		message("Generating artifact ${PACKAGE} ...")
 
 		###
-		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
+		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
 		###
 		execute_process(
-			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
+			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
 			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
@@ -260,20 +257,23 @@ function(cmaki_find_package)
 
 
 	# cmaki_find_package of depends
-	message("COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
+	message("COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
 	execute_process(
-		COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
+		COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
 		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE DEPENDS_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
-	foreach(DEP ${DEPENDS_PACKAGES})
-		if(PACKAGE STREQUAL "${DEP}")
-			message("-- skip: ${DEP}")
-		else()
-			message("-- cmaki_find_package: ${DEP}")
-			cmaki_find_package("${DEP}" NONRECURSIVE)
-		endif()
-	endforeach()
+
+	if("${CALL_RECURSIVE}")
+		foreach(DEP ${DEPENDS_PACKAGES})
+			if(PACKAGE STREQUAL "${DEP}")
+				message("-- skip: ${DEP}")
+			else()
+				message("-- cmaki_find_package: ${DEP}")
+				cmaki_find_package("${DEP}" NONRECURSIVE)
+			endif()
+		endforeach()
+	endif()
 
 	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
 	if(${PACKAGE_MODE} STREQUAL "EXACT")
@@ -625,13 +625,13 @@ function(cmaki_test)
 			add_test(
 				NAME ${_TEST_NAME}${_TEST_SUFFIX}
 				COMMAND $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> --gmock_verbose=error
-				WORKING_DIRECTORY $ENV{CMAKI_INSTALL}/${BUILD_TYPE}
+				WORKING_DIRECTORY ${CMAKI_INSTALL}/${BUILD_TYPE}
 				CONFIGURATIONS ${BUILD_TYPE})
 		else()
 			add_test(
 				NAME ${_TEST_NAME}${_TEST_SUFFIX}
 				COMMAND bash cmaki_emulator.sh $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> --gmock_verbose=error
-				WORKING_DIRECTORY $ENV{CMAKI_INSTALL}
+				WORKING_DIRECTORY ${CMAKI_INSTALL}
 				CONFIGURATIONS ${BUILD_TYPE})
 		endif()
 	endforeach()
