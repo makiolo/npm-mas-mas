@@ -432,8 +432,8 @@ if __name__ == '__main__':
 
     if not parameters.quiet:
         logging.info('---- MODE: {}'.format( os.environ['MODE'] ))
+        logging.info('---- CMAKI_PWD: {}'.format( os.environ['CMAKI_PWD'] ))
         logging.info('---- CMAKI_INSTALL: {}'.format( os.environ['CMAKI_INSTALL'] ))
-        ###
         logging.info('---- rootdir: {}'.format(parameters.rootdir))
         logging.info('---- prefix: {}'.format(parameters.prefix))
         logging.info('---- cmakefiles: {}'.format(parameters.cmakefiles))

@@ -91,7 +91,7 @@ def packing(node, parameters, compiler_replace_maps):
 
             # print packing files
             for source in os.listdir(source_folder):
-                print( source )
+                logging.info('--> pack: {}'.format(source) )
 
             # packing install
             gen_targz = "%star zcvf %s %s" % (precmd, prefix_package, source_folder)
