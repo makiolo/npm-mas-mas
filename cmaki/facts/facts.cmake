@@ -175,10 +175,10 @@ function(cmaki_find_package)
 		message("Generating artifact ${PACKAGE} ...")
 
 		###
-		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
+		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
 		###
 		execute_process(
-			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
+			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
 			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
@@ -258,9 +258,9 @@ function(cmaki_find_package)
 
 
 	# cmaki_find_package of depends
-	message("COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
+	message("COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
 	execute_process(
-		COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${CMAKI_PWD} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
+		COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
 		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE DEPENDS_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
