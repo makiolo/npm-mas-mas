@@ -201,6 +201,8 @@ def copy(rootdir, folder):
             destiny_dir = os.path.dirname(destiny)
             utils.trymkdir(destiny_dir)
             shutil.copyfile(line, destiny)
+            if not os.path.exists(destiny):
+                raise Exception("Not exists %s" % destiny)
             yield destiny
     return process
 

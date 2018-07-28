@@ -487,7 +487,7 @@ def deserialize_json(fileName):
 def get_stdout(cmd, env=os.environ.copy(), program_required=None):
     if isinstance(cmd, list):
         cmd = ' '.join(cmd)
-    logging.debug('launch cmd: %s' % cmd)
+    # logging.debug('launch cmd: %s' % cmd)
 
     # search executable
     ok = True
@@ -498,7 +498,7 @@ def get_stdout(cmd, env=os.environ.copy(), program_required=None):
         data, err = p.communicate()
         data = [line.strip() for line in data.split('\n') if line.strip()]
         for line in data:
-            logging.debug('[out cmd] %s' % line)
+            # logging.debug('[out cmd] %s' % line)
             yield line
     else:
         raise NotFoundProgram('Not found program %s, for execute: %s' % (program_required, cmd))

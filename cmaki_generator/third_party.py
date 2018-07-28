@@ -716,6 +716,17 @@ class ThirdParty:
         else:
             return '.bs_%s%s%s%s' % (package[:3], version[-1:], plat, build_mode)
 
+    def get_install_base_directory(self, plat, build_mode):
+        # install_directory = os.path.join(self.get_build_directory(plat, build_mode), '..', self.get_workspace(plat))
+        install_directory = os.path.join(self.user_parameters.prefix, self.get_workspace(plat))
+        utils.trymkdir(install_directory)
+        return install_directory
+
+
+    def get_install_directory(self, plat, build_mode):
+        install_directory = os.path.join(self.get_install_base_directory(plat, build_mode), self.get_base_folder(), plat)
+        return install_directory
+
 
     def get_download_directory(self):
         package = self.get_package_name()

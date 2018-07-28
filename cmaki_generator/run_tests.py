@@ -70,9 +70,10 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
     for plat, build_mode in product(platforms, reversed(build_modes)):
         for compiler_c, compiler_cpp, generator, _, _, env_modified, _ in node.compiler_iterator(plat, compiler_replace_maps):
             # verify md5sum
+            install_directory = node.get_install_directory(plat, build_mode)
             workspace = node.get_workspace(plat)
-            utils.trymkdir(workspace)
-            with utils.working_directory(workspace):
+            utils.trymkdir(install_directory)
+            with utils.working_directory(install_directory):
                 prefix_package = os.path.join(parameters.prefix, '%s.tar.gz' % workspace)
                 prefix_package_md5 = os.path.join(output_3rdparty, '%s.md5' % workspace)
                 if os.path.exists(prefix_package) and os.path.exists(prefix_package_md5):

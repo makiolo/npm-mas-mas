@@ -27,18 +27,25 @@ def packing(node, parameters, compiler_replace_maps):
             logging.info('[git] Renamed version from %s to %s' % (version_old, version_git))
 
             # renombrar package-version-platform/package-version
-            workspace = node.get_workspace(plat)
+            install_directory = node.get_install_base_directory(plat, build_mode)
             source_folder = node.get_base_folder()
             oldversion = node.get_version()
             try:
                 node.set_version(version_git)
-                new_workspace = node.get_workspace(plat)
+                # new_workspace = node.get_workspace(plat)
+                new_workspace = node.get_install_base_directory(plat, build_mode)
                 new_source_folder = node.get_base_folder()
 
                 # changed version ?
+                from_ = os.path.join(install_directory, source_folder)
+                to_ = os.path.join(install_directory, new_source_folder)
+                logging.warning("from: %s" % from_)
+                logging.warning("to: %s" % to_)
                 if source_folder != new_source_folder:
-                    utils.move_folder_recursive(os.path.join(workspace, source_folder), os.path.join(workspace, new_source_folder))
-                    utils.move_folder_recursive(workspace, new_workspace)
+                    utils.move_folder_recursive(from_, to_)
+                    logging.info('-- copy from: {}, {}'.format(install_directory, os.path.exists(install_directory)))
+                    logging.info('-- copy to: {}, {}'.format(new_workspace, os.path.exists(new_workspace)))
+                    utils.move_folder_recursive(install_directory, new_workspace)
             finally:
                 node.set_version(oldversion)
 
@@ -67,8 +74,9 @@ def packing(node, parameters, compiler_replace_maps):
     for plat in platforms:
         utils.superverbose(parameters, '*** [%s (%s)] Generating package .tar.gz (%s) ***' % (package, version, plat))
         workspace = node.get_workspace(plat)
-        utils.trymkdir(workspace)
-        with utils.working_directory(workspace):
+        install_directory = node.get_install_base_directory(plat, 'Debug')  # TODO: no depende del build_mode
+        utils.trymkdir(install_directory)
+        with utils.working_directory(install_directory):
 
             if utils.is_windows():
                 utils.safe_system('del /s *.ilk')

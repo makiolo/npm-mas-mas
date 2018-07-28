@@ -11,8 +11,7 @@ def upload(node, parameters, compiler_replace_maps):
     else:
         # pack tar.gz binaries
         for plat in platforms:
-            workspace = node.get_workspace(plat)
-            prefix_package = os.path.join(parameters.prefix, '%s.tar.gz' % workspace)
+            prefix_package = os.path.join(parameters.prefix, '%s.tar.gz' % node.get_workspace(plat))
             if not os.path.isfile(prefix_package):
                 logging.error('error dont exitsts: {}'.format(prefix_package))
                 return False
