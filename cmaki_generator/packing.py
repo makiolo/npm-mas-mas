@@ -90,6 +90,7 @@ def packing(node, parameters, compiler_replace_maps):
             logging.info('generating md5file %s' % prefix_package_md5)
 
             # print packing files
+            logging.info('-->source: {}'.format(source_folder) )
             for source in os.listdir(source_folder):
                 logging.info('--> pack: {}'.format(source) )
 
