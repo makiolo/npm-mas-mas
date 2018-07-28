@@ -171,6 +171,8 @@ else
 	script_execute = script_execute.replace(/\\/g, "/");
 }
 
+console.log("Execute: " + caller_execute + script_execute);
+
 if(exists)
 {
 	var child = shelljs.exec(caller_execute + script_execute, {async:true, silent:true}, function(err, stdout, stderr) {
