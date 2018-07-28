@@ -39,7 +39,7 @@ ENDIF()
 # endif()
 
 set(ENV{CMAKI_INFO} ALL)
-include(${CMAKI_INSTALL}/cmaki_identifier.cmake)
+include(${CMAKI_PWD}/bin/cmaki_identifier.cmake)
 set(CMAKI_IDENTIFIER "${PLATFORM}")
 set(CMAKI_PLATFORM "${PLATFORM}")
 
