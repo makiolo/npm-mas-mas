@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
-export NOCACHE_LOCAL="${NOCACHE_LOCAL:-TRUE}"
-export NOCACHE_REMOTE="${NOCACHE_REMOTE:-FALSE}"
+
+export NPP_CACHE="${NPP_CACHE:-FALSE}"
 
 # dentro de docker, por defecto, se instalan dependencias
 if [ -f /.dockerenv ]; then

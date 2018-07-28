@@ -1,6 +1,5 @@
 #!/bin/bash
-export NOCACHE_REMOTE="${NOCACHE_REMOTE:-FALSE}"
-export NOCACHE_LOCAL="${NOCACHE_LOCAL:-FALSE}"
+export NPP_CACHE="${NPP_CACHE:-FALSE}"
 export CC="${CC:-gcc}"
 export CXX="${CXX:-g++}"
 export MODE="${MODE:-Debug}"
