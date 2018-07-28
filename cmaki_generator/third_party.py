@@ -1020,10 +1020,10 @@ class ThirdParty:
             pattern as special string
             list of strings
         '''
-        logging.info('-- searching in {} with pattern: {}'.format(rootdir, special_pattern))
+        logging.debug('-- searching in {} with pattern: {}'.format(rootdir, special_pattern))
 
         if special_pattern is None:
-            logging.warning('Failed searching lib in %s' % rootdir)
+            logging.debug('Failed searching lib in %s' % rootdir)
             return False, None
 
         package = self.get_package_name()
