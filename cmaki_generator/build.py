@@ -351,18 +351,15 @@ usage:""")
         rootdir = ARTIFACTS_PATH, es la base de donde esta build.py (cmaki_generator) (scripts de generacion) tambien podria ser CMAKI_PWD
         CMAKI_INSTALL: donde se espera tener instalado el cmaki_identifier
         '''
-    # parameters cmd line are paths
-    if 'CMAKI_PWD' not in os.environ:
-        parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
-    else:
-        logging.warning('Using rootdir: {}'.format(os.environ['CMAKI_INSTALL']))
-        parameters.rootdir = init_parameter_path(parameters.rootdir, os.environ['CMAKI_INSTALL'])
+
+    parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
     parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, '..', 'artifacts'))
     parameters.third_party_dir = init_parameter_path(parameters.third_party_dir,
                                                      os.path.join(parameters.prefix, 'cmaki_find_package'))
     parameters.cmakefiles = init_parameter_path(parameters.cmakefiles, os.path.join(parameters.rootdir, '..', 'cmaki'))
     parameters.blacklist = init_parameter_path(parameters.blacklist, os.path.join(parameters.rootdir, 'blacklist.txt'))
     parameters.depends = init_parameter_path(parameters.depends, os.path.join(parameters.prefix, '..', 'depends.json'))
+
     # convert priority to int
     parameters.priority = convert_priority_to_integer(parameters.priority)
     parameters.no_priority = convert_priority_to_integer(parameters.no_priority)
