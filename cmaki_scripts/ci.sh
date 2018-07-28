@@ -36,28 +36,28 @@ fi
 
 if [ -f "package.json" ]; then
 
-	echo [1/3] prepare
-	npm cache clean --force
-	rm -Rf $HOME/.npm
+	# echo [0/3] prepare
+	# npm cache clean --force
+	# rm -Rf $HOME/.npm
 
-	echo [2/3] compile
+	echo [1/2] compile
 	npm install
 
-	echo [3/3] run tests
+	echo [2/2] run tests
 	npm test
 else
-	echo [1/3] prepare
-	curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/bootstrap.sh | bash
+	# echo [1/3] prepare
+	# curl -s https://raw.githubusercontent.com/makiolo/cmaki_scripts/master/bootstrap.sh | bash
 
-	echo [2/3] compile
+	echo [1/2] compile
 	./node_modules/cmaki_scripts/setup.sh && ./node_modules/cmaki_scripts/compile.sh
 
-	echo [3/3] run tests
+	echo [2/2] run tests
 	./node_modules/cmaki_scripts/test.sh
 fi
 
 if [ -f "cmaki.yml" ]; then
-	echo [4/3] upload artifact
+	echo [3/3] upload artifact
 	if [ -f "package.json" ]; then
 		npm run upload
 	else
