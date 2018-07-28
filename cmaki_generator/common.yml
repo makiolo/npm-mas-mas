@@ -49,7 +49,7 @@ thirdparty_defaults: &thirdparty_defaults
     # build:
     #     |
     #         #!/bin/bash
-    #         CMAKI_INSTALL=$SELFHOME npm install
+    #         npm install
     build_windows:
         |
             @echo off

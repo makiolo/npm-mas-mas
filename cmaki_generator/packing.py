@@ -89,10 +89,11 @@ def packing(node, parameters, compiler_replace_maps):
             logging.info('generating package %s from source %s' % (prefix_package, os.path.join(os.getcwd(), source_folder)))
             logging.info('generating md5file %s' % prefix_package_md5)
 
-            # print packing files
-            logging.info('-->source: {}'.format(source_folder) )
-            for source in os.listdir(source_folder):
-                logging.info('--> pack: {}'.format(source) )
+            for root, dirs, files in os.walk(source_folder):
+                path = root.split(os.sep)
+                logging.info((len(path) - 1) * '--- ' + '%s' % os.path.basename(root))
+                for file in files:
+                    logging.info(len(path) * '--- ' + '%s' % file)
 
             # packing install
             gen_targz = "%star zcvf %s %s" % (precmd, prefix_package, source_folder)

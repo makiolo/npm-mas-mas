@@ -96,6 +96,10 @@ if 'CMAKI_INSTALL' not in os.environ:
     logging.warning('Using CMAKI_INSTALL by default. For explicit use, define environment var CMAKI_INSTALL')
     os.environ['CMAKI_INSTALL'] = os.path.join( os.getcwd(), '..', 'cmaki_identifier', 'bin')
 
+if 'CMAKI_PWD' not in os.environ:
+    logging.warning('Using CMAKI_PWD by default. For explicit use, define environment var CMAKI_PWD')
+    os.environ['CMAKI_PWD'] = os.path.join( os.getcwd(), '..', 'cmaki_identifier')
+
 
 #
 # INMUTABLE GLOBALS

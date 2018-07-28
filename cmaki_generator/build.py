@@ -79,9 +79,9 @@ def amalgamation_yaml(rootdir, yamlfile=None):
                 f.write('%s%s' % (' '*8, line))
         collapse_third_parties(rootdir, yaml_collapsed_third_parties, yamlfile=yamlfile)
         if yamlfile is None and not parameters.no_back_yaml:
-            rootdir_up = os.path.abspath(os.path.join(rootdir, '..', '..'))
-            for path in os.listdir(rootdir_up):
-                fullpath = os.path.join(os.path.abspath(rootdir_up), path)
+            node_modules_dir = os.path.abspath(os.path.join(rootdir, '..', '..'))
+            for path in os.listdir(node_modules_dir):
+                fullpath = os.path.join(os.path.abspath(node_modules_dir), path)
                 if os.path.isdir(fullpath):
                     cmaki_file = os.path.join(fullpath, 'cmaki.yml')
                     if os.path.isfile(cmaki_file):
@@ -679,13 +679,13 @@ if __name__ == '__main__':
                     # packing (generate .tar.gz)
                     p = pipeline.do(packing, False, parameters, compiler_replace_maps)(p)
 
-                if not parameters.no_run_tests:
-                    # execute unittests and save results in "unittests"
-                    p = pipeline.do(run_tests, False, parameters, compiler_replace_maps, unittests)(p)
-
                 if not parameters.no_upload:
                     # upload artifacts
                     p = pipeline.do(upload, False, parameters, compiler_replace_maps)(p)
+
+                if not parameters.no_run_tests:
+                    # execute unittests and save results in "unittests"
+                    p = pipeline.do(run_tests, False, parameters, compiler_replace_maps, unittests)(p)
 
                 # save results in "rets"
                 p = get_return_code(parameters, rets)(p)

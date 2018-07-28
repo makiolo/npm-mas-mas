@@ -3,7 +3,7 @@
     version: 0.0.0.0
     version_manager: git
     source: https://github.com/gabime/spdlog.git
-    branch: -b v0.17.0
+    branch: -b v0.16.3
     post_install:
         - ./include/*.h* include/ RECURSIVE
         - ./include/*.cc* include/ RECURSIVE
