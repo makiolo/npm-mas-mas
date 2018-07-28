@@ -352,7 +352,11 @@ usage:""")
         CMAKI_INSTALL: donde se espera tener instalado el cmaki_identifier
         '''
     # parameters cmd line are paths
-    parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
+    if 'CMAKI_PWD' not in os.environ:
+        parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
+    else:
+        logging.warning('Using rootdir: {}'.format(os.environ['CMAKI_INSTALL']))
+        parameters.rootdir = init_parameter_path(parameters.rootdir, os.environ['CMAKI_INSTALL'])
     parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, '..', 'artifacts'))
     parameters.third_party_dir = init_parameter_path(parameters.third_party_dir,
                                                      os.path.join(parameters.prefix, 'cmaki_find_package'))
