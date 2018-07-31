@@ -126,7 +126,7 @@ def compilation(node, parameters, compiler_replace_maps):
 
                 # resolve replace maps
                 compiler_replace_resolved = {}
-                for var, value in compiler_replace_maps.iteritems():
+                for var, value in compiler_replace_maps.items():
                     newvalue = value
                     newvalue = newvalue.replace('$PLATFORM', plat)
                     compiler_replace_resolved[var] = newvalue
@@ -187,7 +187,6 @@ def compilation(node, parameters, compiler_replace_maps):
                 else:
                     for build_script in ['.build.sh', 'build.sh']:
                         if os.path.exists(build_script):
-
                             # show vars
                             node.show_environment_vars(env_modified)
 
@@ -199,6 +198,7 @@ def compilation(node, parameters, compiler_replace_maps):
 
                     ret = utils.safe_system(cmake_configure, env=env_modified)
                     if ret == 0:
+                        logging.debug('build command: %s' % cmake_configure)
                         node.ret += abs(utils.safe_system(cmake_build, env=env_modified))
                     else:
                         logging.warning('Configuration failed. See log: %s' % parameters.log)

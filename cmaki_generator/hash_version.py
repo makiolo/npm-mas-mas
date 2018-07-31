@@ -164,7 +164,9 @@ if __name__ == '__main__':
 
     for commit_name in git_log_gen(local_path, 10):
         cmaki_version = to_cmaki_version(local_path, commit_name)
-        print "%s -> %s" % (commit_name, cmaki_version)
+        print ("%s -> %s" % (commit_name, cmaki_version))
         commit_name2 = to_git_version(local_path, cmaki_version)
-        print "%s -> %s" % (cmaki_version, commit_name2)
-        print
+        print ("%s -> %s" % (cmaki_version, commit_name2))
+        print ()
+
+

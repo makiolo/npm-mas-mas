@@ -9,7 +9,6 @@ import pipeline
 import traceback
 import copy
 import datetime
-import urllib2
 # object package
 from third_party import ThirdParty
 from collections import OrderedDict
@@ -555,7 +554,7 @@ if __name__ == '__main__':
 
     # 4/7: write final plan
     groups = []
-    for key, value in sols3.iteritems():
+    for key, value in sols3.items():
         newsolution = [key]
         for node in value:
             newsolution.append(node)

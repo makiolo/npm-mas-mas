@@ -86,7 +86,7 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
                             if len(line) > 0:
                                 # md5sum filename
                                 chunks = line.split(' ')
-                                chunks = filter(None, chunks)
+                                chunks = list(filter(None, chunks))
                                 assert(len(chunks) > 0)
                                 md5sum_real = chunks[0]
                                 logging.debug("real md5: %s" % md5sum_real)

@@ -1,9 +1,9 @@
 import os
 import sys
-import urllib2
+# import urllib2
 import argparse
 import logging
-import poster
+# import poster
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -16,17 +16,17 @@ if __name__ == '__main__':
         logging.error('dont exists %s' % parameters.filename)
         sys.exit(1)
 
-    # Register the streaming http handlers with urllib2
-    poster.streaminghttp.register_openers()
-
-    with open(parameters.filename, "rb") as f:
-        datagen, headers = poster.encode.multipart_encode({parameters.field: f})
-        # Create the Request object
-        request = urllib2.Request(parameters.url, datagen, headers)
-        # Actually do the request, and get the response
-        handler = urllib2.urlopen(request)
-        logging.info( handler.read() )
-        if handler.getcode() == 200:    
-            sys.exit(0)
-        else:
-            sys.exit(1)
+    # # Register the streaming http handlers with urllib2
+    # poster.streaminghttp.register_openers()
+    #
+    # with open(parameters.filename, "rb") as f:
+    #     datagen, headers = poster.encode.multipart_encode({parameters.field: f})
+    #     # Create the Request object
+    #     request = urllib2.Request(parameters.url, datagen, headers)
+    #     # Actually do the request, and get the response
+    #     handler = urllib2.urlopen(request)
+    #     logging.info( handler.read() )
+    #     if handler.getcode() == 200:    
+    #         sys.exit(0)
+    #     else:
+    #         sys.exit(1)

@@ -6,7 +6,6 @@ import logging
 import glob
 import subprocess
 import urllib
-import urllib2
 import tarfile
 import zipfile
 import time
@@ -58,7 +57,7 @@ def smart_merge(dict1, dict2):
 def apply_replaces(element, dictionary):
     if isinstance(element, dict):
         new = {}
-        for k,v in element.iteritems():
+        for k,v in element.items():
             new[k] = apply_replaces(v, dictionary)
         return new
     elif isinstance(element, list):
@@ -70,7 +69,7 @@ def apply_replaces(element, dictionary):
         return element
     elif element is not None:
         new_element = str(element)
-        for k,v in dictionary.iteritems():
+        for k,v in dictionary.items():
             # find in original, not in replaced
             if str(element).find(k) != -1:
                 new_element = new_element.replace(k, v)
@@ -81,7 +80,7 @@ def apply_replaces(element, dictionary):
 
 def apply_replaces_vars(element, dictionary):
     newdict = {}
-    for k,v in dictionary.iteritems():
+    for k,v in dictionary.items():
         newdict['$%s' % k] = v
         newdict['${%s}' % k] = v
     return apply_replaces(element, newdict)
@@ -171,7 +170,7 @@ def prompt_yes_no(default = False):
 
 def show_element(element, deep = 0):
     if isinstance(element, dict):
-        for k,v in element.iteritems():
+        for k,v in element.items():
             logging.info("%s<%s>" % ('\t'*deep, k))
             show_element(v, deep + 1)
     elif isinstance(element, list):
@@ -306,7 +305,7 @@ def extract_file(path, to_directory, environment):
             ok = (ret == 0)
             return ok
     else:
-        raise ValueError, "Could not extract `%s` as no appropriate extractor is found" % path
+        raise ValueError("Could not extract `%s` as no appropriate extractor is found" % path)
 
     # create directory if not exists
     trymkdir(to_directory)

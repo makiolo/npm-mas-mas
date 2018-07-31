@@ -7,7 +7,6 @@ import datetime
 import hash_version
 import copy
 import fnmatch
-from sets import Set
 
 
 class InvalidPlatform(Exception):
@@ -573,7 +572,7 @@ class ThirdParty:
 
         # resolve map
         compiler_replace_resolved = {}
-        for var, value in compiler_replace_maps.iteritems():
+        for var, value in compiler_replace_maps.items():
             new_value = value
             new_value = new_value.replace('$PLATFORM', plat)
             compiler_replace_resolved[var] = new_value
@@ -613,12 +612,12 @@ class ThirdParty:
 
                     try:
                         environment_remove = environment['remove']
-                        for key, values in  environment_remove.iteritems():
+                        for key, values in  environment_remove.items():
                             try:
                                 oldpath = env_iter[key]
                             except KeyError:
                                 oldpath = ''
-                            uniq_values = Set()
+                            uniq_values = set()
                             for v in values:
                                 v = utils.apply_replaces(v, compiler_replace_resolved)
                                 uniq_values.add(v)
@@ -631,12 +630,12 @@ class ThirdParty:
                     # insert front with seprator = ":"
                     try:
                         environment_push_front = environment['push_front']
-                        for key, values in  environment_push_front.iteritems():
+                        for key, values in  environment_push_front.items():
                             try:
                                 oldpath = env_iter[key]
                             except KeyError:
                                 oldpath = ''
-                            uniq_values = Set()
+                            uniq_values = set()
                             for v in values:
                                 v = utils.apply_replaces(v, compiler_replace_resolved)
                                 uniq_values.add(v)
@@ -657,12 +656,12 @@ class ThirdParty:
                     # insert back with separator " "
                     try:
                         environment_flags = environment['flags']
-                        for key, values in  environment_flags.iteritems():
+                        for key, values in  environment_flags.items():
                             try:
                                 oldpath = env_iter[key]
                             except KeyError:
                                 oldpath = ''
-                            uniq_values = Set()
+                            uniq_values = set()
                             for v in values:
                                 v = utils.apply_replaces(v, compiler_replace_resolved)
                                 uniq_values.add(v)
@@ -679,7 +678,7 @@ class ThirdParty:
                     # insert new environment variables
                     try:
                         environment_assign = environment['assign']
-                        for key, value in  environment_assign.iteritems():
+                        for key, value in  environment_assign.items():
                             value = utils.apply_replaces(value, compiler_replace_resolved)
                             env_iter[key] = value
                     except KeyError:
@@ -980,9 +979,9 @@ class ThirdParty:
         if len(exceptions) > 0:
             i = 0
             for exc_type, exc_value, exc_traceback in exceptions:
-                print "---- Exception #%d / %d ----------" % (i+1, len(exceptions))
+                print ("---- Exception #%d / %d ----------" % (i+1, len(exceptions)))
                 traceback.print_exception(exc_type, exc_value, exc_traceback)
-                print "----------------------------------"
+                print ("----------------------------------")
                 i += 1
             raise FailPrepare(self)
 
@@ -999,7 +998,7 @@ class ThirdParty:
 
 
     def generate_cmake_condition(self, platforms, compiler_replace_maps):
-        target_uniques = Set()
+        target_uniques = set()
         condition = ''
         i = 0
         for plat in platforms:
@@ -1202,7 +1201,7 @@ cmaki_package_version_check()
                         includes_set = []
                         definitions_set = []
                         system_depends_set = []
-                        depends_set = Set()
+                        depends_set = set()
 
                         for target, platform_info in self.get_generator_targets(plat, compiler_c, compiler_cpp, ext_sta, ext_dyn):
 
@@ -1240,7 +1239,7 @@ cmaki_package_version_check()
 
                             if 'targets_paths' in self.parameters:
                                 targets_paths = self.parameters['targets_paths']
-                                for key, value in targets_paths.iteritems():
+                                for key, value in targets_paths.items():
                                     f.write('file(TO_NATIVE_PATH "%s" %s)\n' % (value, key))
 
                             if ('executable' in platform_info) and (target != 'dummy'):
@@ -1476,7 +1475,7 @@ cmaki_package_version_check()
     def show_environment_vars(self, env_modified):
         package = self.get_package_name()
         logging.debug('------- begin print environment variables for compile %s ---------' % package)
-        for key, value in sorted(env_modified.iteritems()):
+        for key, value in sorted(env_modified.items()):
             logging.debug("%s=%s" % (key, value))
         logging.debug('------- end print environment variables for compile %s -----------' % package)
 

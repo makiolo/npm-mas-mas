@@ -20,7 +20,7 @@ if __name__ == '__main__':
     else:
         data = {}
     if parameters.name in data:
-        print data[parameters.name]
+        print (data[parameters.name])
         sys.exit(0)
     else:
         sys.exit(1)
