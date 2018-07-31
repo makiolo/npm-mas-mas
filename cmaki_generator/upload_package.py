@@ -4,6 +4,7 @@ import sys
 import argparse
 import logging
 # import poster
+import requests
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -15,6 +16,9 @@ if __name__ == '__main__':
     if not os.path.exists(parameters.filename):
         logging.error('dont exists %s' % parameters.filename)
         sys.exit(1)
+
+    with open(parameters.filename, 'rb') as f:
+        r = requests.post(parameters.url, files={parameters.field: f})
 
     # # Register the streaming http handlers with urllib2
     # poster.streaminghttp.register_openers()

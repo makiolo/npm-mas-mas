@@ -3,7 +3,6 @@ import sys
 import logging
 import argparse
 import urllib
-import cStringIO
 import csv
 import utils
 

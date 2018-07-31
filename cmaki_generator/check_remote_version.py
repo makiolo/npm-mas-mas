@@ -2,10 +2,11 @@ import os
 import sys
 import logging
 import argparse
-import urllib
-import cStringIO
+import urllib.request
+from io import StringIO
 import csv
 import utils
+import functools
 
 
 version_separator = '.'
@@ -13,12 +14,11 @@ version_count_max = 4
 
 
 def read_remote_csv(url):
-    f = urllib.urlopen(url)
-    try:
-        csv = f.read()
-    finally:
-        f.close()
-    return csv
+    fp = urllib.request.urlopen(url)
+    mybytes = fp.read()
+    content = mybytes.decode("utf8")
+    fp.close()
+    return content
 
 
 def version_to_tuple(version_str):
@@ -169,7 +169,7 @@ if __name__ == '__main__':
             if not parameters.server.endswith('?quiet'):
                 parameters.server = parameters.server + '/' + '?quiet'
             csv_content = read_remote_csv(parameters.server)
-            reader = csv.reader(cStringIO.StringIO(csv_content), delimiter=';')
+            reader = csv.reader(StringIO(csv_content), delimiter=';')
             i = 0
             for row in reader:
                 if len(row) >= 2:
@@ -194,7 +194,7 @@ if __name__ == '__main__':
             Al pasar False al comparador aparece primero local y luego remote en caso de ser la misma version.
             Selecciona el primero y sale.
             """
-            for package in sorted(packages_found, cmp=sort_versions(False)):
+            for package in sorted(packages_found, key=functools.cmp_to_key(sort_versions(False))):
                 if package_request.is_same_version(package):
                     print("EXACT;%s;%s" % (package, package.get_version()))
                 else:
@@ -209,7 +209,7 @@ if __name__ == '__main__':
             Al pasar True al comparador hace que en caso de empate se mantenga a pesar del reverse que
             aparece primero versiones locales y luego las remotas.
             """
-            for package in sorted(packages_found, cmp=sort_versions(True), reverse=True):
+            for package in sorted(packages_found, key=functools.cmp_to_key(sort_versions(True)), reverse=True):
                 if package.get_version() >= package_request.get_version():
                     if package_request.is_same_version(package):
                         print("EXACT;%s;%s" % (package, package.get_version()))
