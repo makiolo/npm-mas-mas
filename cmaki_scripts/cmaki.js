@@ -62,7 +62,7 @@ else
 
 
 // no check in cmaki_identifier for avoid recursion
-if( process.cwd().search("/cmaki_identifier/") == -1 )
+if( process.cwd().search("/cmaki_identifier") == -1 )
 {
 	if(!fs.existsSync( path.join( process.env['CMAKI_INSTALL'], cmaki_identifier) ))
 	{
