@@ -7,19 +7,23 @@
     source: https://github.com/nigels-com/glew.git
     cmake_definitions:
         - BUILD_SHARED_LIBS=ON
+    post_install:
+        - ./lib/* lib/ RECURSIVE
+        - ./include/* include/ RECURSIVE
     build:
         |
             #!/bin/bash
-            source find.script
             pushd auto
             make
             popd
-            make -j $CORES && GLEW_DEST=$dune_glew_HOME make -j $CORES install
+            make -j $CORES
     targets:
         - GLEW:
             info:
-                <<: *library_dynamic
+                <<: *library_static
             extra:
+                macos_64-clang_*-*:
+                    system_depends: null
                 default:
                     system_depends:
                         - GL

@@ -1,9 +1,10 @@
 version: '3'
 services:
-  artifacts:
-    build: .
-    ports:
-      - "5000:80"
-    volumes:
-      - .:/var/www/html
+    servfactor:
+        build: .
+        volumes:
+            - .:/var/www/html/cpp
+            - ./packages:/var/www/html/packages
+        ports:
+            - "8080:80"
 

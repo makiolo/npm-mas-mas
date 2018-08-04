@@ -46,10 +46,6 @@ thirdparty_defaults: &thirdparty_defaults
     depends: null
     source: skip
     packing: true
-    # build:
-    #     |
-    #         #!/bin/bash
-    #         npm install
     build_windows:
         |
             @echo off

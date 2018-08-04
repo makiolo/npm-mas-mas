@@ -5,7 +5,6 @@ import shutil
 import logging
 import glob
 import subprocess
-import urllib
 import tarfile
 import zipfile
 import time
@@ -15,6 +14,8 @@ import yaml
 import json
 import errno
 import multiprocessing
+import fnmatch
+from requests import get  # to make GET request
 from distutils.spawn import find_executable
 try:
     import bz2
@@ -129,8 +130,10 @@ def tryremove_dir_empty(source):
             logging.debug('Removing empty directory %s' % (source))
 
 
-def download_from_url(url, filename):
-    urllib.urlretrieve(url, filename=filename)
+def download_from_url(url, file_name):
+    with open(file_name, "wb") as file:
+        response = get(url)
+        file.write(response.content)
 
 
 def setup_logging(level, logname):
@@ -180,26 +183,18 @@ def show_element(element, deep = 0):
         logging.info('%s%s' % ('\t'*deep, element))
 
 
-def _rec_glob(result, rootdir, pattern, deep_max, exclusions, deep):
-    if(os.path.isdir(rootdir)):
-        if deep < deep_max:
-            for folder in os.listdir(rootdir):
-                fullpath = os.path.join(rootdir, folder)
-                if os.path.isdir(fullpath):
-                    _rec_glob(result, fullpath, pattern, deep_max, exclusions, deep + 1)
-        for fullpath in glob.glob(os.path.join(rootdir, pattern)):
-            # ignore some stuff
-            for exc in exclusions:
-                if fullpath.endswith(exc):
-                    break
-            else:
-                # process file
-                result.append( os.path.abspath(fullpath) )
 
+def rec_glob(rootdir, pattern):
 
-def rec_glob(rootdir, pattern, deep_max=99, exclusions=[]):
+    # logging.info('---> {} [START]'.format(rootdir))
     result = []
-    _rec_glob(result, rootdir, pattern, deep_max, exclusions, 0)
+    for root, dirs, files in os.walk(rootdir):
+        # logging.info('---> {}'.format(root))
+        for file in files:
+            # logging.info('---> {}'.format(file))
+            if fnmatch.fnmatch(file, pattern):
+                # logging.info('---> {} [MATCH]'.format(file))
+                result.append(os.path.join(root, file))
     return result
 
 
@@ -528,4 +523,9 @@ def safe_system(cmd, env=None):
         if p.returncode != 0:
             logging.error("end@output: %s" % cmd)
         return p.returncode
+
+
+if __name__ == '__main__':
+    print(rec_glob('.', '*.yml'))
+
 

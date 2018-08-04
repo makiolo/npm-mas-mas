@@ -1,10 +1,14 @@
 <?php
+
+$packages_dir = '/var/www/html/packages';
+
 $debug_mode = false;
 if(isset($_REQUEST['debug']))
 {
 	$debug_mode = true;
 	// Debug PHP
 	ini_set('display_errors', 'On'); 
+	ini_set('display_startup_errors', 1);
 	error_reporting(E_ALL);
 }
 
@@ -26,9 +30,9 @@ if(!$quiet_mode)
 {
 
 /* get disk space free (in bytes) */
-$df = disk_free_space("packages/");
+$df = disk_free_space($packages_dir);
 /* and get disk space total (in bytes)  */
-$dt = disk_total_space("packages/");
+$dt = disk_total_space($packages_dir);
 /* now we calculate the disk space used (in bytes) */
 $du = $dt - $df;
 /* percentage of disk used - this will be used to also set the width % of the progress bar */
@@ -101,8 +105,8 @@ $data = read_stats();
 
 // order by last download
 $arr = array();    
-$files = scandir('packages/');
-$dir = 'packages/';
+$files = scandir($packages_dir);
+$dir = $packages_dir;
 foreach ($files as $file)
 {
 

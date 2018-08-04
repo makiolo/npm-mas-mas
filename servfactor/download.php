@@ -5,6 +5,7 @@ include 'stats.php';
 class u extends \utilphp\util { }
 
 $artifacts = $_SERVER['DOCUMENT_ROOT'].'/packages';
+
 if (!is_writable($artifacts))
 {
 	header("HTTP/1.0 404 Not Found");

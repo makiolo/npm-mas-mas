@@ -7,6 +7,15 @@ from itertools import product
 from third_party import platforms
 from third_party import get_identifier
 
+
+def print_folder(source_folder):
+    for root, dirs, files in os.walk(source_folder):
+        path = root.split(os.sep)
+        logging.info((len(path) - 1) * '... ' + '%s/' % os.path.basename(root))
+        for file in files:
+            logging.info(len(path) * '... ' + '%s' % file)
+
+
 def packing(node, parameters, compiler_replace_maps):
 
     package = node.get_package_name()
@@ -27,25 +36,31 @@ def packing(node, parameters, compiler_replace_maps):
             logging.info('[git] Renamed version from %s to %s' % (version_old, version_git))
 
             # renombrar package-version-platform/package-version
-            install_directory = node.get_install_base_directory(plat, build_mode)
+            install_directory = node.get_install_base_directory(plat)
             source_folder = node.get_base_folder()
             oldversion = node.get_version()
             try:
                 node.set_version(version_git)
                 # new_workspace = node.get_workspace(plat)
-                new_workspace = node.get_install_base_directory(plat, build_mode)
+                new_workspace = node.get_install_base_directory(plat)
                 new_source_folder = node.get_base_folder()
 
                 # changed version ?
                 from_ = os.path.join(install_directory, source_folder)
                 to_ = os.path.join(install_directory, new_source_folder)
-                logging.warning("from: %s" % from_)
-                logging.warning("to: %s" % to_)
+                logging.debug("from: %s" % from_)
+                logging.debug("to: %s" % to_)
                 if source_folder != new_source_folder:
                     utils.move_folder_recursive(from_, to_)
-                    logging.info('-- copy from: {}, {}'.format(install_directory, os.path.exists(install_directory)))
-                    logging.info('-- copy to: {}, {}'.format(new_workspace, os.path.exists(new_workspace)))
+                    logging.debug('-- copy from: {}, {}'.format(install_directory, os.path.exists(install_directory)))
+                    logging.debug('-- copy to: {}, {}'.format(new_workspace, os.path.exists(new_workspace)))
                     utils.move_folder_recursive(install_directory, new_workspace)
+                    # logging.info('-- From1 (must be empty)')
+                    # print_folder(from_)
+                    # logging.info('-- From2 (must be empty)')
+                    # print_folder(install_directory)
+                    # logging.info('-- To (must have libs and includes)')
+                    # print_folder(new_workspace)
             finally:
                 node.set_version(oldversion)
 
@@ -74,7 +89,7 @@ def packing(node, parameters, compiler_replace_maps):
     for plat in platforms:
         utils.superverbose(parameters, '*** [%s (%s)] Generating package .tar.gz (%s) ***' % (package, version, plat))
         workspace = node.get_workspace(plat)
-        install_directory = node.get_install_base_directory(plat, 'Debug')  # TODO: no depende del build_mode
+        install_directory = node.get_install_base_directory(plat)
         utils.trymkdir(install_directory)
         with utils.working_directory(install_directory):
 
@@ -88,12 +103,7 @@ def packing(node, parameters, compiler_replace_maps):
 
             logging.info('generating package %s from source %s' % (prefix_package, os.path.join(os.getcwd(), source_folder)))
             logging.info('generating md5file %s' % prefix_package_md5)
-
-            for root, dirs, files in os.walk(source_folder):
-                path = root.split(os.sep)
-                logging.info((len(path) - 1) * '--- ' + '%s' % os.path.basename(root))
-                for file in files:
-                    logging.info(len(path) * '--- ' + '%s' % file)
+            print_folder(source_folder)
 
             # packing install
             gen_targz = "%star zcvf %s %s" % (precmd, prefix_package, source_folder)
@@ -112,13 +122,14 @@ def packing(node, parameters, compiler_replace_maps):
     # packing cmakefiles (more easy distribution)
     if not parameters.no_packing_cmakefiles:
         for plat in platforms:
-            base_folder = node.get_base_folder()
-            prefix_package_cmake = os.path.join(parameters.prefix, '%s-%s-cmake.tar.gz' % (base_folder, plat))
+            source_folder = node.get_base_folder()
+            prefix_package_cmake = os.path.join(parameters.prefix, '%s-%s-cmake.tar.gz' % (source_folder, plat))
             with utils.working_directory(folder_3rdparty):
                 logging.debug('working dir: %s' % folder_3rdparty)
-                # packing install
                 logging.info('generating package cmake %s' % prefix_package_cmake)
-                gen_targz_cmake = '{}tar zcvf {} {}'.format(precmd, prefix_package_cmake, node.get_base_folder())
+                print_folder(source_folder)
+
+                gen_targz_cmake = '{}tar zcvf {} {}'.format(precmd, prefix_package_cmake, source_folder)
                 node.ret += abs( node.safe_system(gen_targz_cmake, compiler_replace_maps) )
                 if not os.path.exists(prefix_package_cmake):
                     logging.error('No such file: {}'.format(prefix_package_cmake))

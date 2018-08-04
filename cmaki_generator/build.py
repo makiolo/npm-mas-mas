@@ -29,7 +29,6 @@ from run_tests import run_tests
 from upload import upload
 from get_return_code import get_return_code
 from third_party import FailThirdParty
-from utils import download_from_url
 
 # GLOBAL NO MUTABLES
 image_pattern = "image.%Y.%m.%d.%H%M"
@@ -345,7 +344,7 @@ usage:""")
         TODO:
         refactor:
         prefix = DEPENDS_PATH (cmake3p) (artifacts)
-        cmakefiles = CMAKI_PATH, CMAKE_MODULE_PATH (cmakelib, cmaki_find_package)
+        cmakefiles = CMAKI_PATH, CMAKE_MODULE_PATH (cmaki, cmaki_find_package)
         third-party-dir = CMAKE_PREFIX_PATH (directorio artifacts/cmaki_find_package) (3rdparty)
         rootdir = ARTIFACTS_PATH, es la base de donde esta build.py (cmaki_generator) (scripts de generacion) tambien podria ser CMAKI_PWD
         CMAKI_INSTALL: donde se espera tener instalado el cmaki_identifier
@@ -678,13 +677,13 @@ if __name__ == '__main__':
                     # packing (generate .tar.gz)
                     p = pipeline.do(packing, False, parameters, compiler_replace_maps)(p)
 
-                if not parameters.no_upload:
-                    # upload artifacts
-                    p = pipeline.do(upload, False, parameters, compiler_replace_maps)(p)
-
                 if not parameters.no_run_tests:
                     # execute unittests and save results in "unittests"
                     p = pipeline.do(run_tests, False, parameters, compiler_replace_maps, unittests)(p)
+
+                if not parameters.no_upload:
+                    # upload artifacts
+                    p = pipeline.do(upload, False, parameters, compiler_replace_maps)(p)
 
                 # save results in "rets"
                 p = get_return_code(parameters, rets)(p)

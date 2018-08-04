@@ -2,33 +2,9 @@
 
 $stats = 'stats.txt';
 
-// class MutexStatic {
-// 	public static $handler = Mutex::create();
-//
-// 	public function lock()
-// 	{
-// 		Mutex::lock($handler);
-// 	}
-//
-// 	public function unlock()
-// 	{
-// 		Mutex::unlock($handler);
-// 	}
-// }
-//
-// $mutex = new MutexStatic();
-
-
-// scheme
-// 		0 -> counter
-//		1 -> last_download
-
 function read_stats()
 {
 	global $stats;
-	// global $mutex;
-    //
-	// $mutex->lock();
 
 	if(file_exists($stats))
 	{
@@ -45,8 +21,6 @@ function read_stats()
 	{
 		$data = array();
 	}
-
-	// $mutex->unlock();
 
 	return $data;
 }
@@ -84,16 +58,10 @@ function get_hits($data, $key)
 function write_stats($data)
 {
 	global $stats;
-	// global $mutex;
-    //
-	// $mutex->lock();
-
 	$f = fopen($stats, 'w');
 	$data = serialize($data);
 	fwrite($f, $data);
 	fclose($f);
-
-	// $mutex->unlock();
 }
 
 ?>

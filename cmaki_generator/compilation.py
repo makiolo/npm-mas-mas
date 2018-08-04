@@ -42,7 +42,7 @@ def compilation(node, parameters, compiler_replace_maps):
     parms = node.parameters
     build_modes = node.get_build_modes()
     for plat, build_mode in product(platforms, build_modes):
-        install_directory = node.get_install_directory(plat, build_mode)
+        install_directory = node.get_install_directory(plat)
         utils.trymkdir(install_directory)
         build_directory = os.path.join(os.getcwd(), node.get_build_directory(plat, build_mode))
         utils.trymkdir(build_directory)

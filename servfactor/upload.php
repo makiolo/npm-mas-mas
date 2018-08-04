@@ -12,25 +12,26 @@ include 'util.php';
 class u extends \utilphp\util { }
 
 $artifacts = $_SERVER['DOCUMENT_ROOT'].'/packages';
+echo "<h1>" . $artifacts . "</h1>";
+
 if(!is_writable($artifacts))
 {
-	chmod($artifacts, 0777);
-	echo "I don't have permission";
-	exit 1;
+	echo "I don't have permission<br />";
+	exit(1);
 }
 
 $uploaded_file = $artifacts . "/" . basename($_FILES['uploaded']['name']);
 
 // mejor permitir subir ficheros ya existentes
-// if(isset($_FILES['uploaded']) && file_exists($uploaded_file))
-// {
-// 	echo "file: ".$uploaded_file." already esxists!";
-// 	exit;
-// }
+if(isset($_FILES['uploaded']) && file_exists($uploaded_file))
+{
+	echo "file: ".$uploaded_file." already esxists!";
+	exit(1);
+}
 
 if (move_uploaded_file($_FILES['uploaded']['tmp_name'], $uploaded_file))
 {
-	echo "El fichero es valido y se subio con exito.\n";
+	echo "El fichero es valido y se subio con exito: ". $uploaded_file .".\n";
 }
 else
 {

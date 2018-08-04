@@ -719,15 +719,14 @@ class ThirdParty:
         else:
             return '.bs_%s%s%s%s' % (package[:3], version[-1:], plat, build_mode)
 
-    def get_install_base_directory(self, plat, build_mode):
-        # install_directory = os.path.join(self.get_build_directory(plat, build_mode), '..', self.get_workspace(plat))
+    def get_install_base_directory(self, plat):
         install_directory = os.path.join(self.user_parameters.prefix, self.get_workspace(plat))
         utils.trymkdir(install_directory)
         return install_directory
 
 
-    def get_install_directory(self, plat, build_mode):
-        install_directory = os.path.join(self.get_install_base_directory(plat, build_mode), self.get_base_folder(), plat)
+    def get_install_directory(self, plat):
+        install_directory = os.path.join(self.get_install_base_directory(plat), self.get_base_folder(), plat)
         return install_directory
 
 
@@ -1026,11 +1025,13 @@ class ThirdParty:
         logging.debug('-- searching in {} with pattern: {}'.format(rootdir, special_pattern))
 
         if special_pattern is None:
+            logging.info('000000')
             logging.debug('Failed searching lib in %s' % rootdir)
             return False, None
 
         package = self.get_package_name()
         if isinstance(special_pattern, list):
+            logging.info('1111111')
             utils.verbose(self.user_parameters, 'Searching list %s' % special_pattern)
             valid_ff = None
             for ff in special_pattern:
@@ -1040,9 +1041,10 @@ class ThirdParty:
             return valid, valid_ff
 
         elif special_pattern.startswith('/') and special_pattern.endswith('/'):
+            logging.info('2222222')
             pattern = special_pattern[1:-1]
             utils.verbose(self.user_parameters, 'Searching rootdir %s, pattern %s' % (rootdir, pattern))
-            files_found = utils.rec_glob(rootdir, pattern, deep_max=10)
+            files_found = utils.rec_glob(rootdir, pattern)
             utils.verbose(self.user_parameters, 'Candidates %s' % files_found)
             if len(files_found) == 1:
                 relfile = os.path.relpath(files_found[0], rootdir)
@@ -1056,6 +1058,7 @@ class ThirdParty:
                 logging.debug(msg)
                 return False, None
         else:
+            logging.info('3333333')
             pathfull = os.path.join(rootdir, special_pattern)
             utils.verbose(self.user_parameters, 'Checking file %s' % pathfull)
             if os.path.exists(pathfull):
@@ -1086,15 +1089,14 @@ class ThirdParty:
 
     def search_library_noexcept(self, workbase, dataset, kind):
         try:
-            try:
-                rootdir = os.path.abspath(workbase)
-                finalpath = self.search_library(workbase, dataset, kind, rootdir)
-                utils.superverbose(self.user_parameters, '[01] path: %s' % finalpath)
-                return finalpath
-            except AmbiguationLibs:
-                finalpath = '%s.%s' % (magic_invalid_file, kind)
-                utils.superverbose(self.user_parameters, '[02] path: %s' % finalpath)
-                return finalpath
+            rootdir = os.path.abspath(workbase)
+            finalpath = self.search_library(workbase, dataset, kind, rootdir)
+            utils.superverbose(self.user_parameters, '[01] path: %s' % finalpath)
+            return finalpath
+        except AmbiguationLibs:
+            finalpath = '%s.%s' % (magic_invalid_file, kind)
+            utils.superverbose(self.user_parameters, '[02] path: %s' % finalpath)
+            return finalpath
         except NotFoundInDataset:
             finalpath = '%s.%s' % (magic_invalid_file, kind)
             utils.superverbose(self.user_parameters, '[03] path: %s' % finalpath)
@@ -1229,32 +1231,36 @@ cmaki_package_version_check()
                             # rename to definitions
                             if 'definitions' in platform_info:
                                 definitions = platform_info['definitions']
-                                for d in definitions:
-                                    definitions_set.append(d)
+                                if definitions is not None:
+                                    for d in definitions:
+                                        definitions_set.append(d)
 
                             if 'system_depends' in platform_info:
                                 system_depends = platform_info['system_depends']
-                                for sd in system_depends:
-                                    system_depends_set.append(sd)
+                                if system_depends is not None:
+                                    for sd in system_depends:
+                                        system_depends_set.append(sd)
 
                             if 'targets_paths' in self.parameters:
                                 targets_paths = self.parameters['targets_paths']
-                                for key, value in targets_paths.items():
-                                    f.write('file(TO_NATIVE_PATH "%s" %s)\n' % (value, key))
+                                if targets_paths is not None:
+                                    for key, value in targets_paths.items():
+                                        f.write('file(TO_NATIVE_PATH "%s" %s)\n' % (value, key))
+
+                            # work_base = os.path.join(oldcwd, workspace, base_folder, plat)
+                            work_base = self.get_install_directory(plat)
 
                             if ('executable' in platform_info) and (target != 'dummy'):
                                 # a target in mode executable, dont need install
                                 install_3rdparty_dependencies = False
 
                                 if 'use_run_with_libs' in platform_info:
-                                    # if plat.startswith('win'):
                                     if utils.is_windows():
                                         f.write('file(TO_NATIVE_PATH "${_MY_DIR}/../../run_with_libs.cmd" %s_LAUNCHER)\n' % target_upper)
                                     else:
                                         f.write('file(TO_NATIVE_PATH "${_MY_DIR}/../../run_with_libs.sh" %s_LAUNCHER)\n' % target_upper)
 
                                 executable = platform_info['executable']
-                                work_base = os.path.join(oldcwd, workspace, base_folder, plat)
                                 if not self.check_parts_exists(work_base, package, target, executable, [('bin', True)], build_modes=['Release']):
                                     errors += 1
                                 release_bin = self.search_library_noexcept(work_base, executable, 'bin')
@@ -1275,9 +1281,7 @@ cmaki_package_version_check()
                                 if add_3rdparty_dependencies:
                                     f.write('list(APPEND %s_LIBRARIES %s)\n' % (package_upper, target_lower))
 
-                                # if plat.startswith('win'):
                                 if utils.is_windows():
-                                    work_base = os.path.join(oldcwd, workspace, base_folder, plat)
                                     if not self.check_parts_exists(work_base, package, target, dynamic, [('dll', True), ('lib', lib_provided), ('pdb', False)]):
                                         errors += 1
 
@@ -1335,7 +1339,6 @@ cmaki_package_version_check()
                                     f.write(')\n')
                                 else:
 
-                                    work_base = os.path.join(oldcwd, workspace, base_folder, plat)
                                     if not self.check_parts_exists(work_base, package, target, dynamic, [('so', True)]):
                                         errors += 1
 
@@ -1347,6 +1350,7 @@ cmaki_package_version_check()
                                     try:
                                         debug_so_full = os.path.join(oldcwd, work_base, debug_so)
                                         debug_soname = utils.get_soname(debug_so_full, env=env_modified)
+                                        logging.debug('detected soname in debug library: {}'.format(debug_soname))
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         debug_soname = None
@@ -1354,6 +1358,7 @@ cmaki_package_version_check()
                                     try:
                                         release_so_full = os.path.join(oldcwd, work_base, release_so)
                                         release_soname = utils.get_soname(release_so_full, env=env_modified)
+                                        logging.debug('detected soname in release library: {}'.format(release_soname))
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         release_soname = None
@@ -1361,6 +1366,7 @@ cmaki_package_version_check()
                                     try:
                                         relwithdebinfo_so_full = os.path.join(oldcwd, work_base, relwithdebinfo_so)
                                         relwithdebinfo_soname = utils.get_soname(relwithdebinfo_so_full, env=env_modified)
+                                        logging.debug('detected soname in relwithdebinfo library: {}'.format(relwithdebinfo_soname))
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         relwithdebinfo_soname = None
@@ -1368,6 +1374,7 @@ cmaki_package_version_check()
                                     try:
                                         minsizerel_so_full = os.path.join(oldcwd, work_base, minsizerel_so)
                                         minsizerel_soname = utils.get_soname(minsizerel_so_full, env=env_modified)
+                                        logging.debug('detected soname in minsizerel library: {}'.format(minsizerel_soname))
                                     except Exception as e:
                                         logging.debug('exception searching lib: %s' % e)
                                         minsizerel_soname = None
@@ -1402,7 +1409,6 @@ cmaki_package_version_check()
 
                                 static = platform_info['static']
 
-                                work_base = os.path.join(oldcwd, workspace, base_folder, plat)
                                 if not self.check_parts_exists(work_base, package, target, static, [('lib', True)]):
                                     errors += 1
 

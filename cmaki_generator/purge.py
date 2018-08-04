@@ -20,13 +20,12 @@ def purge(node, parameters):
 
     for plat in platforms:
 
+        if not node.get_exclude_from_clean():
+            logging.debug("Cleaning install %s" % package)
+            utils.tryremove_dir(node.get_install_directory(plat))
+
         build_modes = node.get_build_modes()
         for build_mode in build_modes:
-            
-            # TODO: no depende del build mode
-            if not node.get_exclude_from_clean():
-                logging.debug("Cleaning install %s" % package)
-                utils.tryremove_dir(node.get_install_directory(plat, build_mode))
 
             logging.debug("Cleaning build %s" % package)
             build_directory = node.get_build_directory(plat, build_mode)

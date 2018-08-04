@@ -1,3 +1,3 @@
-install:
-	mkdir -p packages
-	chmod 777 packages
+all:
+	docker-compose up -d --build
+

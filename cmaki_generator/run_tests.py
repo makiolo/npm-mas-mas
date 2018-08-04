@@ -70,7 +70,7 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
     for plat, build_mode in product(platforms, reversed(build_modes)):
         for compiler_c, compiler_cpp, generator, _, _, env_modified, _ in node.compiler_iterator(plat, compiler_replace_maps):
             # verify md5sum
-            install_directory = node.get_install_directory(plat, build_mode)
+            install_directory = node.get_install_directory(plat)
             workspace = node.get_workspace(plat)
             utils.trymkdir(install_directory)
             with utils.working_directory(install_directory):
@@ -139,7 +139,22 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
                         utils.tryremove('install_manifest.txt')
                         utils.tryremove_dir('CMakeFiles')
 
-                        cmd = 'cmake %s %s -DARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (unittest_root, generator_extra, artifacts_dir, get_identifier('COMPILER'), get_identifier('ALL'), cmakelib_dir, package, package_upper, build_mode, cmake_third_party_dir, unittest_found, cmake_prefix, find_packages_str, build_mode, build_mode)
+                        cmd = 'cmake %s %s -DARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (
+                                unittest_root, 
+                                generator_extra, 
+                                artifacts_dir, 
+                                get_identifier('COMPILER'), 
+                                get_identifier('ALL'), 
+                                cmakelib_dir, 
+                                package, 
+                                package_upper, 
+                                build_mode, 
+                                cmake_prefix, # cmake_third_party_dir, 
+                                unittest_found, 
+                                cmake_prefix, 
+                                find_packages_str, 
+                                build_mode, 
+                                build_mode)
                         ret = utils.safe_system(cmd, env=env_modified)
                         node.ret += abs(ret)
                         if ret != 0:

@@ -18,7 +18,11 @@ if __name__ == '__main__':
         sys.exit(1)
 
     with open(parameters.filename, 'rb') as f:
-        r = requests.post(parameters.url, files={parameters.field: f})
+        response = requests.post(parameters.url, files={parameters.field: f})
+        if response.status_code == 200:    
+            sys.exit(0)
+        else:
+            sys.exit(1)
 
     # # Register the streaming http handlers with urllib2
     # poster.streaminghttp.register_openers()

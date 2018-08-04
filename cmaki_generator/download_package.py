@@ -1,12 +1,11 @@
-import urllib.request
+from requests import get  # to make GET request
 
-def download_from_url(url, filename):
-    local_filename, headers = urllib.request.urlretrieve(url)
-    html = open(filename)
-    html.close()
-    return urllib2.urlretrieve(url, filename=filename)
+def download_from_url(url, file_name):
+    with open(file_name, "wb") as file:
+        response = get(url)
+        file.write(response.content)
 
-url = "http://artifacts.myftp.biz/download.php?file=sdl2-2.0.3.0-linux_64_glibc_2.23-gcc_5-debug-cmake.tar.gz"
+url = 'http://localhost:8080/cpp/download.php?file=json-0.0.1514575489.676243933-macos_64-clang_9-debug-cmake.tar.gz'
 
-print( download_from_url(url, "sdl2-2.0.3.0-linux_64_glibc_2.23-gcc_5-debug-cmake.tar.gz") )
+print( download_from_url(url, "json-0.0.1514575489.676243933-macos_64-clang_9-debug-cmake.tar.gz") )
 
