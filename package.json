@@ -5,14 +5,6 @@
 	"bin": {
 		"cmaki": "./cmaki_scripts/cmaki.js"
 	},
-	"scripts": {
-		"clean": "cmaki clean",
-		"setup": "cmaki setup",
-		"compile": "cmaki compile",
-		"install": "cmaki setup && cmaki compile",
-		"test": "cmaki test",
-		"upload": "cmaki upload"
-	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/makiolo/npm-mas-mas.git"
