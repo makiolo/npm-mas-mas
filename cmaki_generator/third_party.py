@@ -719,14 +719,14 @@ class ThirdParty:
         else:
             return '.bs_%s%s%s%s' % (package[:3], version[-1:], plat, build_mode)
 
-    def get_install_base_directory(self, plat):
+    def get_binary_workspace(self, plat):
         install_directory = os.path.join(self.user_parameters.prefix, self.get_workspace(plat))
         utils.trymkdir(install_directory)
         return install_directory
 
 
     def get_install_directory(self, plat):
-        install_directory = os.path.join(self.get_install_base_directory(plat), self.get_base_folder(), plat)
+        install_directory = os.path.join(self.get_binary_workspace(plat), self.get_base_folder(), plat)
         return install_directory
 
 
@@ -757,17 +757,16 @@ class ThirdParty:
         to_package = os.path.abspath(package)
         utils.trymkdir(to_package)
         with utils.working_directory(to_package):
-            basedir = os.path.abspath('..')
+            basedir = self.user_parameters.prefix
+            rootdir = self.user_parameters.rootdir
 
             # generate find.cmake
             build_directory = self.get_build_directory(r"${CMAKI_PLATFORM}", r"${GLOBAL_BUILD_MODE}")
             with open('find.cmake', 'wt') as f:
-                # TODO: remove vars
-                # ONLY HOME
                 f.write("SET(%s_VERSION %s CACHE STRING \"Last version compiled ${PACKAGE}\" FORCE)\n" % (package_norm, version))
-                f.write("file(TO_NATIVE_PATH \"${PACKAGE_BUILD_DIRECTORY}/../%s-%s-${CMAKI_PLATFORM}/%s-%s/${CMAKI_PLATFORM}/include\" %s_INCLUDE)\n" % (package, version, package, version, package_norm))
-                f.write("file(TO_NATIVE_PATH \"${PACKAGE_BUILD_DIRECTORY}/../%s-%s-${CMAKI_PLATFORM}/%s-%s/${CMAKI_PLATFORM}\" %s_LIBDIR)\n" % (package, version, package, version, package_norm))
-                f.write("file(TO_NATIVE_PATH \"${PACKAGE_BUILD_DIRECTORY}/../%s\" %s_BUILD)\n" % (build_directory, package_norm))
+                f.write("file(TO_NATIVE_PATH \"%s/%s-%s-${CMAKI_PLATFORM}/%s-%s/${CMAKI_PLATFORM}/include\" %s_INCLUDE)\n" % (basedir, package, version, package, version, package_norm))
+                f.write("file(TO_NATIVE_PATH \"%s/%s-%s-${CMAKI_PLATFORM}/%s-%s/${CMAKI_PLATFORM}\" %s_LIBDIR)\n" % (basedir, package, version, package, version, package_norm))
+                f.write("file(TO_NATIVE_PATH \"%s/%s\" %s_BUILD)\n" % (rootdir, build_directory, package_norm))
                 f.write("SET(%s_INCLUDE ${%s_INCLUDE} CACHE STRING \"Include dir %s\" FORCE)\n" % (package_norm, package_norm, package))
                 f.write("SET(%s_LIBDIR ${%s_LIBDIR} CACHE STRING \"Libs dir %s\" FORCE)\n" % (package_norm, package_norm, package))
                 f.write("SET(%s_BUILD ${%s_BUILD} CACHE STRING \"Build dir %s\" FORCE)\n" % (package_norm, package_norm, package))
@@ -781,7 +780,7 @@ class ThirdParty:
                     f.write("set %s_BASE=%s\%s-%s-%%PLATFORM%%\%s-%s\n" % (package_norm, basedir, package, version, package, version))
                     f.write("set SELFHOME=%s\%%PACKAGE%%-%%VERSION%%-%%PLATFORM%%\%%PACKAGE%%-%%VERSION%%\%%PLATFORM%%\n" % (basedir))
                     f.write("set SELFBASE=%s\%%PACKAGE%%-%%VERSION%%-%%PLATFORM%%\%%PACKAGE%%-%%VERSION%%\n" % (basedir))
-                    f.write("set %s_BUILD=%s\%s\n" % (package_norm, basedir, build_directory))
+                    f.write("set %s_BUILD=%s\%s\n" % (package_norm, rootdir, build_directory))
                     f.write(r"md %SELFHOME%")
                     f.write("\n")
             else:
@@ -793,7 +792,7 @@ class ThirdParty:
                     f.write("%s_BASE=%s/%s-%s-$PLATFORM/%s-%s\n" % (package_norm, basedir, package, version, package, version))
                     f.write("SELFHOME=%s/$PACKAGE-$VERSION-$PLATFORM/$PACKAGE-$VERSION/$PLATFORM\n" % (basedir))
                     f.write("SELFBASE=%s/$PACKAGE-$VERSION-$PLATFORM/$PACKAGE-$VERSION\n" % (basedir))
-                    f.write("%s_BUILD=%s/%s\n" % (package_norm, basedir, build_directory))
+                    f.write("%s_BUILD=%s/%s\n" % (package_norm, rootdir, build_directory))
                     f.write("mkdir -p $SELFHOME\n")
 
 
@@ -1025,13 +1024,11 @@ class ThirdParty:
         logging.debug('-- searching in {} with pattern: {}'.format(rootdir, special_pattern))
 
         if special_pattern is None:
-            logging.info('000000')
             logging.debug('Failed searching lib in %s' % rootdir)
             return False, None
 
         package = self.get_package_name()
         if isinstance(special_pattern, list):
-            logging.info('1111111')
             utils.verbose(self.user_parameters, 'Searching list %s' % special_pattern)
             valid_ff = None
             for ff in special_pattern:
@@ -1041,7 +1038,6 @@ class ThirdParty:
             return valid, valid_ff
 
         elif special_pattern.startswith('/') and special_pattern.endswith('/'):
-            logging.info('2222222')
             pattern = special_pattern[1:-1]
             utils.verbose(self.user_parameters, 'Searching rootdir %s, pattern %s' % (rootdir, pattern))
             files_found = utils.rec_glob(rootdir, pattern)
@@ -1058,7 +1054,6 @@ class ThirdParty:
                 logging.debug(msg)
                 return False, None
         else:
-            logging.info('3333333')
             pathfull = os.path.join(rootdir, special_pattern)
             utils.verbose(self.user_parameters, 'Checking file %s' % pathfull)
             if os.path.exists(pathfull):

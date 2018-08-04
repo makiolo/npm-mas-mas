@@ -7,13 +7,14 @@
         - dune-glew
     mode: dr
     targets:
-        - SDL2-2.0:
+        - SDL2:
             info:
                 <<: *library_dynamic_exact
             extra:
                 default:
                     include:
                         - include/SDL2
+
 
 - sdl2-image:
     <<: *thirdparty_defaults

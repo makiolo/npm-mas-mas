@@ -21,4 +21,9 @@
         - GLEW:
             info:
                 <<: *library_dynamic_exact
+            extra:
+                macos_64-clang_*-*: null
+                default:
+                    system_depends:
+                        - GL
 

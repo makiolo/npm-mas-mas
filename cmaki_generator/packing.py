@@ -8,8 +8,8 @@ from third_party import platforms
 from third_party import get_identifier
 
 
-def print_folder(source_folder):
-    for root, dirs, files in os.walk(source_folder):
+def print_folder(folder):
+    for root, dirs, files in os.walk(folder):
         path = root.split(os.sep)
         logging.info((len(path) - 1) * '... ' + '%s/' % os.path.basename(root))
         for file in files:
@@ -35,32 +35,23 @@ def packing(node, parameters, compiler_replace_maps):
             version_git = hash_version.to_cmaki_version(build_directory, revision_git)
             logging.info('[git] Renamed version from %s to %s' % (version_old, version_git))
 
-            # renombrar package-version-platform/package-version
-            install_directory = node.get_install_base_directory(plat)
-            source_folder = node.get_base_folder()
+            current_workspace = node.get_binary_workspace(plat)
+            current_base = node.get_base_folder()
             oldversion = node.get_version()
             try:
                 node.set_version(version_git)
-                # new_workspace = node.get_workspace(plat)
-                new_workspace = node.get_install_base_directory(plat)
-                new_source_folder = node.get_base_folder()
+                updated_workspace = node.get_binary_workspace(plat)
+                updated_base = node.get_base_folder()
 
-                # changed version ?
-                from_ = os.path.join(install_directory, source_folder)
-                to_ = os.path.join(install_directory, new_source_folder)
-                logging.debug("from: %s" % from_)
-                logging.debug("to: %s" % to_)
-                if source_folder != new_source_folder:
-                    utils.move_folder_recursive(from_, to_)
-                    logging.debug('-- copy from: {}, {}'.format(install_directory, os.path.exists(install_directory)))
-                    logging.debug('-- copy to: {}, {}'.format(new_workspace, os.path.exists(new_workspace)))
-                    utils.move_folder_recursive(install_directory, new_workspace)
-                    # logging.info('-- From1 (must be empty)')
-                    # print_folder(from_)
-                    # logging.info('-- From2 (must be empty)')
-                    # print_folder(install_directory)
-                    # logging.info('-- To (must have libs and includes)')
-                    # print_folder(new_workspace)
+                current_base2 = os.path.join(current_workspace, current_base)
+                updated_base2 = os.path.join(current_workspace, updated_base)
+                logging.debug("from: %s" % current_base2)
+                logging.debug("to: %s" % updated_base2)
+                if current_base != updated_base:
+                    utils.move_folder_recursive(current_base2, updated_base2)
+                    logging.debug('-- copy from: {}, {}'.format(current_workspace, os.path.exists(current_workspace)))
+                    logging.debug('-- copy to: {}, {}'.format(updated_workspace, os.path.exists(updated_workspace)))
+                    utils.move_folder_recursive(current_workspace, updated_workspace)
             finally:
                 node.set_version(oldversion)
 
@@ -92,24 +83,26 @@ def packing(node, parameters, compiler_replace_maps):
     for plat in platforms:
         utils.superverbose(parameters, '*** [%s (%s)] Generating package .tar.gz (%s) ***' % (package, version, plat))
         workspace = node.get_workspace(plat)
-        install_directory = node.get_install_base_directory(plat)
-        utils.trymkdir(install_directory)
-        with utils.working_directory(install_directory):
+        current_workspace = node.get_binary_workspace(plat)
+        utils.trymkdir(current_workspace)
+        with utils.working_directory(current_workspace):
+
+            logging.info('working directory: {}'.format(current_workspace))
 
             if utils.is_windows():
                 utils.safe_system('del /s *.ilk')
                 utils.safe_system('del /s *.exp')
 
-            source_folder = node.get_base_folder()
+            current_base = node.get_base_folder()
             prefix_package = os.path.join(parameters.prefix, '%s.tar.gz' % workspace)
             prefix_package_md5 = os.path.join(output_3rdparty, '%s.md5' % workspace)
 
-            logging.info('generating package %s from source %s' % (prefix_package, os.path.join(os.getcwd(), source_folder)))
+            logging.info('generating package %s from source %s' % (prefix_package, os.path.join(os.getcwd(), current_base)))
             logging.info('generating md5file %s' % prefix_package_md5)
-            print_folder(source_folder)
+            print_folder(current_base)
 
             # packing install
-            gen_targz = "%star zcvf %s %s" % (precmd, prefix_package, source_folder)
+            gen_targz = "%star zcvf %s %s" % (precmd, prefix_package, current_base)
 
             node.ret += abs( node.safe_system(gen_targz, compiler_replace_maps) )
             if not os.path.exists(prefix_package):
@@ -125,14 +118,17 @@ def packing(node, parameters, compiler_replace_maps):
     # packing cmakefiles (more easy distribution)
     if not parameters.no_packing_cmakefiles:
         for plat in platforms:
-            source_folder = node.get_base_folder()
-            prefix_package_cmake = os.path.join(parameters.prefix, '%s-%s-cmake.tar.gz' % (source_folder, plat))
+            current_base = node.get_base_folder()
+            prefix_package_cmake = os.path.join(parameters.prefix, '%s-%s-cmake.tar.gz' % (current_base, plat))
             with utils.working_directory(folder_3rdparty):
+
+                logging.info('working directory: {}'.format(folder_3rdparty))
+
                 logging.debug('working dir: %s' % folder_3rdparty)
                 logging.info('generating package cmake %s' % prefix_package_cmake)
-                print_folder(source_folder)
+                print_folder(current_base)
 
-                gen_targz_cmake = '{}tar zcvf {} {}'.format(precmd, prefix_package_cmake, source_folder)
+                gen_targz_cmake = '{}tar zcvf {} {}'.format(precmd, prefix_package_cmake, current_base)
                 node.ret += abs( node.safe_system(gen_targz_cmake, compiler_replace_maps) )
                 if not os.path.exists(prefix_package_cmake):
                     logging.error('No such file: {}'.format(prefix_package_cmake))
