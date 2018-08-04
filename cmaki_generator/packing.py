@@ -70,6 +70,9 @@ def packing(node, parameters, compiler_replace_maps):
     # regenerate autoscripts with new version
     node.generate_scripts_headers(compiler_replace_maps)
 
+    # # generate versions.cmake
+    node.generate_3rdpartyversion(parameters.prefix)
+
     precmd = ''
     if utils.is_windows():
         precmd = 'cmake -E '

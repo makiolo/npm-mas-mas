@@ -350,10 +350,27 @@ usage:""")
         CMAKI_INSTALL: donde se espera tener instalado el cmaki_identifier
         '''
 
+    cmaki_pwd = os.environ.get('CMAKI_PWD', os.getcwd())
+    cmaki_install = os.environ.get('CMAKI_INSTALL', os.path.join(cmaki_pwd, 'bin'))
+
+    '''
+    axiomas:
+        - cmaki_pwd
+        - cmaki_install
+        - cmaki
+
+    reglas:
+        - rootdir = cmaki/../cmaki_generator
+        - prefix = cmaki/../../artifacts
+        - third-party-dir = prefix/cmaki_find_package
+        - depends = cmaki/../../depends.json
+        - blacklist = cmaki/../../blacklist.txt
+    '''
+    
+
     parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
     parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, '..', 'artifacts'))
-    parameters.third_party_dir = init_parameter_path(parameters.third_party_dir,
-                                                     os.path.join(parameters.prefix, 'cmaki_find_package'))
+    parameters.third_party_dir = init_parameter_path(parameters.third_party_dir, os.path.join(parameters.prefix, 'cmaki_find_package'))
     parameters.cmakefiles = init_parameter_path(parameters.cmakefiles, os.path.join(parameters.rootdir, '..', 'cmaki'))
     parameters.blacklist = init_parameter_path(parameters.blacklist, os.path.join(parameters.rootdir, 'blacklist.txt'))
     parameters.depends = init_parameter_path(parameters.depends, os.path.join(parameters.prefix, '..', 'depends.json'))

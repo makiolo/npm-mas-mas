@@ -20,11 +20,5 @@
     targets:
         - GLEW:
             info:
-                <<: *library_static
-            extra:
-                macos_64-clang_*-*:
-                    system_depends: null
-                default:
-                    system_depends:
-                        - GL
+                <<: *library_dynamic_exact
 

@@ -10,9 +10,9 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
 
     old_cwd = os.getcwd()
 
-    artifacts_dir = parameters.rootdir
-    artifacts_dir = utils.get_norm_path(artifacts_dir)
-    artifacts_dir = artifacts_dir.replace('\\', '/')
+    rootdir = parameters.rootdir
+    rootdir = utils.get_norm_path(rootdir)
+    rootdir = rootdir.replace('\\', '/')
 
     cmakelib_dir = parameters.cmakefiles
     cmakelib_dir = utils.get_norm_path(cmakelib_dir)
@@ -139,17 +139,17 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
                         utils.tryremove('install_manifest.txt')
                         utils.tryremove_dir('CMakeFiles')
 
-                        cmd = 'cmake %s %s -DARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (
+                        cmd = 'cmake %s %s -DNPP_ARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (
                                 unittest_root, 
                                 generator_extra, 
-                                artifacts_dir, 
+                                cmake_prefix, 
                                 get_identifier('COMPILER'), 
                                 get_identifier('ALL'), 
                                 cmakelib_dir, 
                                 package, 
                                 package_upper, 
                                 build_mode, 
-                                cmake_prefix, # cmake_third_party_dir, 
+                                cmake_third_party_dir, 
                                 unittest_found, 
                                 cmake_prefix, 
                                 find_packages_str, 

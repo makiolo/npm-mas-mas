@@ -17,9 +17,6 @@ def prepare(node, parameters, compiler_replace_maps):
     source_dir = os.path.join(os.getcwd(), package)
     utils.trymkdir(source_dir)
 
-    # # generate versions.cmake
-    node.generate_3rdpartyversion(parameters.prefix)
-
     # generate .build.sh / .build.cmd if is defined in yaml
     node.get_generate_custom_script(source_dir)
 
