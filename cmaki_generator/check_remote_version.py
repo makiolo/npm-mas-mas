@@ -8,7 +8,6 @@ import csv
 import utils
 import functools
 
-
 version_separator = '.'
 version_count_max = 4
 
