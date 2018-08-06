@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 cmake_policy(SET CMP0011 NEW)
 cmake_policy(SET CMP0045 OLD)
 
+find_program(PYTHON_EXECUTABLE NAMES python3.6 python3.5 python3 python)
+
 IF(NOT DEFINED CMAKI_PWD)
 	set(CMAKI_PWD $ENV{CMAKI_PWD})
 ENDIF()
@@ -72,11 +74,11 @@ function(cmaki_find_package)
 
 	if(VERSION_REQUEST STREQUAL "")
 		##
-		message("COMMAND python ${NPP_GENERATOR_PATH}/get_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE}")
+		message("COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/get_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE}")
 		##
 		# 1. obtener la version actual (o ninguno en caso de no tener el artefacto)
 		execute_process(
-			COMMAND python ${NPP_GENERATOR_PATH}/get_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE}
+			COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/get_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE}
 			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 		if(RESULT_VERSION)
@@ -92,11 +94,11 @@ function(cmaki_find_package)
 		set(EXTRA_VERSION "--version=${VERSION_REQUEST}")
 	endif()
 
-	message("python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}")
+	message("${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}")
 	#######################################################
 	# 2. obtener la mejor version buscando en la cache local y remota
 	execute_process(
-		COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}
+		COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE} ${EXTRA_VERSION}
 		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	if(RESULT_VERSION)
@@ -174,10 +176,10 @@ function(cmaki_find_package)
 		message("Generating artifact ${PACKAGE} ...")
 
 		###
-		message("python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
+		message("${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge")
 		###
 		execute_process(
-			COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
+			COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --no-run-tests --no-purge
 			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			RESULT_VARIABLE artifacts_result
 			)
@@ -188,7 +190,7 @@ function(cmaki_find_package)
 		#######################################################
 		# 6: obtengo la version del paquete creado
 		execute_process(
-			COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE}
+			COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/check_remote_version.py --server=${CMAKI_REPOSITORY} --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE}
 			WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 			OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 		if(RESULT_VERSION)
@@ -256,9 +258,9 @@ function(cmaki_find_package)
 
 
 	# cmaki_find_package of depends
-	message("COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
+	message("COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
 	execute_process(
-		COMMAND python ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
+		COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
 		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE DEPENDS_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -285,7 +287,7 @@ function(cmaki_find_package)
 
 	# generate json
 	execute_process(
-		COMMAND python ${NPP_GENERATOR_PATH}/save_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --version=${VERSION}
+		COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/save_package.py --name=${PACKAGE} --depends=${NPP_PACKAGE_JSON_FILE} --version=${VERSION}
 		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	if(RESULT_VERSION)
@@ -319,7 +321,7 @@ macro(cmaki_package_version_check)
 	# llamar a check_remote_version
 	# dando el nombre recibo la version
 	execute_process(
-		COMMAND python ${NPP_GENERATOR_PATH}/check_remote_version.py --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE_FIND_NAME} --version=${PACKAGE_FIND_VERSION}
+		COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/check_remote_version.py --artifacts=${CMAKE_PREFIX_PATH} --platform=${CMAKI_IDENTIFIER} --name=${PACKAGE_FIND_NAME} --version=${PACKAGE_FIND_VERSION}
 		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
 		OUTPUT_VARIABLE RESULT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 	list(GET RESULT_VERSION 0 RESULT)
