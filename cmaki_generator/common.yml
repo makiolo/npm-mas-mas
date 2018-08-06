@@ -1,4 +1,12 @@
 compilation_environments: &compilation_environments
+    windows_32-msvc_msc_ver_*-*:
+        generator: "Visual Studio 15 2017"
+        ext_dyn: dll
+        ext_sta: lib
+    windows_64-msvc_msc_ver_*-*:
+        generator: "Visual Studio 15 2017 Win64"
+        ext_dyn: dll
+        ext_sta: lib
     windows_32-msvc_2015-*:
         generator: "Visual Studio 14 2015"
         ext_dyn: dll
