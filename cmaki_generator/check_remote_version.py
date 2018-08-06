@@ -2,7 +2,7 @@ import os
 import sys
 import logging
 import argparse
-import urllib.request
+from requests import get  # to make GET request
 from io import StringIO
 import csv
 import utils
@@ -12,12 +12,17 @@ version_separator = '.'
 version_count_max = 4
 
 
+# def read_remote_csv(url):
+#     fp = urllib.request.urlopen(url)
+#     mybytes = fp.read()
+#     content = mybytes.decode("utf8")
+#     fp.close()
+#     return content
+
+
 def read_remote_csv(url):
-    fp = urllib.request.urlopen(url)
-    mybytes = fp.read()
-    content = mybytes.decode("utf8")
-    fp.close()
-    return content
+    response = get(url)
+    return response.content
 
 
 def version_to_tuple(version_str):
@@ -219,4 +224,7 @@ if __name__ == '__main__':
     else:
         print("UNSUITABLE;;")
         sys.exit(1)
+
+# if __name__ == '__main__':
+#     print(read_remote_csv('http://localhost:8080'))
 
