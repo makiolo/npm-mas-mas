@@ -22,7 +22,8 @@ version_count_max = 4
 
 def read_remote_csv(url):
     response = get(url)
-    return response.content
+    response = response.content.decode("utf8")
+    return response
 
 
 def version_to_tuple(version_str):
@@ -226,5 +227,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
 # if __name__ == '__main__':
-#     print(read_remote_csv('http://localhost:8080'))
+#     csv_content = read_remote_csv('http://localhost:8080')
+#     reader = csv.reader(StringIO(csv_content), delimiter=';')
+#     print(list(reader))
 

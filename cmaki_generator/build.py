@@ -361,19 +361,19 @@ usage:""")
 
     reglas:
         - rootdir = cmaki/../cmaki_generator
-        - prefix = cmaki/../../artifacts
+        - prefix = cmaki_pwd/artifacts
         - third-party-dir = prefix/cmaki_find_package
-        - depends = cmaki/../../depends.json
-        - blacklist = cmaki/../../blacklist.txt
+        - depends = cmaki_pwd/depends.json
+        - blacklist = rootdir/blacklist.txt
     '''
     
 
     parameters.rootdir = init_parameter_path(parameters.rootdir, os.getcwd())
-    parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(parameters.rootdir, '..', 'artifacts'))
+    parameters.prefix = init_parameter_path(parameters.prefix, os.path.join(cmaki_pwd, 'artifacts'))
     parameters.third_party_dir = init_parameter_path(parameters.third_party_dir, os.path.join(parameters.prefix, 'cmaki_find_package'))
     parameters.cmakefiles = init_parameter_path(parameters.cmakefiles, os.path.join(parameters.rootdir, '..', 'cmaki'))
     parameters.blacklist = init_parameter_path(parameters.blacklist, os.path.join(parameters.rootdir, 'blacklist.txt'))
-    parameters.depends = init_parameter_path(parameters.depends, os.path.join(parameters.prefix, '..', 'depends.json'))
+    parameters.depends = init_parameter_path(parameters.depends, os.path.join(cmaki_pwd, 'depends.json'))
 
     # convert priority to int
     parameters.priority = convert_priority_to_integer(parameters.priority)
