@@ -1,10 +1,13 @@
 import os
 import sys
+import logging
 # import urllib2
 import argparse
 import logging
 # import poster
 import requests
+
+logger = logging.getLogger(__name__)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -22,7 +25,8 @@ if __name__ == '__main__':
         if response.status_code == 200:    
             sys.exit(0)
         else:
-            sys.exit(1)
+            logger.error('Error uploading file {} to {}'.format(parameters.filename, parameters.url))
+            sys.exit(0)
 
     # # Register the streaming http handlers with urllib2
     # poster.streaminghttp.register_openers()
