@@ -9,8 +9,6 @@
         - OX_HAVE_LIBCURL=1
         - OX_HAVE_HTTP=0
         - OX_USE_SDL2=1
-    # post_install:
-    #     - ./oxygine/src/*.h* include/ RECURSIVE
     depends:
         - sdl2
         - freeimage

@@ -6,7 +6,6 @@
     post_install:
         - ./src/*.h* include
     cmake_target: null
-    mode: dr
     source: https://github.com/nlohmann/json.git
     branch: -b v3.0.1
     cmake_definitions:

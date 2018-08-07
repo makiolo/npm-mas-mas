@@ -36,28 +36,3 @@
                         - include/SDL2
 
 
-- sdl2-image:
-    <<: *thirdparty_defaults
-    version: 2.0.3.0
-    source: https://www.libsdl.org/projects/SDL_image/release/SDL2_image-2.0.3.tar.gz
-    uncompress_strip: SDL2_image-2.0.3
-    depends:
-        - sdl2
-    mode: dr
-    build:
-        |
-            #!/bin/bash
-            source $(pwd)/../sdl2/find.script
-            export SDL2_CONFIG=$sdl2_HOME/bin/sdl2-config
-            ./autogen.sh
-            ./configure --prefix=$SELFHOME --with-sdl2=$sdl2_HOME && make -j12 && make install
-            exit $?
-    targets:
-        - SDL2_image:
-            info:
-                <<: *library_dynamic_exact
-            extra:
-                default:
-                    include:
-                        - include/SDL2
-

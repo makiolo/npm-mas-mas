@@ -1,11 +1,10 @@
 - paho-mqtt3:
     <<: *thirdparty_defaults
     version: 0.0.0.0
-    mode: dr
     version_manager: git
+    mode: dr
     post_install:
         - ./src/*.h include
-    mode: dr
     source: https://github.com/eclipse/paho.mqtt.c.git
     branch: -b develop
     cmake_definitions:
