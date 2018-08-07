@@ -7,7 +7,7 @@
         - dune-glew
     mode: dr
     targets:
-        - SDL2:
+        - SDL2-2.0:
             info:
                 <<: *library_dynamic_exact
             extra:
