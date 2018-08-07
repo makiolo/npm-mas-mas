@@ -61,6 +61,7 @@ function(cmaki_find_package)
 			message("${PACKAGE} is not recursive")
 			set(CALL_RECURSIVE "FALSE")
 		else()
+			message("${PACKAGE} is recursive")
 			set(VERSION_REQUEST "${PARM1}")
 		endif()
 	endif()
@@ -124,6 +125,24 @@ function(cmaki_find_package)
 	endif()
 	#######################################################
 
+	# cmaki_find_package of depends
+	message("COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
+	execute_process(
+		COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
+		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
+		OUTPUT_VARIABLE DEPENDS_PACKAGES
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+	if("${CALL_RECURSIVE}")
+		foreach(DEP ${DEPENDS_PACKAGES})
+			if(PACKAGE STREQUAL "${DEP}")
+				message("-- skip: ${DEP}")
+			else()
+				message("-- cmaki_find_package: ${DEP}")
+				cmaki_find_package("${DEP}" NONRECURSIVE)
+			endif()
+		endforeach()
+	endif()
 
 	get_filename_component(package_dir "${CMAKE_CURRENT_LIST_FILE}" PATH)
 	get_filename_component(package_name_version "${package_dir}" NAME)
@@ -256,25 +275,6 @@ function(cmaki_find_package)
 
 	endif()
 
-
-	# cmaki_find_package of depends
-	message("COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet")
-	execute_process(
-		COMMAND ${PYTHON_EXECUTABLE} ${NPP_GENERATOR_PATH}/build.py ${PACKAGE} --rootdir=${NPP_GENERATOR_PATH} --depends=${NPP_PACKAGE_JSON_FILE} --cmakefiles=${CMAKI_PATH} --prefix=${NPP_ARTIFACTS_PATH} --third-party-dir=${CMAKE_PREFIX_PATH} --server=${CMAKI_REPOSITORY} --plan --quiet
-		WORKING_DIRECTORY "${NPP_GENERATOR_PATH}"
-		OUTPUT_VARIABLE DEPENDS_PACKAGES
-		OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-	if("${CALL_RECURSIVE}")
-		foreach(DEP ${DEPENDS_PACKAGES})
-			if(PACKAGE STREQUAL "${DEP}")
-				message("-- skip: ${DEP}")
-			else()
-				message("-- cmaki_find_package: ${DEP}")
-				cmaki_find_package("${DEP}" NONRECURSIVE)
-			endif()
-		endforeach()
-	endif()
 
 	# 12. hacer find_package tradicional, ahora que tenemos los ficheros de cmake
 	if(${PACKAGE_MODE} STREQUAL "EXACT")
