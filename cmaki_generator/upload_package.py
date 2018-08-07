@@ -21,11 +21,15 @@ if __name__ == '__main__':
         sys.exit(1)
 
     with open(parameters.filename, 'rb') as f:
-        response = requests.post(parameters.url, files={parameters.field: f})
-        if response.status_code == 200:    
-            sys.exit(0)
-        else:
-            logger.error('Error uploading file {} to {}'.format(parameters.filename, parameters.url))
+        try:
+            response = requests.post(parameters.url, files={parameters.field: f})
+            if response.status_code == 200:    
+                sys.exit(0)
+            else:
+                logger.error('Error uploading file {} to {}'.format(parameters.filename, parameters.url))
+                sys.exit(0)
+        except Exception as e:
+            logger.error('Exception uploading file {} to {}'.format(parameters.filename, parameters.url))
             sys.exit(0)
 
     # # Register the streaming http handlers with urllib2

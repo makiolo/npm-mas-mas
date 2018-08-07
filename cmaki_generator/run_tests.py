@@ -166,6 +166,10 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
             else:
                 unittests[ '%s - %s' % (package, version) ] = 'WARN: No unittest found'
 
+    if node.ret != 0:
+        logging.warning('Cleaning packages because tests are failed.')
+        node.remove_packages()
+
     # successful
     return True
 

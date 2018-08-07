@@ -1491,3 +1491,18 @@ cmaki_package_version_check()
     def safe_system(self, cmd, compiler_replace_maps):
         return utils.safe_system(cmd, env=self.get_first_environment(compiler_replace_maps))
 
+
+    def remove_packages(self):
+        # remove packages before
+        for plat in platforms:
+            prefix_package = os.path.join(self.user_parameters.prefix, '%s.tar.gz' % self.get_workspace(plat))
+            prefix_package_cmake = os.path.join(self.user_parameters.prefix, '%s-cmakelib-%s.tar.gz' % (self.get_base_folder(), sys.platform))
+            prefix_folder_cmake = os.path.join(self.user_parameters.third_party_dir, self.get_base_folder())
+            logging.info("preremoving package %s" % prefix_package)
+            logging.info("preremoving package cmakefiles %s" % prefix_package_cmake)
+            logging.info("preremoving folder cmakefiles %s" % prefix_folder_cmake)
+            utils.tryremove(prefix_package)
+            utils.tryremove(prefix_package_cmake)
+            utils.tryremove_dir(prefix_folder_cmake)
+
+

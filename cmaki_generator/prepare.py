@@ -27,18 +27,8 @@ def prepare(node, parameters, compiler_replace_maps):
     with open('CMakeLists.txt', 'rt') as f:
         content_cmakelists = f.read()
 
-    # remove packages before
-    for plat in platforms:
-        # TODO: en lugar de borrar, saltar algunas etapas
-        prefix_package = os.path.join(parameters.prefix, '%s.tar.gz' % node.get_workspace(plat))
-        prefix_package_cmake = os.path.join(parameters.prefix, '%s-cmakelib-%s.tar.gz' % (node.get_base_folder(), sys.platform))
-        prefix_folder_cmake = os.path.join(parameters.third_party_dir, node.get_base_folder())
-        logging.info("preremoving package %s" % prefix_package)
-        logging.info("preremoving package cmakefiles %s" % prefix_package_cmake)
-        logging.info("preremoving folder cmakefiles %s" % prefix_folder_cmake)
-        utils.tryremove(prefix_package)
-        utils.tryremove(prefix_package_cmake)
-        utils.tryremove_dir(prefix_folder_cmake)
+    # OJO: dejar de borrar cuando reciclemos binarios
+    node.remove_packages()
 
     # run_tests or packing
     build_modes = node.get_build_modes()
