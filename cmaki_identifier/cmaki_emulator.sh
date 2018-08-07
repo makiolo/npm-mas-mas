@@ -5,8 +5,7 @@
 #     exit 1
 # fi
 
-export DIRPROGRAM="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-
+export DIRPROGRAM="$( cd "$( dirname "$1" )" >/dev/null && pwd )"
 export BASENAMEPROGRAM=$(basename "$1")
 export CMAKI_PWD="${CMAKI_PWD:-$(pwd)}"
 export CMAKI_INSTALL="${CMAKI_INSTALL:-$CMAKI_PWD/bin}"
