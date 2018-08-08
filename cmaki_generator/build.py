@@ -124,8 +124,10 @@ def collapse_third_parties(rootdir, filename, yamlfile=None):
     p = pipeline.grep_v(yaml_common_references)(p)
     p = pipeline.grep_v(yaml_collapsed_third_parties)(p)
     p = pipeline.grep_v(' - Copy.yml')(p)
+    p = pipeline.info('---> (yaml found.) ')(p)
     # cat
     p = pipeline.cat()(p)
+    # p = pipeline.info('amalgamated: ')(p)
     # write
     p = pipeline.write_file(filename)(p)
     # end
@@ -445,6 +447,9 @@ if __name__ == '__main__':
     else:
         utils.setup_logging(logging.INFO, parameters.log)
 
+    if parameters.verbose:
+        logging.info('parameters = {}'.format(parameters))
+
     if not parameters.quiet:
         logging.info('---- MODE: {}'.format( os.environ['MODE'] ))
         logging.info('---- CMAKI_PWD: {}'.format( os.environ['CMAKI_PWD'] ))
@@ -492,6 +497,10 @@ if __name__ == '__main__':
             parms = third[key]
             third_parties_data.append( (key, parms) )
             count += 1
+
+    logging.info('Found {} packages.'.format(count))
+    logging.info('Package requested: {}'.format(parameters.packages))
+
     if count == 1 and (len(parameters.packages) == 0):
         parameters.packages = [ third_parties_data[0][0] ]
 
@@ -518,6 +527,8 @@ if __name__ == '__main__':
                 for exp in parameters.packages:
                     if fnmatch.fnmatch(key.lower(), exp.lower()):
                         selected.append( (key, node) )
+
+    logging.info('Selected {} packages.'.format(len(selected)))
 
     # create relations
     for key, parms in third_parties_data:

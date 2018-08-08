@@ -223,6 +223,14 @@ def printf(prefix = ''):
     return process
 
 
+def info(prefix = ''):
+    def process(p):
+        for line in p:
+            logging.info("%s%s" % (prefix, line.rstrip()))
+            yield line
+    return process
+
+
 def debug(prefix = ''):
     def process(p):
         for line in p:
