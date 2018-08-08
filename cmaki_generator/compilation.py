@@ -160,7 +160,7 @@ def compilation(node, parameters, compiler_replace_maps):
                     cmake_toolchain_file_filepath=' -DCMAKE_TOOLCHAIN_FILE="{}"'.format(env_modified['CMAKE_TOOLCHAIN_FILE'])
 
                 cmake_prefix = node.get_cmake_prefix()
-                cmake_configure = 'cmake %s %s -DNPP_ARTIFACTS_PATH="%s" -DCMAKE_MODULE_PATH=%s -DCMAKI_PATH=%s -DCMAKE_BUILD_TYPE=%s -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH=%s -DPACKAGE=%s -DPACKAGE_UPPER=%s -DPACKAGE_VERSION=%s -DPACKAGE_BUILD_DIRECTORY=%s -DCMAKI_COMPILER=%s -DCMAKI_IDENTIFIER=%s -DCMAKI_PLATFORM=%s %s %s' % (generator_extra, cmake_prefix, cmake3p_dir, cmakefiles_dir, cmakefiles_dir, build_mode, cmake_prefix_path, package, package_upper, version, build_directory, get_identifier('COMPILER'), get_identifier('ALL'), get_identifier('ALL'), definitions_extra, cmake_toolchain_file_filepath)
+                cmake_configure = 'cmake %s %s -DNPP_ARTIFACTS_PATH="%s" -DCMAKE_MODULE_PATH=%s -DCMAKI_PATH=%s -DCMAKE_BUILD_TYPE=%s -DCMAKE_PREFIX_PATH=%s -DPACKAGE=%s -DPACKAGE_UPPER=%s -DPACKAGE_VERSION=%s -DPACKAGE_BUILD_DIRECTORY=%s -DCMAKI_COMPILER=%s -DCMAKI_IDENTIFIER=%s -DCMAKI_PLATFORM=%s %s %s' % (generator_extra, cmake_prefix, cmake3p_dir, cmakefiles_dir, cmakefiles_dir, build_mode, cmake_prefix_path, package, package_upper, version, build_directory, get_identifier('COMPILER'), get_identifier('ALL'), get_identifier('ALL'), definitions_extra, cmake_toolchain_file_filepath)
 
                 target = node.get_cmake_target()
                 if target is not None:

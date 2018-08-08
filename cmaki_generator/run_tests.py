@@ -139,7 +139,7 @@ def run_tests(node, parameters, compiler_replace_maps, unittests):
                         utils.tryremove('install_manifest.txt')
                         utils.tryremove_dir('CMakeFiles')
 
-                        cmd = 'cmake %s %s -DNPP_ARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DAVOID_USE_HTTP=1 -DINSTALL_SIMPLE=1 -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (
+                        cmd = 'cmake %s %s -DNPP_ARTIFACTS_PATH="%s" -DCMAKI_COMPILER="%s" -DCMAKI_PLATFORM="%s" -DCMAKE_MODULE_PATH="%s" -DPACKAGE="%s" -DPACKAGE_UPPER="%s" -DCMAKE_BUILD_TYPE="%s" -DCMAKE_PREFIX_PATH="%s" -DUNITTEST_PATH="%s" -DDEPENDS_PATH="%s" -DFIND_PACKAGES="%s" && cmake --build . --config %s --target install && ctest . -C %s --output-on-failure -VV' % (
                                 unittest_root, 
                                 generator_extra, 
                                 cmake_prefix, 
