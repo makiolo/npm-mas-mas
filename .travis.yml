@@ -7,4 +7,4 @@ env:
     # - TARGET=windows64
     # - TARGET=android64
 script:
-    - make
+    - docker-compose run --rm linux64 make clean build
