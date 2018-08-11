@@ -2,9 +2,14 @@ language: c
 services: docker
 os: linux
 env:
-    - TARGET=linux64 MODE=Debug
-    # - TARGET=linux64 MODE=Release
-    # - TARGET=windows64
-    # - TARGET=android64
+    - PACKAGE=python TARGET=linux64 MODE=Debug
+    - PACKAGE=dune-freetype TARGET=linux64 MODE=Debug
+    - PACKAGE=haxx-libcurl TARGET=linux64 MODE=Debug
+    - PACKAGE=fmod TARGET=linux64 MODE=Debug
+    - PACKAGE=intel-tbb TARGET=linux64 MODE=Debug
+    - PACKAGE=cryptopp TARGET=linux64 MODE=Debug
+    - PACKAGE=ois TARGET=linux64 MODE=Debug
+    - PACKAGE=bullet2 TARGET=linux64 MODE=Debug
 script:
-    - docker-compose run --rm linux64 make clean build
+    - PACKAGE=$PACKAGE make $TARGET
+
