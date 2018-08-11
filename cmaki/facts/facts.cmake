@@ -633,8 +633,8 @@ function(cmaki_test)
 		else()
 			add_test(
 				NAME ${_TEST_NAME}${_TEST_SUFFIX}
-				COMMAND bash cmaki_emulator.sh $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> --gmock_verbose=error
-				WORKING_DIRECTORY ${CMAKI_INSTALL}
+				COMMAND bash ../cmaki_emulator.sh $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> --gmock_verbose=error
+				WORKING_DIRECTORY ${CMAKI_INSTALL}/${BUILD_TYPE}
 				CONFIGURATIONS ${BUILD_TYPE})
 		endif()
 	endforeach()

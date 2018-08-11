@@ -8,9 +8,9 @@
 export DIRPROGRAM="$( cd "$( dirname "$1" )" >/dev/null && pwd )"
 export BASENAMEPROGRAM=$(basename "$1")
 export CMAKI_PWD="${CMAKI_PWD:-$(pwd)}"
-export CMAKI_INSTALL="${CMAKI_INSTALL:-$CMAKI_PWD/bin}"
 export CMAKI_EMULATOR="${CMAKI_EMULATOR:-}"
 
+export LD_LIBRARY_PATH=$(pwd):$LD_LIBRARY_PATH
 cd ${DIRPROGRAM}
 
 if [[ "$DEFAULT_DOCKCROSS_IMAGE" = "makiolo/windows-x86" ]]; then
@@ -29,3 +29,4 @@ elif [[ "$DEFAULT_DOCKCROSS_IMAGE" = "makiolo/browser-asmjs" ]]; then
 else
 	$CMAKI_EMULATOR ./$BASENAMEPROGRAM "${@:2}"
 fi
+
