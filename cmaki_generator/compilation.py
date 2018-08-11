@@ -90,7 +90,7 @@ def compilation(node, parameters, compiler_replace_maps):
                 env_modified['SOURCES'] = os.path.abspath(os.path.join('..', node.get_download_directory()))
                 env_modified['CMAKI_DIR'] = cmakefiles_dir
                 env_modified['SELFHOME'] = install_directory
-                env_modified['CMAKI_PWD'] = os.environ['CMAKI_PWD']
+                env_modified['CMAKI_PWD'] = build_directory
                 env_modified['CMAKI_INSTALL'] = install_directory
 
                 #################
