@@ -7,7 +7,6 @@ IF NOT EXIST "%NODE%" (
    SET NODE="%NODEHOME%\node.exe"
   ) ELSE (
    ECHO Error: Missing node.exe from node home: "%NODEHOME%"
-   EXIT /B 2
   )
  ) ELSE (
   IF EXIST "C:\Program Files\nodejs\node.exe" (
@@ -16,10 +15,8 @@ IF NOT EXIST "%NODE%" (
    SET NODEHOME=C:\Program Files\nodejs
   ) ELSE (
    ECHO ERROR: NODE configuration unavailable!
-   EXIT /B 3
   )
  )
 )
 
 "%NODE%" %DIRWORK%\cmaki.js %*
-exit /b %ERRORLEVEL%
