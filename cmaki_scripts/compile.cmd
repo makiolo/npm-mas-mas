@@ -17,5 +17,3 @@ cd %MODE%
 cmake --build . --config %MODE% --target install
 set lasterror=%errorlevel%
 cd ..
-
-if %lasterror% neq 0 exit /b %lasterror%
