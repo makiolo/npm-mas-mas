@@ -9,4 +9,3 @@ IF EXIST "%PYTHON%" (
 
 SET PATH=%~dp0\bin;%PATH%
 "%PYTHON%" %DIRWORK%\build.py %*
-exit /b %ERRORLEVEL%
