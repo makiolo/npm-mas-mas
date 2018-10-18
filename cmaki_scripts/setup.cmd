@@ -33,5 +33,3 @@ IF DEFINED Configuration (
 
 set lasterror=%errorlevel%
 cd ..
-
-if %lasterror% neq 0 exit /b %lasterror%
