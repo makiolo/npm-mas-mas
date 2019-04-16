@@ -643,8 +643,12 @@ function(cmaki_test)
 endfunction()
 
 macro(cmaki_google_test)
-	# cmaki_find_package(google-gmock)
+	find_package(GTest REQUIRED)
+	find_package(GMock REQUIRED)
+	set(PARAMETERS ${ARGV})
+	list(GET PARAMETERS 0 _MAIN_NAME)
 	cmaki_test(${ARGV})
+	target_compile_definitions(${_MAIN_NAME} PRIVATE WITH_GMOCK)
 endmacro()
 
 macro(cmaki_python_library)
