@@ -10,6 +10,7 @@ export COVERAGE="${COVERAGE:-FALSE}"
 export TESTS_VALGRIND="${TESTS_VALGRIND:-FALSE}"
 export COMPILER_BASENAME=$(basename ${CC})
 export CMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE:-"no cross compile"}"
+export COMPILER="${COMPILER:-${COMPILER_BASENAME}}"
 export COMPILER_LIBCXX="${COMPILER_LIBCXX:-libstdc++11}"
 export COMPILER_VERSION="${COMPILER_VERSION:-7.3}"
 
@@ -30,7 +31,7 @@ if [ -f "CMakeCache.txt" ]; then
 	rm CMakeCache.txt
 fi
 if [ -f "../../conanfile.txt" ]; then
-	if ! conan install ../.. --build missing -s compiler=${COMPILER_BASENAME} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
+	if ! conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
 		echo Error conan
 		exit 1
 	fi
