@@ -28,7 +28,7 @@ if [ -f "CMakeCache.txt" ]; then
 	rm CMakeCache.txt
 fi
 if [ -f "../../conanfile.txt" ]; then
-	if ! conan install ../.. --build missing -s compiler=${COMPILER_BASENAME}; then
+	if ! conan install ../.. --build missing -s compiler=${COMPILER_BASENAME} -s build_type=${MODE}; then
 		echo Error conan
 		exit 1
 	fi
