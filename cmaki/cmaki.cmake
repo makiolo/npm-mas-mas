@@ -18,6 +18,11 @@ macro(cmaki_setup)
 	set(CMAKE_CXX_STANDARD 14)
 	set(CMAKE_CXX_STANDARD_REQUIRED ON)
 	set(CMAKE_CXX_EXTENSIONS ON)
+	IF(WITH_CONAN)
+		# Conan
+		include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+		conan_basic_setup()
+	ENDIF()
 endmacro()
 
 macro (mark_as_internal _var)
@@ -524,6 +529,3 @@ macro(generate_clang)
 	STRING(REGEX REPLACE ";" "\n" extra_parameters "${extra_parameters}")
 	FILE(WRITE "${CMAKE_CURRENT_SOURCE_DIR}/.clang_complete" "${extra_parameters}\n")
 endmacro()
-
-# setup initial
-cmaki_setup()
