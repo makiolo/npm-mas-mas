@@ -31,7 +31,7 @@ if [ -f "CMakeCache.txt" ]; then
 	rm CMakeCache.txt
 fi
 export WITH_CONAN=0
-if [ -f "../../conanfile.txt" || -f "../../conanfile.py" ]; then
+if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
 	if ! conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
 		echo Error conan
 		exit 1
