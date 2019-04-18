@@ -25,24 +25,31 @@ if [ ! -d ${COMPILER_BASENAME}/${MODE} ]; then
 	mkdir -p ${COMPILER_BASENAME}/${MODE}
 fi
 
-export WITH_CONANBUILDINFO=0
-if [ -f "conanbuildinfo.cmake" ]; then
-	export WITH_CONANBUILDINFO=1
-fi
-
 # setup
 cd ${COMPILER_BASENAME}/${MODE}
 if [ -f "CMakeCache.txt" ]; then
 	rm CMakeCache.txt
 fi
+
 export WITH_CONAN=0
-if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
-	if ! conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
-		echo Error conan
-		exit 1
+if [ -f "../../conanbuildinfo.cmake" ]; then
+	if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
+		if ! conan install ../.. --install-folder=$CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
+			echo Error conan
+			exit 1
+		fi
+		export WITH_CONAN=1
 	fi
-	export WITH_CONAN=1
+else
+	if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
+		if ! conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
+			echo Error conan
+			exit 1
+		fi
+		export WITH_CONAN=1
+	fi
 fi
-cmake ../.. ${CMAKE_TOOLCHAIN_FILE_FILEPATH} -DCMAKE_MODULE_PATH=${CMAKI_PWD}/node_modules/npm-mas-mas/cmaki -DCMAKE_INSTALL_PREFIX=${CMAKI_INSTALL} -DCMAKE_BUILD_TYPE=${MODE} -DFIRST_ERROR=1 -G"${CMAKI_GENERATOR}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" -DNPP_CACHE=${NPP_CACHE} -DCOVERAGE=${COVERAGE} -DTESTS_VALGRIND=${TESTS_VALGRIND} -DWITH_CONAN=${WITH_CONAN} -DWITH_CONANBUILDINFO=${WITH_CONANBUILDINFO}
+
+cmake ../.. ${CMAKE_TOOLCHAIN_FILE_FILEPATH} -DCMAKE_MODULE_PATH=${CMAKI_PWD}/node_modules/npm-mas-mas/cmaki -DCMAKE_INSTALL_PREFIX=${CMAKI_INSTALL} -DCMAKE_BUILD_TYPE=${MODE} -DFIRST_ERROR=1 -G"${CMAKI_GENERATOR}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" -DNPP_CACHE=${NPP_CACHE} -DCOVERAGE=${COVERAGE} -DTESTS_VALGRIND=${TESTS_VALGRIND} -DWITH_CONAN=${WITH_CONAN}
 code=$?
 exit ${code}
