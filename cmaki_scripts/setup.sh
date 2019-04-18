@@ -27,6 +27,7 @@ echo "running in mode ${MODE} ... ($COMPILER_BASENAME) (${CC} / ${CXX})"
 if [ ! -d ${BUILD_DIR} ]; then
 	mkdir -p ${BUILD_DIR}
 fi
+echo BUILD_DIR=${BUILD_DIR}
 cd ${BUILD_DIR}
 
 if [ -f "CMakeCache.txt" ]; then
