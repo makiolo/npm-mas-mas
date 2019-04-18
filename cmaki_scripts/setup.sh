@@ -34,6 +34,7 @@ fi
 export WITH_CONAN=0
 if [ -f "../../conanbuildinfo.cmake" ]; then
 	if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
+		echo conan install ../.. --install-folder=$CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
 		if ! conan install ../.. --install-folder=$CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
 			echo Error conan
 			exit 1
@@ -42,6 +43,7 @@ if [ -f "../../conanbuildinfo.cmake" ]; then
 	fi
 else
 	if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
+		echo conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
 		if ! conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
 			echo Error conan
 			exit 1
