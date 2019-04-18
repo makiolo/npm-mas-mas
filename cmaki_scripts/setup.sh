@@ -36,8 +36,8 @@ fi
 
 export WITH_CONAN=0
 if [ -f "$CMAKI_PWD/conanfile.txt" ] || [ -f "$CMAKI_PWD/conanfile.py" ]; then
-	echo conan install $CMAKI_PWD --install-folder ${BUILD_DIR} --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
-	if ! conan install $CMAKI_PWD --install-folder ${BUILD_DIR} --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
+	echo conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
+	if ! conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
 		echo Error conan
 		exit 1
 	fi
