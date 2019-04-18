@@ -36,16 +36,12 @@ fi
 
 export WITH_CONAN=0
 if [ -f "$CMAKI_PWD/conanfile.txt" ] || [ -f "$CMAKI_PWD/conanfile.py" ]; then
-	if [ ! -f "conanbuildinfo.cmake" ]; then
-		echo conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
-		if ! conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
-			echo Error conan
-			exit 1
-		fi
-		export WITH_CONAN=1
-	else
-		echo skipping conan command
+	echo conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
+	if ! conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
+		echo Error conan
+		exit 1
 	fi
+	export WITH_CONAN=1
 fi
 
 cmake $CMAKI_PWD ${CMAKE_TOOLCHAIN_FILE_FILEPATH} -DCMAKE_MODULE_PATH=${CMAKI_PWD}/node_modules/npm-mas-mas/cmaki -DCMAKE_INSTALL_PREFIX=${CMAKI_INSTALL} -DCMAKE_BUILD_TYPE=${MODE} -DFIRST_ERROR=1 -G"${CMAKI_GENERATOR}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" -DNPP_CACHE=${NPP_CACHE} -DCOVERAGE=${COVERAGE} -DTESTS_VALGRIND=${TESTS_VALGRIND} -DWITH_CONAN=${WITH_CONAN}
