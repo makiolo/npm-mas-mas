@@ -13,8 +13,7 @@ export COVERAGE="${COVERAGE:-FALSE}"
 export TESTS_VALGRIND="${TESTS_VALGRIND:-FALSE}"
 export COMPILER_BASENAME=$(basename ${CC})
 export CMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE:-"no cross compile"}"
-# export BUILD_DIR="${BUILD_DIR:-${COMPILER_BASENAME}/${MODE}}"
-export BUILD_DIR="${BUILD_DIR:-${PWD}}"
+export BUILD_DIR="${BUILD_DIR:-${COMPILER_BASENAME}/${MODE}}"
 
 if [ "$CMAKE_TOOLCHAIN_FILE" == "no cross compile" ]; then
 	export CMAKE_TOOLCHAIN_FILE_FILEPATH=""
