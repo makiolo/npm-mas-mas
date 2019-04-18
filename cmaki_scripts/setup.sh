@@ -13,7 +13,7 @@ export COVERAGE="${COVERAGE:-FALSE}"
 export TESTS_VALGRIND="${TESTS_VALGRIND:-FALSE}"
 export COMPILER_BASENAME=$(basename ${CC})
 export CMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE:-"no cross compile"}"
-export DO_CD="${DO_CD:-TRUE}"
+export BUILD_DIR="${BUILD_DIR:-${COMPILER_BASENAME}/${MODE}}"
 
 if [ "$CMAKE_TOOLCHAIN_FILE" == "no cross compile" ]; then
 	export CMAKE_TOOLCHAIN_FILE_FILEPATH=""
@@ -23,23 +23,21 @@ fi
 
 echo "running in mode ${MODE} ... ($COMPILER_BASENAME) (${CC} / ${CXX})"
 
-if [ "$DO_CD" == "TRUE" ]; then
-	# setup
-	if [ ! -d ${COMPILER_BASENAME}/${MODE} ]; then
-		mkdir -p ${COMPILER_BASENAME}/${MODE}
-	fi
-	cd ${COMPILER_BASENAME}/${MODE}
+# setup
+if [ ! -d ${BUILD_DIR} ]; then
+	mkdir -p ${BUILD_DIR}
 fi
+cd ${BUILD_DIR}
 
 if [ -f "CMakeCache.txt" ]; then
 	rm CMakeCache.txt
 fi
 
 export WITH_CONAN=0
-if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
+if [ -f "$CMAKI_PWD/conanfile.txt" ] || [ -f "$CMAKI_PWD/conanfile.py" ]; then
 	if [ ! -f "conanbuildinfo.cmake" ]; then
-		echo conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
-		if ! conan install ../.. --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
+		echo conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
+		if ! conan install $CMAKI_PWD --build missing -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}; then
 			echo Error conan
 			exit 1
 		fi
@@ -49,6 +47,6 @@ if [ -f "../../conanfile.txt" ] || [ -f "../../conanfile.py" ]; then
 	fi
 fi
 
-cmake ../.. ${CMAKE_TOOLCHAIN_FILE_FILEPATH} -DCMAKE_MODULE_PATH=${CMAKI_PWD}/node_modules/npm-mas-mas/cmaki -DCMAKE_INSTALL_PREFIX=${CMAKI_INSTALL} -DCMAKE_BUILD_TYPE=${MODE} -DFIRST_ERROR=1 -G"${CMAKI_GENERATOR}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" -DNPP_CACHE=${NPP_CACHE} -DCOVERAGE=${COVERAGE} -DTESTS_VALGRIND=${TESTS_VALGRIND} -DWITH_CONAN=${WITH_CONAN}
+cmake $CMAKI_PWD ${CMAKE_TOOLCHAIN_FILE_FILEPATH} -DCMAKE_MODULE_PATH=${CMAKI_PWD}/node_modules/npm-mas-mas/cmaki -DCMAKE_INSTALL_PREFIX=${CMAKI_INSTALL} -DCMAKE_BUILD_TYPE=${MODE} -DFIRST_ERROR=1 -G"${CMAKI_GENERATOR}" -DCMAKE_C_COMPILER="${CC}" -DCMAKE_CXX_COMPILER="${CXX}" -DNPP_CACHE=${NPP_CACHE} -DCOVERAGE=${COVERAGE} -DTESTS_VALGRIND=${TESTS_VALGRIND} -DWITH_CONAN=${WITH_CONAN}
 code=$?
 exit ${code}
