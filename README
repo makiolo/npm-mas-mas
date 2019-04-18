@@ -35,3 +35,12 @@ cmaki_test ------------> npp_test
 cmaki_google_test -----> npp_google_test
 cmaki_python_test -----> npp_python_test
 
+
+
+Comandos uso
+------------
+npm install 
+npm test
+
+npm run create  # crear package
+npm run upload  # subir package
