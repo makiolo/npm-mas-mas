@@ -21,12 +21,15 @@ else
 fi
 
 echo "running in mode ${MODE} ... ($COMPILER_BASENAME) (${CC} / ${CXX})"
-if [ ! -d ${COMPILER_BASENAME}/${MODE} ]; then
-	mkdir -p ${COMPILER_BASENAME}/${MODE}
+
+if [ ! -f "conanbuildinfo.cmake" ]; then
+	# setup
+	if [ ! -d ${COMPILER_BASENAME}/${MODE} ]; then
+		mkdir -p ${COMPILER_BASENAME}/${MODE}
+	fi
+	cd ${COMPILER_BASENAME}/${MODE}
 fi
 
-# setup
-cd ${COMPILER_BASENAME}/${MODE}
 if [ -f "CMakeCache.txt" ]; then
 	rm CMakeCache.txt
 fi
