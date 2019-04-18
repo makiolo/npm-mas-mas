@@ -13,6 +13,7 @@ export COVERAGE="${COVERAGE:-FALSE}"
 export TESTS_VALGRIND="${TESTS_VALGRIND:-FALSE}"
 export COMPILER_BASENAME=$(basename ${CC})
 export CMAKE_TOOLCHAIN_FILE="${CMAKE_TOOLCHAIN_FILE:-"no cross compile"}"
+export DO_CD="${DO_CD:-TRUE}"
 
 if [ "$CMAKE_TOOLCHAIN_FILE" == "no cross compile" ]; then
 	export CMAKE_TOOLCHAIN_FILE_FILEPATH=""
@@ -22,7 +23,7 @@ fi
 
 echo "running in mode ${MODE} ... ($COMPILER_BASENAME) (${CC} / ${CXX})"
 
-if [ ! -f "conanbuildinfo.cmake" ]; then
+if [ "$DO_CD" == "TRUE" ]; then
 	# setup
 	if [ ! -d ${COMPILER_BASENAME}/${MODE} ]; then
 		mkdir -p ${COMPILER_BASENAME}/${MODE}
