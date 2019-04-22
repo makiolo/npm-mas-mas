@@ -7,6 +7,7 @@ IF(NOT DEFINED CMAKI_PATH)
 ENDIF()
 
 include("${CMAKE_CURRENT_LIST_DIR}/facts/facts.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/GitUtils.cmake")
 
 option(FIRST_ERROR "stop on first compilation error" FALSE)
 
