@@ -66,7 +66,7 @@ endif()
 #
 #     include(${testProj_SOURCE_DIR}/cmake/myFancyLib.cmake)
 
-function(git_clone)
+function(cmaki_git_clone)
 
     cmake_parse_arguments(
             PARGS                                                               # prefix of output variables
