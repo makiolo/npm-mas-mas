@@ -44,3 +44,14 @@ npm test
 
 npm run create  # crear package
 npm run upload  # subir package
+
+
+windows environment
+------------------
+visual studio 2019
+mini conda
+npm
+cmake
+pip install conan
+chocolatey
+choco install tortoisegit
