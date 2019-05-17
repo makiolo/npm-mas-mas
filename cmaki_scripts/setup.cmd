@@ -33,3 +33,5 @@ IF DEFINED Configuration (
 
 set lasterror=%errorlevel%
 cd ..
+
+exit /b %lasterror%
