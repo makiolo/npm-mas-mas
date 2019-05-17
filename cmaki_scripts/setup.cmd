@@ -21,8 +21,8 @@ md %MODE%
 :: setup
 cd %MODE%
 
-:: conan install %CMAKI_PWD% --build missing -s build_type=%MODE%
-conan install %CMAKI_PWD% --build never -s build_type=%MODE%
+conan install %CMAKI_PWD% --build missing -s build_type=%MODE%
+:: conan install %CMAKI_PWD% --build never -s build_type=%MODE%
 
 IF DEFINED Configuration (
     IF DEFINED Platform (
