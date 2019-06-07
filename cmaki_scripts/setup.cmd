@@ -26,12 +26,12 @@ conan install %CMAKI_PWD% --build missing -s build_type=%MODE%
 
 IF DEFINED Configuration (
     IF DEFINED Platform (
-        cmake .. -DCMAKE_MODULE_PATH=%CMAKI_PWD%\node_modules\npm-mas-mas\cmaki -DCMAKE_BUILD_TYPE=%MODE% -G"%GENERATOR%" -DCMAKE_INSTALL_PREFIX=%CMAKI_INSTALL%
+        cmake .. -DCMAKE_MODULE_PATH="%CMAKI_PWD%\node_modules\npm-mas-mas\cmaki" -DCMAKE_BUILD_TYPE=%MODE% -G"%GENERATOR%" -DCMAKE_INSTALL_PREFIX=%CMAKI_INSTALL%
     ) ELSE (
-        cmake .. -DCMAKE_MODULE_PATH=%CMAKI_PWD%\node_modules\npm-mas-mas\cmaki -DCMAKE_BUILD_TYPE=%MODE% -DCMAKE_INSTALL_PREFIX=%CMAKI_INSTALL%
+        cmake .. -DCMAKE_MODULE_PATH="%CMAKI_PWD%\node_modules\npm-mas-mas\cmaki" -DCMAKE_BUILD_TYPE=%MODE% -DCMAKE_INSTALL_PREFIX=%CMAKI_INSTALL%
     )
 ) ELSE (
-    cmake .. -DCMAKE_MODULE_PATH=%CMAKI_PWD%\node_modules\npm-mas-mas\cmaki -DCMAKE_BUILD_TYPE=%MODE% -DCMAKE_INSTALL_PREFIX=%CMAKI_INSTALL%
+    cmake .. -DCMAKE_MODULE_PATH="%CMAKI_PWD%\node_modules\npm-mas-mas\cmaki" -DCMAKE_BUILD_TYPE=%MODE% -DCMAKE_INSTALL_PREFIX=%CMAKI_INSTALL%
 )
 
 set lasterror=%errorlevel%
