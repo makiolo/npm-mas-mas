@@ -20,6 +20,7 @@ macro(cmaki_setup)
 	set(CMAKE_CXX_EXTENSIONS ON)
 	IF(WITH_CONAN)
 		# Conan
+		message("-- Using conan dir: ${CMAKE_BINARY_DIR}")
 		include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
 		conan_basic_setup()
 	ENDIF()
