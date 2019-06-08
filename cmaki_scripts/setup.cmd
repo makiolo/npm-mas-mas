@@ -30,7 +30,7 @@ cd %MODE%
 :: compiler.runtime=MD
 :: compiler.version=14
 
-conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch_build=%ARCH% -s compiler="Visual Studio"
+conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler="Visual Studio"
 
 IF DEFINED Configuration (
     IF DEFINED Platform (
