@@ -2,6 +2,24 @@
 
 setlocal enableextensions
 
+
+export COMPILER="${COMPILER:-$(conan profile show default | grep -e "\<compiler\>=" | cut -d"=" -f2)}"
+export COMPILER_VERSION="${COMPILER_VERSION:-$(conan profile show default | grep -e "\<compiler.version\>=" | cut -d"=" -f2)}"
+
+if DEFINED COMPILER (
+    echo Using COMPILER: %COMPILER%
+) else (
+    set COMPILER="Visual Studio"
+    echo Env var COMPILER is not defined. Using by default: %COMPILER%
+)
+
+if DEFINED COMPILER_VERSION (
+    echo Using COMPILER_VERSION: %COMPILER_VERSION%
+) else (
+    set COMPILER_VERSION=16
+    echo Env var COMPILER_VERSION is not defined. Using by default: %COMPILER_VERSION%
+)
+
 if DEFINED GENERATOR (
     echo Using Visual Studio generator: %GENERATOR%
 ) else (
@@ -22,14 +40,14 @@ if "%Platform%" == "x64" (
     set ARCH=x86
 )
 
-echo running in mode %MODE% ...
+echo running in mode %COMPILER% %COMPILER_VERSION% %ARCH% %MODE% ...
 if exist %MODE% (rmdir /s /q %MODE%)
 md %MODE%
 
 :: setup
 cd %MODE%
 
-conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler="Visual Studio"
+conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler=%COMPILER% -s compiler.version=%COMPILER_VERSION%
 
 IF DEFINED Configuration (
     IF DEFINED Platform (
