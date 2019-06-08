@@ -3,9 +3,10 @@
 setlocal enableextensions
 
 if DEFINED GENERATOR (
-    echo If DEFINED GENERATOR env var
+    echo Using Visual Studio generator: %GENERATOR%
 ) else (
-    echo Else DEFINED GENERATOR env var
+    set GENERATOR=Visual Studio 16 2019
+    echo Env var GENERATOR is not defined. Using by default: %GENERATOR%
 )
 
 if "%Configuration%" == "Release" (
@@ -15,12 +16,9 @@ if "%Configuration%" == "Release" (
 )
 
 if "%Platform%" == "x64" (
-    set GENERATOR=Visual Studio 16 2019 Win64
-    :: set GENERATOR=Visual Studio 14 2015 Win64
+    set GENERATOR=%GENERATOR% Win64
     set ARCH=x86_64
 ) else (
-    set GENERATOR=Visual Studio 16 2019
-    :: set GENERATOR=Visual Studio 14 2015
     set ARCH=x86
 )
 
@@ -30,11 +28,6 @@ md %MODE%
 
 :: setup
 cd %MODE%
-
-:: -s compiler=${COMPILER} -s build_type=${MODE} -s compiler.libcxx=${COMPILER_LIBCXX} -s compiler.version=${COMPILER_VERSION}
-:: compiler=Visual Studio
-:: compiler.runtime=MD
-:: compiler.version=14
 
 conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler="Visual Studio"
 
