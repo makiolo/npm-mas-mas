@@ -47,7 +47,9 @@ md %MODE%
 :: setup
 cd %MODE%
 
-conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler=%COMPILER% -s compiler.version=%COMPILER_VERSION%
+:: conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler=%COMPILER% -s compiler.version=%COMPILER_VERSION%
+
+conan install %CMAKI_PWD% --build never -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler=%COMPILER% -s compiler.version=%COMPILER_VERSION%
 
 IF DEFINED Configuration (
     IF DEFINED Platform (
