@@ -3,9 +3,9 @@
 setlocal enableextensions
 
 if DEFINED GENERATOR (
-    echo "If defined Generator env var"
+    echo If DEFINED GENERATOR env var
 ) else (
-    echo "Else defined Generator env var"
+    echo Else DEFINED GENERATOR env var
 )
 
 if "%Configuration%" == "Release" (
