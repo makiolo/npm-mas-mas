@@ -9,12 +9,12 @@ if "%Configuration%" == "Release" (
 )
 
 if "%Platform%" == "x64" (
-    :: set GENERATOR=Visual Studio 16 2019 Win64
-    set GENERATOR=Visual Studio 14 2015 Win64
+    set GENERATOR=Visual Studio 16 2019 Win64
+    :: set GENERATOR=Visual Studio 14 2015 Win64
     set ARCH=x86_64
 ) else (
-    :: set GENERATOR=Visual Studio 16 2019
-    set GENERATOR=Visual Studio 14 2015
+    set GENERATOR=Visual Studio 16 2019
+    :: set GENERATOR=Visual Studio 14 2015
     set ARCH=x86
 )
 
