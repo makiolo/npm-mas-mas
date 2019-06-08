@@ -9,9 +9,11 @@ if "%Configuration%" == "Release" (
 )
 
 if "%Platform%" == "x64" (
-    set GENERATOR=Visual Studio 16 2019 Win64
+    :: set GENERATOR=Visual Studio 16 2019 Win64
+    set GENERATOR=Visual Studio 15 2017 Win64
 ) else (
-    set GENERATOR=Visual Studio 16 2019
+    :: set GENERATOR=Visual Studio 16 2019
+    set GENERATOR=Visual Studio 15 2017
 )
 
 echo running in mode %MODE% ...
