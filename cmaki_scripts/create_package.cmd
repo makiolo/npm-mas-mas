@@ -21,8 +21,8 @@ if "%Configuration%" == "Release" (
 )
 
 if "%NPP_CI%" == "FALSE" (
-	conan install . --build missing -s compiler=%COMPILER% -s build_type=%MODE% -s compiler.libcxx=%COMPILER_LIBCXX% -s compiler.version=%COMPILER_VERSION%
+	conan install . --build missing -s compiler=%COMPILER% -s build_type=%MODE% -s compiler.version=%COMPILER_VERSION%
 )
 
-conan create . npm-mas-mas/testing -s compiler=%COMPILER% -s build_type=%MODE% -s compiler.libcxx=%COMPILER_LIBCXX% -s compiler.version=%COMPILER_VERSION% -tf None
+conan create . npm-mas-mas/testing -s compiler=%COMPILER% -s build_type=%MODE% -s compiler.version=%COMPILER_VERSION% -tf None
 
