@@ -33,11 +33,11 @@ if "%Configuration%" == "Release" (
     set MODE=Debug
 )
 
-if "%Platform%" == "x64" (
+if "%Platform%" == "x86" (
+    set ARCH=x86
+) else (
     set GENERATOR=%GENERATOR% Win64
     set ARCH=x86_64
-) else (
-    set ARCH=x86
 )
 
 echo running in mode %COMPILER% %COMPILER_VERSION% %ARCH% %MODE% ...
@@ -46,8 +46,6 @@ md %MODE%
 
 :: setup
 cd %MODE%
-
-:: conan install %CMAKI_PWD% --build missing -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler=%COMPILER% -s compiler.version=%COMPILER_VERSION%
 
 conan install %CMAKI_PWD% --build never -s build_type=%MODE% -s arch=%ARCH% -s arch_build=%ARCH% -s compiler=%COMPILER% -s compiler.version=%COMPILER_VERSION%
 
