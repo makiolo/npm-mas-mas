@@ -656,13 +656,13 @@ function(cmaki_test)
 		if(WIN32)
 			add_test(
 				NAME ${_TEST_NAME}${_TEST_SUFFIX}
-				COMMAND $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> --gmock_verbose=error
+				COMMAND $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> 
 				WORKING_DIRECTORY ${CMAKI_INSTALL}/${BUILD_TYPE}
 				CONFIGURATIONS ${BUILD_TYPE})
 		else()
 			add_test(
 				NAME ${_TEST_NAME}${_TEST_SUFFIX}
-				COMMAND bash ../cmaki_emulator.sh $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> --gmock_verbose=error
+				COMMAND bash ../cmaki_emulator.sh $<TARGET_FILE:${_TEST_NAME}${_TEST_SUFFIX}> 
 				WORKING_DIRECTORY ${CMAKI_INSTALL}/${BUILD_TYPE}
 				CONFIGURATIONS ${BUILD_TYPE})
 		endif()
