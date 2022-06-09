@@ -14,14 +14,14 @@
 		"c++",
 		"artifacts"
 	],
-	"author": "Ricardo Marmolejo García",
+	"author": "Ricardo Marmolejo GarcÃ­a",
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/makiolo/npm-mas-mas/issues"
 	},
 	"homepage": "https://github.com/makiolo/npm-mas-mas#readme",
 	"dependencies": {
-		"shelljs": "^0.7.8"
+		"shelljs": ">=0.8.5"
 	}
 }
 
